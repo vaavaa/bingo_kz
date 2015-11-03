@@ -10,4 +10,11 @@
         <attr name="layout_cellsHeight" format="integer" />
     </declare-styleable>
 
+    <declare-styleable name="TwoTextViews">
+        <attr name="label_text" format="string" />
+        <attr name="field_text" format="string" />
+        <attr name="color_text" format="color" />
+        <attr name="size_text" format="dimension" />
+    </declare-styleable>
+
 </resources>
