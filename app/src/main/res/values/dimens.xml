@@ -1,0 +1,19 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">2dp</dimen>
+    <dimen name="activity_vertical_margin">2dp</dimen>
+    <dimen name= "ball_space">15dp</dimen>
+    <dimen name= "ball_size">60dp</dimen>
+    <dimen name="ball_text_size">30sp</dimen>
+    <dimen name="column_width">40dp</dimen>
+    <dimen name="row_width">40dp</dimen>
+    <dimen name="button_width">20dp</dimen>
+    <dimen name="f1st_row">25sp</dimen>
+    <dimen name="s2nd_row">25sp</dimen>
+    <dimen name="sys_info_text_size">25sp</dimen>
+    <dimen name="bingo_card_text_size">39sp</dimen>
+    <dimen name="auto_text_size">25sp</dimen>
+    <dimen name="x2_text_size">25sp</dimen>
+    <dimen name="auto_ball_size">100dp</dimen>
+    <dimen name="entry_ball_size">65dp</dimen>
+</resources>

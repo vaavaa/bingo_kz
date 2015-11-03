@@ -1,0 +1,155 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:cl="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background"
+    tools:context=".main"
+    android:orientation="horizontal"
+    android:keepScreenOn="true">
+    <kz.regto.bingo.CellLayout
+        android:id="@+id/cell_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        cl:columns="200"
+        cl:spacing="1dp"
+        tools:context=".MainActivity" >
+
+        <!-- Начало первой строки -->
+        <TextView android:textColor="@color/first_line_label"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textSize="@dimen/f1st_row"
+            android:text="Cайт:"
+            cl:layout_cellsHeight="@integer/first_row_height"
+            cl:layout_cellsWidth="15"
+            cl:layout_left="0"
+            cl:layout_top="0"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/f1st_row"
+            android:text="www.BingoCard.kz"
+            android:textColor="@color/first_line_label"
+            cl:layout_cellsHeight="@integer/first_row_height"
+            cl:layout_cellsWidth="45"
+            cl:layout_left="17"
+            cl:layout_top="0"/>
+        <TextView android:layout_height="wrap_content"
+            android:textColor="@color/first_line_label"
+            android:layout_width="wrap_content"
+            android:textSize="@dimen/f1st_row"
+            android:text="Устройство:"
+            cl:layout_cellsHeight="@integer/first_row_height"
+            cl:layout_cellsWidth="30"
+            cl:layout_left="155"
+            cl:layout_top="0"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/first_line_label"
+            android:textSize="@dimen/f1st_row"
+            android:text="185519"
+            cl:layout_cellsHeight="@integer/first_row_height"
+            cl:layout_cellsWidth="15"
+            cl:layout_left="185"
+            cl:layout_top="0"/>
+
+        <!-- Конец первой строки -->
+        <!-- Начало второй строки -->
+
+        <TextView android:textColor="@color/second_line_label"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textSize="@dimen/s2nd_row"
+            android:text="Баланс:"
+            cl:layout_cellsHeight="@integer/second_row_height"
+            cl:layout_cellsWidth="15"
+            cl:layout_left="0"
+            cl:layout_top="@integer/first_row_height"/>
+            />
+        <TextView
+            android:id="@+id/balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/s2nd_row"
+            android:text="18000"
+            android:textColor="@color/second_line_label"
+            cl:layout_cellsHeight="@integer/second_row_height"
+            cl:layout_cellsWidth="15"
+            cl:layout_left="17"
+            cl:layout_top="@integer/first_row_height"/>
+
+        <TextView android:layout_height="wrap_content"
+            android:textColor="@color/second_line_label"
+            android:layout_width="wrap_content"
+            android:textSize="@dimen/s2nd_row"
+            android:text="Выйгрыш"
+            cl:layout_cellsHeight="@integer/second_row_height"
+            cl:layout_cellsWidth="20"
+            cl:layout_left="38"
+            cl:layout_top="@integer/first_row_height"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/second_line_label"
+            android:textSize="@dimen/s2nd_row"
+            android:text="10000"
+            cl:layout_cellsHeight="@integer/second_row_height"
+            cl:layout_cellsWidth="15"
+            cl:layout_left="60"
+            cl:layout_top="@integer/first_row_height"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/second_line_label"
+            android:textSize="@dimen/sys_info_text_size"
+            android:text="Ставка"
+            cl:layout_cellsHeight="@integer/second_row_height"
+            cl:layout_cellsWidth="20"
+            cl:layout_left="75"
+            cl:layout_top="@integer/first_row_height"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/second_line_label"
+            android:textSize="@dimen/sys_info_text_size"
+            android:text="2000"
+            cl:layout_cellsHeight="@integer/second_row_height"
+            cl:layout_cellsWidth="15"
+            cl:layout_left="95"
+            cl:layout_top="@integer/first_row_height"/>
+        <RelativeLayout  android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="55dp"
+            android:layout_centerHorizontal="true"
+            cl:layout_cellsHeight="@integer/second_row_height"
+            cl:layout_cellsWidth="100"
+            cl:layout_left="100"
+            cl:layout_top="@integer/first_row_height">
+            <TextView
+                android:id="@+id/timerValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textSize="40dp"
+                android:textColor="#ffffff"
+                android:text="@string/timerVal" />
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_below="@+id/timerValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/timerValue"
+                android:layout_alignRight="@id/timerValue"
+                android:indeterminate="false"
+                android:padding="1dp" >
+            </ProgressBar>
+        </RelativeLayout>
+
+    </kz.regto.bingo.CellLayout>
+
+</RelativeLayout>
