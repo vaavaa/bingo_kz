@@ -173,15 +173,4 @@ public class TimerRelative extends RelativeLayout {
             customHandler.postDelayed(this, 0);
         }
     };
-
-    static class Responder implements TimerEvent {
-        @Override
-        public void TimerOver(){
-            Log.v("1", "Таймер завершился");
-        }
-        @Override
-        public void TimerStarted(){
-            Log.v("1", "Таймер начался");
-        }
-    }
 }

@@ -90,10 +90,10 @@
         <kz.regto.bingo.MainContainer
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            cl:layout_cellsHeight="60"
+            cl:layout_cellsHeight="50"
             cl:layout_cellsWidth="180"
             cl:layout_left="10"
-            cl:layout_top="35">
+            cl:layout_top="45">
             <kz.regto.bingo.BoardGrid
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
