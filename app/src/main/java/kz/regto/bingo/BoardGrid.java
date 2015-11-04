@@ -129,9 +129,11 @@ public class BoardGrid extends View {
             //Рисуем вертикальные границы с некоторыми ограничениями всего столбцов 12,
             // последний 13ый столбец не нужен.
             for (int i = 1; i <= 12; i++) {
-                mRect[ii].left = i * columns - GRID_STEP+correlate;
+                if (i<4) mRect[ii].left = i * columns - GRID_STEP+correlate;
+                else mRect[ii].left = i * columns - GRID_STEP;
                 mRect[ii].top = GRID_STEP;
-                mRect[ii].right = i * columns + GRID_STEP+correlate;
+                if (i<4) mRect[ii].right = i * columns + GRID_STEP+correlate;
+                else mRect[ii].right = i * columns + GRID_STEP;
                 mRect[ii].bottom = 3 * rows - GRID_STEP;
                 //canvas.drawRect(mRect[ii], paint);
                 ii++;

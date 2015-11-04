@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -13,6 +14,8 @@ import android.view.animation.Animation;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by spt on 03.11.2015.
@@ -26,7 +29,7 @@ public class TimerRelative extends RelativeLayout {
     private long secCounter = 50000;
     private long secCounterPlus = 2000;
     private long secCounterPlus2 = 2000;
-
+    private boolean bTimer= true;
 
     private Handler customHandler = new Handler();
     private Animation anim = new AlphaAnimation(0.0f, 1.0f);
@@ -35,7 +38,9 @@ public class TimerRelative extends RelativeLayout {
     private long timeInMilliseconds = 0L;
     private long timeSwapBuff = 0L;
     private long updatedTime = 0L;
+    private List<TimerEvent> listeners = new ArrayList<TimerEvent>();
 
+    static Responder rr = new Responder();
 
     public TimerRelative(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -66,7 +71,10 @@ public class TimerRelative extends RelativeLayout {
         progressBar.setMax((int) secCounter / 100);
 
         startTime = SystemClock.uptimeMillis();
+        this.addListener(rr);
+        for (TimerEvent hl : listeners) hl.TimerStarted();
         customHandler.postDelayed(updateTimerThread, 0);
+
 
         addView(view);
     }
@@ -83,6 +91,8 @@ public class TimerRelative extends RelativeLayout {
             a.recycle();
         }
     }
+    //Принимаем подписчиков на события таймера
+    public void addListener(TimerEvent toAdd) { listeners.add(toAdd); }
 
     private Runnable updateTimerThread = new Runnable() {
         int i = 42;
@@ -107,6 +117,11 @@ public class TimerRelative extends RelativeLayout {
                     secs = (int) (secCounter) / 1000;
                     mins = secs / 60;
                     secs = secs % 60;
+                    //Даем всем знать что таймер кончился
+                    if (bTimer){
+                        for (TimerEvent hl : listeners) hl.TimerOver();
+                        bTimer=false;
+                    }
                 }
 
                 if ((updatedTime) >= (secCounter + secCounterPlus + secCounterPlus2)) {
@@ -115,10 +130,12 @@ public class TimerRelative extends RelativeLayout {
                     progressBar.setProgress(0);
                     i = 42;
                     ii = 55;
+                    //Даем всем знать что таймер начался
+                    for (TimerEvent hl : listeners) hl.TimerStarted();
+                    bTimer=true;
                 }
 
-                timerValue.setText("" + mins + ":"
-                        + String.format("%02d", secs));
+                timerValue.setText(Integer.toString(mins).concat(":").concat(String.format("%02d", secs)));
 
             } else {
                 long persnt = (int) updatedTime * 100 / secCounter;
@@ -151,10 +168,20 @@ public class TimerRelative extends RelativeLayout {
                 int mins = secs / 60;
                 secs = secs % 60;
 
-                timerValue.setText("" + mins + ":"
-                        + String.format("%02d", secs));
+                timerValue.setText(Integer.toString(mins).concat(":").concat(String.format("%02d", secs)));
             }
             customHandler.postDelayed(this, 0);
         }
     };
+
+    static class Responder implements TimerEvent {
+        @Override
+        public void TimerOver(){
+            Log.v("1", "Таймер завершился");
+        }
+        @Override
+        public void TimerStarted(){
+            Log.v("1", "Таймер начался");
+        }
+    }
 }

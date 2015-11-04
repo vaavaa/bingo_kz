@@ -77,6 +77,7 @@
             cl:layout_top="@integer/first_row_height"/>
 
         <kz.regto.bingo.TimerRelative
+            android:id="@+id/gameTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             cl:layout_cellsHeight="@integer/second_row_height"
@@ -90,8 +91,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             cl:layout_cellsHeight="60"
-            cl:layout_cellsWidth="150"
-            cl:layout_left="25"
+            cl:layout_cellsWidth="180"
+            cl:layout_left="10"
             cl:layout_top="35">
             <kz.regto.bingo.BoardGrid
                 android:layout_width="match_parent"
