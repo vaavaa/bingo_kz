@@ -85,14 +85,14 @@
             cl:layout_top="@integer/first_row_height"/>
         <!-- Конец второй строки -->
 
-        <!-- Начало поля строки -->
+        <!-- Начало поля -->
         <kz.regto.bingo.MainContainer
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             cl:layout_cellsHeight="60"
             cl:layout_cellsWidth="150"
-            cl:layout_left="50"
-            cl:layout_top="30">
+            cl:layout_left="25"
+            cl:layout_top="35">
             <kz.regto.bingo.BoardGrid
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
@@ -105,6 +105,99 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </kz.regto.bingo.MainContainer>
+        <!-- Конец поля -->
+        <!-- Нижние кнопки -->
+        <Button android:id="@+id/auto"
+            android:text="A"
+            android:layout_width="@dimen/auto_ball_size"
+            android:layout_height="@dimen/auto_ball_size"
+            android:textSize="@dimen/auto_text_size"
+            android:background="@drawable/auto_button_effect"
+            android:gravity="center"
+            cl:layout_cellsHeight="15"
+            cl:layout_cellsWidth="15"
+            cl:layout_left="0"
+            cl:layout_top="100"/>
+        <Button android:id="@+id/x2"
+            android:text="2x"
+            android:textSize="@dimen/x2_text_size"
+            android:layout_height="@dimen/auto_ball_size"
+            android:layout_width="@dimen/auto_ball_size"
+            android:background="@drawable/auto_button_effect"
+            android:gravity="center"
+            cl:layout_cellsHeight="15"
+            cl:layout_cellsWidth="15"
+            cl:layout_left="15"
+            cl:layout_top="100"/>
+
+        <Button android:id="@+id/entry100"
+            android:text="100"
+            android:textSize="@dimen/auto_text_size"
+            android:layout_height="@dimen/entry_ball_size"
+            android:layout_width="@dimen/entry_ball_size"
+            android:background="@drawable/auto_button_effect"
+            android:gravity="center"
+            cl:layout_cellsHeight="12"
+            cl:layout_cellsWidth="12"
+            cl:layout_left="75"
+            cl:layout_top="100"/>
+        <Button android:id="@+id/entry200"
+           android:text="200"
+           android:textSize="@dimen/auto_text_size"
+           android:layout_height="@dimen/entry_ball_size"
+           android:layout_width="@dimen/entry_ball_size"
+           android:background="@drawable/auto_button_effect"
+           android:gravity="center"
+           cl:layout_cellsHeight="12"
+           cl:layout_cellsWidth="12"
+           cl:layout_left="87"
+           cl:layout_top="100"/>
+        <Button android:id="@+id/entry500"
+             android:text="500"
+             android:textSize="@dimen/auto_text_size"
+             android:layout_height="@dimen/entry_ball_size"
+             android:layout_width="@dimen/entry_ball_size"
+             android:background="@drawable/auto_button_effect"
+             android:gravity="center"
+             cl:layout_cellsHeight="12"
+             cl:layout_cellsWidth="12"
+             cl:layout_left="99"
+             cl:layout_top="100"/>
+        <Button android:id="@+id/entry1000"
+              android:text="1000"
+              android:textSize="@dimen/auto_text_size"
+              android:layout_height="@dimen/entry_ball_size"
+              android:layout_width="@dimen/entry_ball_size"
+              android:background="@drawable/auto_button_effect"
+              android:gravity="center"
+              cl:layout_cellsHeight="12"
+              cl:layout_cellsWidth="12"
+              cl:layout_left="111"
+              cl:layout_top="100"/>
+
+        <Button android:id="@+id/make_crd_null"
+              android:text="НН"
+              android:textSize="@dimen/auto_text_size"
+              android:layout_height="@dimen/entry_ball_size"
+              android:layout_width="@dimen/entry_ball_size"
+              android:background="@drawable/auto_button_effect"
+              android:gravity="center"
+              cl:layout_cellsHeight="15"
+              cl:layout_cellsWidth="15"
+              cl:layout_left="170"
+              cl:layout_top="100" />
+        <Button android:id="@+id/card_step_back"
+             android:text="Н"
+             android:textSize="@dimen/auto_text_size"
+             android:layout_height="@dimen/entry_ball_size"
+             android:layout_width="@dimen/entry_ball_size"
+             android:background="@drawable/auto_button_effect"
+             android:gravity="center"
+            cl:layout_cellsHeight="15"
+            cl:layout_cellsWidth="15"
+            cl:layout_left="185"
+            cl:layout_top="100"/>
+        <!-- Нижние кнопки конец -->
     </kz.regto.bingo.CellLayout>
 
 </FrameLayout>
