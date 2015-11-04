@@ -2,23 +2,27 @@
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:shareInterpolator="false" >
 
+    <scale
+        android:startOffset="50"
+        android:duration="500"
+        android:fromXScale="3.0"
+        android:fromYScale="3.0"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:toXScale="1"
+        android:toYScale="1" />
+
     <rotate
         android:startOffset="70"
         android:duration="70"
         android:fromDegrees="0"
         android:pivotX="50%"
         android:pivotY="50%"
-        android:toDegrees="15"
-        android:repeatCount="infinite"
-        android:repeatMode="reverse"/>
+        android:toDegrees="35" />
     <rotate
         android:duration="70"
         android:fromDegrees="0"
         android:pivotX="50%"
         android:pivotY="50%"
-        android:toDegrees="-15"
-        android:repeatCount="infinite"
-        android:repeatMode="reverse"/>
-
-
+        android:toDegrees="-35" />
 </set>

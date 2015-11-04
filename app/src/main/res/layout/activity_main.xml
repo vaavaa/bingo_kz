@@ -76,35 +76,35 @@
             cl:layout_left="85"
             cl:layout_top="@integer/first_row_height"/>
 
-        <RelativeLayout  android:layout_width="wrap_content"
+        <kz.regto.bingo.TimerRelative
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="55dp"
-            android:layout_centerHorizontal="true"
             cl:layout_cellsHeight="@integer/second_row_height"
-            cl:layout_cellsWidth="100"
-            cl:layout_left="100"
-            cl:layout_top="@integer/first_row_height">
-            <TextView
-                android:id="@+id/timerValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:textSize="40dp"
-                android:textColor="#ffffff"
-                android:text="@string/timerVal" />
-            <ProgressBar
-                android:id="@+id/progressBar1"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_below="@+id/timerValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@id/timerValue"
-                android:layout_alignRight="@id/timerValue"
-                android:indeterminate="false"
-                android:padding="1dp" >
-            </ProgressBar>
-        </RelativeLayout>
+            cl:layout_cellsWidth="60"
+            cl:layout_left="140"
+            cl:layout_top="@integer/first_row_height"/>
+        <!-- Конец второй строки -->
 
+        <!-- Начало поля строки -->
+        <kz.regto.bingo.MainContainer
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            cl:layout_cellsHeight="60"
+            cl:layout_cellsWidth="150"
+            cl:layout_left="50"
+            cl:layout_top="30">
+            <kz.regto.bingo.BoardGrid
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <kz.regto.bingo.RectView
+                android:id="@+id/zRectView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <kz.regto.bingo.RectView
+                android:id="@+id/xRectView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </kz.regto.bingo.MainContainer>
     </kz.regto.bingo.CellLayout>
 
 </FrameLayout>

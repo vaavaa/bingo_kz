@@ -17,4 +17,6 @@
         <attr name="size_text" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="TimerRelative">
+    </declare-styleable>
 </resources>
