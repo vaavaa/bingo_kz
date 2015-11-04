@@ -34,7 +34,7 @@ public class BoardGrid extends View {
     Rect[] mRectC = new Rect[50];
     Rect[] mRectCw = new Rect[50];
     Rect[] mLastRow3 = new Rect[3];
-    Rect[] mLastRow1 = new Rect[2];
+
 
     RectView mRecOperate;
     RectView mRecOperate1;
@@ -90,7 +90,6 @@ public class BoardGrid extends View {
 
 
         for (int i = 0; i <50 ; i++) {
-            if (i<2) mLastRow1[i]=new Rect();
             if (i<3) mLastRow3[i]=new Rect();
             mRect[i] = new Rect();
             mRectw[i] = new Rect();
@@ -113,21 +112,10 @@ public class BoardGrid extends View {
         int rows;
         if (canvas.getHeight()<canvas.getWidth()) {
             columns = (int) canvas.getWidth() / 14;
-            rows = (int) canvas.getHeight() / 5;
+            rows = (int) canvas.getHeight() / 4;
             column_light=columns;
             row_light=rows;
             correlation_light=correlate;
-
-            //Заполняем нижнюю строку, там всего два прямоуголника
-            mLastRow1[0].left =columns+correlate;
-            mLastRow1[0].top = rows*4+correlate;
-            mLastRow1[0].right = 7*columns;
-            mLastRow1[0].bottom  = rows * 4 + rows-correlate;
-
-            mLastRow1[1].left =7*columns+ 2* correlate;
-            mLastRow1[1].top = rows*4+correlate;
-            mLastRow1[1].right = 13*columns+correlate;
-            mLastRow1[1].bottom  = rows * 4 + rows-correlate;
 
             //Заполняем предпоследнюю строку, там 3  прямоуголника
             for (int i = 0; i <= 2; i++) {
@@ -144,8 +132,7 @@ public class BoardGrid extends View {
                 mRect[ii].left = i * columns - GRID_STEP+correlate;
                 mRect[ii].top = GRID_STEP;
                 mRect[ii].right = i * columns + GRID_STEP+correlate;
-                if ((i==1)||(i==13)) mRect[ii].bottom = 3 * rows - GRID_STEP;
-                else mRect[ii].bottom = 3 * rows + GRID_STEP;
+                mRect[ii].bottom = 3 * rows - GRID_STEP;
                 //canvas.drawRect(mRect[ii], paint);
                 ii++;
             }
@@ -323,17 +310,7 @@ public class BoardGrid extends View {
         result[0]=0;
         result[1]=0;
 
-        //Those are two buttons
-        for (int i = 0; i <= 1; i++)
-            if (mLastRow1[i].contains(xTouch, yTouch)) {
-                result[1] = mLastRow1[i].centerY();
-                mRecOperateTemp[1]= mLastRow1[i];
-                y_pushed = 5;
-                break;
-            }
-
         //This is three buttons
-        if (result[1] == 0)
             for (int i = 0; i <= 2; i++)
                 if (mLastRow3[i].contains(xTouch, yTouch)) {
                     result[1] = mLastRow3[i].centerY();
@@ -349,14 +326,6 @@ public class BoardGrid extends View {
                 y_pushed = 5;
             }
 
-        //Две кнопки
-        for (int i = 0; i <= 1; i++)
-            if (mLastRow1[i].contains(xTouch, yTouch)) {
-                result[0] = mLastRow1[i].centerX();
-                mRecOperateTemp[0]=mLastRow1[i];
-                x_pushed=5;
-                break;
-            }
         //Three buttons
         if (result[0] == 0)
             for (int i = 0; i <= 2; i++)
