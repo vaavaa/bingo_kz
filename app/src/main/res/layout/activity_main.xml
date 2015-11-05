@@ -88,6 +88,7 @@
 
         <!-- Начало поля -->
         <kz.regto.bingo.MainContainer
+            android:id="@+id/main_board"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             cl:layout_cellsHeight="50"
@@ -95,6 +96,7 @@
             cl:layout_left="10"
             cl:layout_top="45">
             <kz.regto.bingo.BoardGrid
+                android:id="@+id/board_grid"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
             <kz.regto.bingo.RectView
@@ -141,7 +143,8 @@
             cl:layout_cellsHeight="12"
             cl:layout_cellsWidth="12"
             cl:layout_left="75"
-            cl:layout_top="100"/>
+            cl:layout_top="100"
+            android:onClick="EntrySet"/>
         <Button android:id="@+id/entry200"
            android:text="200"
            android:textSize="@dimen/auto_text_size"
@@ -152,7 +155,8 @@
            cl:layout_cellsHeight="12"
            cl:layout_cellsWidth="12"
            cl:layout_left="87"
-           cl:layout_top="100"/>
+           cl:layout_top="100"
+            android:onClick="EntrySet"/>
         <Button android:id="@+id/entry500"
              android:text="500"
              android:textSize="@dimen/auto_text_size"
@@ -163,7 +167,8 @@
              cl:layout_cellsHeight="12"
              cl:layout_cellsWidth="12"
              cl:layout_left="99"
-             cl:layout_top="100"/>
+             cl:layout_top="100"
+            android:onClick="EntrySet"/>
         <Button android:id="@+id/entry1000"
               android:text="1000"
               android:textSize="@dimen/auto_text_size"
@@ -174,7 +179,8 @@
               cl:layout_cellsHeight="12"
               cl:layout_cellsWidth="12"
               cl:layout_left="111"
-              cl:layout_top="100"/>
+              cl:layout_top="100"
+            android:onClick="EntrySet"/>
 
         <Button android:id="@+id/make_crd_null"
               android:text="НН"

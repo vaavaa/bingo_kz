@@ -12,6 +12,9 @@ import android.view.ViewGroup;
  * Created by spt on 23.10.2015.
  */
 public class MainContainer extends ViewGroup {
+
+    int ilevelset=1;
+
     public MainContainer(Context context) {
         super(context);
         init(context);
@@ -64,6 +67,14 @@ public class MainContainer extends ViewGroup {
         }
     }
 
+    public void setIlevelset(int ilevelset) {
+        this.ilevelset = ilevelset;
+    }
+
+    public int getIlevelset() {
+        return ilevelset;
+    }
+
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -76,8 +87,8 @@ public class MainContainer extends ViewGroup {
         return resourceId;
     }
 
-    public boolean setChildName(View child){
-        boolean mReturn = false;
+    public int setChildName(View child){
+        int iReturn = 0;
         int childCount = this.getChildCount();
         String className;
         for(int i=0; i<childCount;i++) {
@@ -90,12 +101,14 @@ public class MainContainer extends ViewGroup {
                     int idV=v.getId();
                     int animPoint = child.getId();
                     if (idV==animPoint) {
-                        mReturn=true;
-                        int level=v.getBackground().getLevel()+1;
-                        if (level>8) level=8;
-                        String nameDrawable  = "card_entry" + Integer.toString(level);
-                        v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", nameDrawable)));
+                        //Фишка уже стоит на поле мы повышаем ее статус до заданого или на 1
+                        int level=v.getBackground().getLevel();
+                        if (level ==ilevelset) level++;
+                        else level =ilevelset;
+                        if (level>4) level=4;
+                        v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable",EntryName(level))));
                         v.getBackground().setLevel(level);
+                        iReturn=level;
                         v.bringToFront();
                         v.invalidate();
                         invalidate();
@@ -108,9 +121,9 @@ public class MainContainer extends ViewGroup {
         className= className.substring(className.lastIndexOf(".") + 1);
         switch (className){
             case "EntryAnimated":
-                if (!mReturn) {
-                    child.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.card_entry1));
-                    child.getBackground().setLevel(1);
+                if (iReturn==0) {
+                    child.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", EntryName(ilevelset))));
+                    child.getBackground().setLevel(ilevelset);
                     child.bringToFront();
                     this.addView(child);
                     invalidate();
@@ -118,6 +131,10 @@ public class MainContainer extends ViewGroup {
                 break;
         }
 
-        return mReturn;
+        return iReturn;
+    }
+    private String EntryName(int level){
+        String nameDrawable  = "card_entry" + Integer.toString(level);
+        return nameDrawable;
     }
 }

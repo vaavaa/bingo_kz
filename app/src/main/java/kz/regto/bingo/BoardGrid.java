@@ -9,24 +9,28 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by spt on 12.10.2015.
  */
 public class BoardGrid extends View {
     private Paint paint;
     private Paint bg_paint;
-
+    private List<BoardGridEvents> listeners = new ArrayList<BoardGridEvents>();
 
     int left_X=0;
     int top_Y=0;
     int right_X=0;
     int bottom_Y=0;
-    boolean clrCanvas=false;
 
     //Ни чего не нажато по X
     int x_pushed = 0;
     //Ни чего не нажато по Y;
     int y_pushed = 0;
+    //какая ставка
+    int ilevel=0;
 
 
     Rect[] mRect=new Rect[50];
@@ -37,7 +41,7 @@ public class BoardGrid extends View {
     RectView mRecOperate;
     RectView mRecOperate1;
     Rect[] mRecOperateTemp=new Rect[2];
-    boolean mRecOperateIsAcive=false;
+    boolean mRecOperateIsActive=false;
 
 
     private int ii =0;
@@ -188,12 +192,13 @@ public class BoardGrid extends View {
 
         touchedView=new EntryAnimated(this.getContext());
         touchedView.RectArea(xTouch_new - (int) (RADIUS_LIMIT / 2), yTouch_new - (int) (RADIUS_LIMIT / 2), xTouch_new + (int) (RADIUS_LIMIT / 2), yTouch_new + (int) (RADIUS_LIMIT / 2));
-        //Object now has name for an identification
+        //Object now has name for identification
         int idV;
         idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
         touchedView.setId(idV);
         main_container_parent = (MainContainer)BoardGrid.this.getParent();
-        main_container_parent.setChildName(touchedView);
+        ilevel = main_container_parent.setChildName(touchedView);
+        for (BoardGridEvents hl : listeners) hl.entrySet(ilevel);
     }
 
     @Override
@@ -266,10 +271,10 @@ public class BoardGrid extends View {
                 break;
 
             case MotionEvent.ACTION_UP:
-                if (mRecOperateIsAcive){
+                if (mRecOperateIsActive){
                     mRecOperate.setVisibility(View.GONE);
                     mRecOperate1.setVisibility(View.GONE);
-                    mRecOperateIsAcive=false;
+                    mRecOperateIsActive=false;
                     invalidate();
                 }
                 handled = true;
@@ -422,7 +427,7 @@ public class BoardGrid extends View {
                     0, mRecOperateTemp[0].right, row_light*3+correlation_light);
             mRecOperate.setVisibility(View.VISIBLE);
             main_container_parent.invalidate();
-            mRecOperateIsAcive=true;
+            mRecOperateIsActive=true;
         }
         //Ячейки
         if ((y_pushed==4)&&(x_pushed==4)){
@@ -437,7 +442,7 @@ public class BoardGrid extends View {
                     ((int)y+row_light/2)+correlation_light);
             mRecOperate.setVisibility(View.VISIBLE);
             main_container_parent.invalidate();
-            mRecOperateIsAcive=true;
+            mRecOperateIsActive=true;
         }
         //Пересечение границ
         if ((y_pushed==1)&&(x_pushed==1)){
@@ -453,7 +458,7 @@ public class BoardGrid extends View {
                     ((int)y+row_light)+correlation_light);
             mRecOperate.setVisibility(View.VISIBLE);
             main_container_parent.invalidate();
-            mRecOperateIsAcive=true;
+            mRecOperateIsActive=true;
         }
         //нажато пересечение границы по y и строка
         if ((y_pushed==4)&&(x_pushed==1)) {
@@ -475,7 +480,7 @@ public class BoardGrid extends View {
                     ((int)y+row_light/2)+correlation_light);
             mRecOperate.setVisibility(View.VISIBLE);
             main_container_parent.invalidate();
-            mRecOperateIsAcive=true;
+            mRecOperateIsActive=true;
         }
 
         if ((y_pushed==1)&&(x_pushed==4)){
@@ -491,7 +496,7 @@ public class BoardGrid extends View {
                     ((int)y+row_light)+correlation_light);
             mRecOperate.setVisibility(View.VISIBLE);
             main_container_parent.invalidate();
-            mRecOperateIsAcive=true;
+            mRecOperateIsActive=true;
         }
 
     }

@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <drawable name="card_entry1" level="1">@drawable/entry10</drawable>
-    <drawable name="card_entry2" level="2">@drawable/entry20</drawable>
-    <drawable name="card_entry3" level="3">@drawable/entry30</drawable>
-    <drawable name="card_entry4" level="4">@drawable/entry40</drawable>
-    <drawable name="card_entry5" level="5">@drawable/entry100</drawable>
-    <drawable name="card_entry6" level="6">@drawable/entry500</drawable>
-    <drawable name="card_entry7" level="7">@drawable/entry1000</drawable>
-    <drawable name="card_entry8" level="8">@drawable/kotiki</drawable>
+    <drawable name="card_entry1" level="1">@drawable/entry40</drawable>
+    <drawable name="card_entry2" level="2">@drawable/entry100</drawable>
+    <drawable name="card_entry3" level="3">@drawable/entry500</drawable>
+    <drawable name="card_entry4" level="4">@drawable/entry1000</drawable>
 </resources>
