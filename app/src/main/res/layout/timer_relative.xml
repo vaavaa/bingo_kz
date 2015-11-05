@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/timerValue"
             android:layout_alignRight="@id/timerValue"
+            android:progressDrawable="@drawable/progress_bar_color"
             android:indeterminate="false"
             android:padding="1dp" >
         </ProgressBar>

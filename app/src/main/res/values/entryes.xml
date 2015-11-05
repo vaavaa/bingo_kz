@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <drawable name="card_entry1" level="1">@drawable/entry40</drawable>
-    <drawable name="card_entry2" level="2">@drawable/entry100</drawable>
-    <drawable name="card_entry3" level="3">@drawable/entry500</drawable>
-    <drawable name="card_entry4" level="4">@drawable/entry1000</drawable>
+    <drawable name="card_entry1" level="1">@drawable/entry100</drawable>
+    <drawable name="card_entry2" level="2">@drawable/entry40</drawable>
+    <drawable name="card_entry3" level="3">@drawable/entry1000</drawable>
+    <drawable name="card_entry4" level="4">@drawable/entry500</drawable>
 </resources>

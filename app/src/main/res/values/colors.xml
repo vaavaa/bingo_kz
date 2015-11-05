@@ -8,4 +8,11 @@
     <color name="colorHL">#F2FFFFFF</color>
     <color name="first_line_label">#FFFFFF</color>
     <color name="second_line_label">#FFFFFF</color>
+
+    <color name="progress_bar_color">#ffe500</color>
+
+    <color name="e1">#43B446</color>
+    <color name="e2">#0287FF</color>
+    <color name="e3">#FF6302</color>
+    <color name="e4">#FF0277</color>
 </resources>

@@ -127,6 +127,7 @@ public class MainContainer extends ViewGroup {
                     child.bringToFront();
                     this.addView(child);
                     invalidate();
+                    iReturn=ilevelset;
                 }
                 break;
         }

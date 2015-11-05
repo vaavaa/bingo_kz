@@ -2,6 +2,7 @@ package kz.regto.bingo;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -15,6 +16,8 @@ public class RectView extends View
     public int top_Y=0;
     public int right_X=0;
     public int bottom_Y=0;
+
+    int rectColor=0;
 
     public RectView(Context context){
         super(context);
@@ -32,8 +35,9 @@ public class RectView extends View
     }
 
     private void init(final Context ct) {
+        if(rectColor==0) rectColor=this.getResourceByID("color", "colorHL");
         //Собственный метод
-        this.setBackgroundColor(ContextCompat.getColor(ct, this.getResourceByID("color", "colorHL")));
+        this.setBackgroundColor(ContextCompat.getColor(ct,rectColor));
         this.getBackground().setAlpha(45);
     }
 
@@ -42,21 +46,19 @@ public class RectView extends View
         this.top_Y = Y;
         this.right_X = rX;
         this.bottom_Y = rY;
+        if (rectColor!=0){
+            this.setBackgroundColor(ContextCompat.getColor(this.getContext(),rectColor));
+            this.getBackground().setAlpha(35);
+            this.invalidate();
+        }
     }
 
-    public void setEmpty(){
-        this.left_X = 0;
-        this.top_Y = 0;
-        this.right_X = 0;
-        this.bottom_Y = 0;
+    public int getRectColor() {
+        return rectColor;
     }
-
-    public boolean isEmpty(){
-        boolean booleanAnswer = false;
-        if ((this.left_X == 0)&&(this.top_Y == 0)&&(this.right_X == 0)&&(this.bottom_Y == 0)) booleanAnswer= true;
-        return booleanAnswer;
+    public void setRectColor(int rctColor){
+        rectColor=rctColor;
     }
-
 
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {

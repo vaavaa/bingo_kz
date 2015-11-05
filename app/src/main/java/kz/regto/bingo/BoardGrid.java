@@ -1,6 +1,7 @@
 package kz.regto.bingo;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -223,7 +224,7 @@ public class BoardGrid extends View {
 
                 if (xTouch_new>0 && yTouch_new>0){
                     EntryGetsPoint(xTouch_new,yTouch_new);
-                    GetUserTouch(xTouch_new,yTouch_new);
+                    GetUserTouch(xTouch_new, yTouch_new);
                     invalidate();
                 }
                 handled = true;
@@ -422,6 +423,9 @@ public class BoardGrid extends View {
         mRecOperate =(RectView)main_container_parent.getChildAt(1);
         mRecOperate1=(RectView)main_container_parent.getChildAt(2);
 
+        mRecOperate.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
+        mRecOperate1.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
+
         if ((y_pushed==5)&&(x_pushed==5)) {
             mRecOperate.RectArea(mRecOperateTemp[0].left,
                     0, mRecOperateTemp[0].right, row_light*3+correlation_light);
@@ -499,6 +503,12 @@ public class BoardGrid extends View {
             mRecOperateIsActive=true;
         }
 
+    }
+    public int getResourceByID(String ResType,String ResName) {
+        Resources resources = getContext().getResources();
+        final int resourceId = resources.getIdentifier(ResName, ResType,
+                getContext().getPackageName());
+        return resourceId;
     }
 }
 
