@@ -2,13 +2,15 @@ package kz.regto.bingo;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.view.View;
+import android.view.Gravity;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 
 
-public class EntryAnimated extends View{
+public class EntryAnimated extends TextView{
 
     public int left_X=0;
     public int top_Y=0;
@@ -35,6 +37,8 @@ public class EntryAnimated extends View{
 
     private void init(final Context ct) {
         this.animation();
+        this.setGravity(Gravity.RIGHT);
+        this.setTypeface(null, Typeface.BOLD);
     }
 
     public void animation(){

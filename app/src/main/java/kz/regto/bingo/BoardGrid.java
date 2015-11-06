@@ -6,11 +6,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.nfc.Tag;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -20,6 +22,7 @@ public class BoardGrid extends View {
     private Paint paint;
     private Paint bg_paint;
     private List<BoardGridEvents> listeners = new ArrayList<BoardGridEvents>();
+    private LinkedList<ChipLog> chLog = new LinkedList<>();
 
     int left_X=0;
     int top_Y=0;
@@ -33,6 +36,9 @@ public class BoardGrid extends View {
     //какая ставка
     int ilevel=0;
 
+    //Определеяем какое число нажато
+    int x_pushed_number=-1;
+    int y_pushed_number=-1;
 
     Rect[] mRect=new Rect[50];
     Rect[] mRectw = new Rect[50];
@@ -49,8 +55,6 @@ public class BoardGrid extends View {
     private int iiw = 0;
     private int iic = 0;
     private int iicw = 0;
-    private int ii3 = 0;
-    private int ii1 = 0;
 
     private int column_light=0;
     private int row_light=0;
@@ -111,7 +115,7 @@ public class BoardGrid extends View {
 
     private void MakeTouchedRectangleArea(Canvas canvas){
 
-        ii=1; iiw=1; iic=0; iicw=0; ii3=0; ii1= 0;
+        ii=1; iiw=1; iic=0; iicw=0;
         int correlate = (int)(14)/LINE_WIDTH;
         int columns;
         int rows;
@@ -131,6 +135,7 @@ public class BoardGrid extends View {
 //                //canvas.drawRect(mLastRow3[ii3], bg_paint);
 //                ii3++;
 //            }
+
             //Рисуем вертикальные границы с некоторыми ограничениями всего столбцов 12,
             // последний 13ый столбец не нужен.
             for (int i = 1; i <= 12; i++) {
@@ -229,6 +234,7 @@ public class BoardGrid extends View {
                 if (xTouch_new>0 && yTouch_new>0){
                     EntryGetsPoint(xTouch_new,yTouch_new);
                     GetUserTouch(xTouch_new, yTouch_new);
+                    getPushedNumber(xTouch_new, yTouch_new);
                     invalidate();
                 }
                 handled = true;
@@ -367,6 +373,7 @@ public class BoardGrid extends View {
                     result = mRectw[i].centerY();
                     mRecOperateTemp[1] = mRectw[i];
                     y_pushed = 1;
+                    y_pushed_number=i;
                     break;
                 }
             }
@@ -377,6 +384,7 @@ public class BoardGrid extends View {
                         result = mRectCw[i].centerY();
                         mRecOperateTemp[1] = mRectCw[i];
                         y_pushed = 4;
+                        y_pushed_number=i+1;
                         break;
                     }
                 }
@@ -397,6 +405,7 @@ public class BoardGrid extends View {
                     result = mRect[i].centerX();
                     mRecOperateTemp[0]=mRect[i];
                     x_pushed=1;
+                    x_pushed_number=i;
                 break;
             }
         //Rows
@@ -406,6 +415,7 @@ public class BoardGrid extends View {
                     result = mRectC[i].centerX();
                     mRecOperateTemp[0]=mRectC[i];
                     x_pushed=4;
+                    x_pushed_number=i;
                     break;
                 }
             }
@@ -427,6 +437,7 @@ public class BoardGrid extends View {
         mRecOperate =(RectView)main_container_parent.getChildAt(1);
         mRecOperate1=(RectView)main_container_parent.getChildAt(2);
 
+        //pushed color
         mRecOperate.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
         mRecOperate1.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
 
@@ -513,6 +524,176 @@ public class BoardGrid extends View {
         final int resourceId = resources.getIdentifier(ResName, ResType,
                 getContext().getPackageName());
         return resourceId;
+    }
+
+    public void getPushedNumber(int x,int y){
+        int idV;
+        idV = Integer.parseInt(Integer.toString(x)+Integer.toString(y));
+        if ((y_pushed==5)&&(x_pushed==5)) {
+            chLog.add(new ChipLog(0,ilevel,idV));
+        }
+        //Ячейки
+        if ((y_pushed==4)&&(x_pushed==4)){
+            switch (x_pushed_number){
+                case 1:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(3,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(2,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(1,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 2:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(6,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(5,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(4,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 3:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(9,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(8,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(7,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 4:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(12,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(11,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(10,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 5:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(15,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(14,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(13,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 6:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(18,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(17,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(16,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 7:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(21,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(20,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(19,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 8:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(24,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(23,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(22,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 9:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(27,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(26,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(25,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 10:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(30,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(29,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(28,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 11:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(33,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(32,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(31,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 12:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(36,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(35,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(34,ilevel,idV));
+                            break;
+                    }
+                    break;
+            }
+        }
+
     }
 }
 

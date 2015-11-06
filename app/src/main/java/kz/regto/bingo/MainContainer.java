@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import java.util.LinkedList;
+
 
 /**
  * Created by spt on 23.10.2015.
@@ -14,6 +16,7 @@ import android.view.ViewGroup;
 public class MainContainer extends ViewGroup {
 
     int ilevelset=1;
+    private LinkedList<LogChanges> mLog = new LinkedList<>();
 
     public MainContainer(Context context) {
         super(context);
@@ -34,13 +37,12 @@ public class MainContainer extends ViewGroup {
     private void init(final Context ct) {
         // Generate bitmap used for background
         this.setBackground(ContextCompat.getDrawable(ct, getResourceByID("drawable", "empty_board")));
-
         int childCount = this.getChildCount();
         for(int i=0; i<childCount;i++) {
             View v = getChildAt(i);
-            this.addView(v,i,v.getLayoutParams());
-            Log.v("1",Integer.toString(v.getId()));
+            this.addView(v, i, v.getLayoutParams());
         }
+
     }
 
     @Override
@@ -97,17 +99,22 @@ public class MainContainer extends ViewGroup {
             className= className.substring(className.lastIndexOf(".") + 1);
             switch (className){
                 case "EntryAnimated":
-                    View v = getChildAt(i);
+                    TextView v = (TextView)getChildAt(i);
                     int idV=v.getId();
                     int animPoint = child.getId();
                     if (idV==animPoint) {
                         //Фишка уже стоит на поле мы повышаем ее статус до заданого или на 1
                         int level=v.getBackground().getLevel();
-                        if (level ==ilevelset) level++;
+                        if (level ==ilevelset) {
+                            v.setText("2");
+                        }
                         else level =ilevelset;
                         if (level>4) level=4;
+
+                        mLog.add(new LogChanges(v.getId(), v.getBackground().getLevel(),level));
                         v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable",EntryName(level))));
                         v.getBackground().setLevel(level);
+
                         iReturn=level;
                         v.bringToFront();
                         v.invalidate();
@@ -126,6 +133,7 @@ public class MainContainer extends ViewGroup {
                     child.getBackground().setLevel(ilevelset);
                     child.bringToFront();
                     this.addView(child);
+                    mLog.add(new LogChanges(child.getId(),0,ilevelset));
                     invalidate();
                     iReturn=ilevelset;
                 }
@@ -162,6 +170,63 @@ public class MainContainer extends ViewGroup {
     }
 
     public void stepBack(){
+        LogChanges operatedLog;
+        if (mLog.size()>0){
+            operatedLog=mLog.get(mLog.size()-1);
+            if (operatedLog.getpLevel()==0)
+                for(int i=0; i<this.getChildCount();i++){
+                    if (this.getChildAt(i).getId()==operatedLog.getId_object()){
+                        this.removeView(this.getChildAt(i));
+                        break;
+                    }
+                }
+            else {
+                for(int i=0; i<this.getChildCount();i++)
+                    if (this.getChildAt(i).getId()==operatedLog.getId_object()){
+                        this.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(),
+                                getResourceByID("drawable", EntryName(operatedLog.getpLevel()))));
+                        this.getChildAt(i).getBackground().setLevel(operatedLog.getpLevel());
+                            }
+                    }
+            mLog.remove(operatedLog);
+            this.invalidate();
+        }
 
+    }
+
+    private class LogChanges{
+        int id_object =0;
+        int pLevel =0;
+        int cLevel=0;
+
+        LogChanges(int id, int p, int c){
+            id_object =id;
+            pLevel =p;
+            cLevel=c;
+        }
+
+        public int getId_object() {
+            return id_object;
+        }
+
+        public void setId_object(int id_object) {
+            this.id_object = id_object;
+        }
+
+        public int getcLevel() {
+            return cLevel;
+        }
+
+        public int getpLevel() {
+            return pLevel;
+        }
+
+        public void setcLevel(int cLevel) {
+            this.cLevel = cLevel;
+        }
+
+        public void setpLevel(int pLevel) {
+            this.pLevel = pLevel;
+        }
     }
 }

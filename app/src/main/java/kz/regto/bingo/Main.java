@@ -14,6 +14,7 @@ import android.widget.Button;
 public class Main extends AppCompatActivity {
 
     View mRootView;
+    MainContainer mc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,7 @@ public class Main extends AppCompatActivity {
         showSystemUi();
         //Ставка в 100
         findViewById(R.id.entry100).setSelected(true);
+        mc=(MainContainer)findViewById(R.id.main_board);
     }
 
     private void showSystemUi() {
@@ -51,7 +53,6 @@ public class Main extends AppCompatActivity {
         findViewById(R.id.entry500).setSelected(false);
         findViewById(R.id.entry1000).setSelected(false);
 
-        MainContainer mc = (MainContainer)findViewById(R.id.main_board);
         Button bPushed= (Button)view;
 
         bPushed.setSelected(true);
@@ -63,12 +64,10 @@ public class Main extends AppCompatActivity {
     }
 
     public void ClearBoard(View view){
-        MainContainer mc = (MainContainer)findViewById(R.id.main_board);
         mc.ClearBoard();
     }
     public void stepBack(View view){
-
-
+        mc.stepBack();
     }
 
 }
