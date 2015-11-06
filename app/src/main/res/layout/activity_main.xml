@@ -191,27 +191,28 @@
             android:onClick="EntrySet"/>
 
         <Button android:id="@+id/make_crd_null"
-              android:text="НН"
               android:textSize="@dimen/auto_text_size"
               android:layout_height="@dimen/entry_ball_size"
               android:layout_width="@dimen/entry_ball_size"
-              android:background="@drawable/auto_button_effect"
+              android:background="@drawable/left_double_angle"
               android:gravity="center"
               cl:layout_cellsHeight="15"
               cl:layout_cellsWidth="15"
               cl:layout_left="170"
-              cl:layout_top="100" />
+              cl:layout_top="100"
+            android:onClick="ClearBoard"/>
+
         <Button android:id="@+id/card_step_back"
-             android:text="Н"
              android:textSize="@dimen/auto_text_size"
              android:layout_height="@dimen/entry_ball_size"
              android:layout_width="@dimen/entry_ball_size"
-             android:background="@drawable/auto_button_effect"
+             android:background="@drawable/left_single_angle"
              android:gravity="center"
             cl:layout_cellsHeight="15"
             cl:layout_cellsWidth="15"
             cl:layout_left="185"
-            cl:layout_top="100"/>
+            cl:layout_top="100"
+            android:onClick="stepBack"/>
         <!-- Нижние кнопки конец -->
     </kz.regto.bingo.CellLayout>
 

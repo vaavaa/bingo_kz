@@ -106,6 +106,9 @@ public class BoardGrid extends View {
 
     }
 
+
+
+
     private void MakeTouchedRectangleArea(Canvas canvas){
 
         ii=1; iiw=1; iic=0; iicw=0; ii3=0; ii1= 0;
@@ -176,6 +179,7 @@ public class BoardGrid extends View {
 
         }
     }
+
 
 
     @Override

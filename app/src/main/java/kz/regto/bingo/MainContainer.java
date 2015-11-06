@@ -138,4 +138,30 @@ public class MainContainer extends ViewGroup {
         String nameDrawable  = "card_entry" + Integer.toString(level);
         return nameDrawable;
     }
+
+    //блядскаяпроцедура которая все же удалила
+    public void ClearBoard(){
+            boolean doBreak = false;
+            while (!doBreak) {
+                int childCount = this.getChildCount();
+                int i;
+                for(i=0; i<childCount; i++) {
+                    View currentChild = this.getChildAt(i);
+                    // Change ImageView with your disired type view
+                    if (currentChild instanceof EntryAnimated) {
+                        this.removeView(currentChild);
+                        break;
+                    }
+                }
+
+                if (i == childCount) {
+                    doBreak = true;
+                }
+            }
+       this.invalidate();
+    }
+
+    public void stepBack(){
+
+    }
 }

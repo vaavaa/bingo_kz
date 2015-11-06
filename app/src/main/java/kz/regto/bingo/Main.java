@@ -27,6 +27,8 @@ public class Main extends AppCompatActivity {
         mRootView = getWindow().getDecorView();
         //setOnSystemUiVisibilityChangeListener();
         showSystemUi();
+        //Ставка в 100
+        findViewById(R.id.entry100).setSelected(true);
     }
 
     private void showSystemUi() {
@@ -59,4 +61,14 @@ public class Main extends AppCompatActivity {
         if (entryset.equals("500"))  mc.setIlevelset(3);
         if (entryset.equals("1000"))  mc.setIlevelset(4);
     }
+
+    public void ClearBoard(View view){
+        MainContainer mc = (MainContainer)findViewById(R.id.main_board);
+        mc.ClearBoard();
+    }
+    public void stepBack(View view){
+
+
+    }
+
 }
