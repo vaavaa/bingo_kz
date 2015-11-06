@@ -40,26 +40,24 @@ public class TimerRelative extends RelativeLayout {
     private long updatedTime = 0L;
     private List<TimerEvent> listeners = new ArrayList<TimerEvent>();
 
-    static Responder rr = new Responder();
-
     public TimerRelative(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initAttrs(context, attrs);
-        initView();
+        initView(context);
     }
 
     public TimerRelative(Context context, AttributeSet attrs) {
         super(context, attrs);
         initAttrs(context, attrs);
-        initView();
+        initView(context);
     }
 
     public TimerRelative(Context context) {
         super(context);
-        initView();
+        initView(context);
     }
 
-    private void initView() {
+    private void initView(Context context) {
         View view = inflate(getContext(), R.layout.timer_relative, null);
         timerValue = (TextView) view.findViewById(R.id.timerValue);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar1);
@@ -69,15 +67,18 @@ public class TimerRelative extends RelativeLayout {
         anim.setRepeatMode(Animation.REVERSE);
         anim.setRepeatCount(Animation.INFINITE);
         progressBar.setMax((int) secCounter / 100);
-
+        this.addListener((Main)context);
         startTime = SystemClock.uptimeMillis();
-        this.addListener(rr);
+
         for (TimerEvent hl : listeners) hl.TimerStarted();
         customHandler.postDelayed(updateTimerThread, 0);
 
 
         addView(view);
     }
+
+
+
     public void initAttrs(Context context, AttributeSet attrs) {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.TimerRelative, 0, 0);
 

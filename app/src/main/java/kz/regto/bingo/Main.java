@@ -11,10 +11,11 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 
-public class Main extends AppCompatActivity {
+public class Main extends AppCompatActivity implements TimerEvent {
 
     View mRootView;
     MainContainer mc;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,10 @@ public class Main extends AppCompatActivity {
         mc=(MainContainer)findViewById(R.id.main_board);
     }
 
+    public Main getCurrentActivity(){
+        return this;
+    }
+
     private void showSystemUi() {
         ActionBar bar = getSupportActionBar();
         if (bar.isShowing()) bar.hide();
@@ -46,6 +51,16 @@ public class Main extends AppCompatActivity {
         super.onResume();
         showSystemUi();
     }
+
+    @Override
+    public void TimerOver(){
+        mc.ClearBoard();
+    }
+    @Override
+    public void TimerStarted(){
+        Log.v("1", "Таймер начался");
+    }
+
 
     public void EntrySet(View view){
         findViewById(R.id.entry100).setSelected(false);
