@@ -529,6 +529,7 @@ public class BoardGrid extends View {
     public void getPushedNumber(int x,int y){
         int idV;
         idV = Integer.parseInt(Integer.toString(x)+Integer.toString(y));
+        //Zero
         if ((y_pushed==5)&&(x_pushed==5)) {
             chLog.add(new ChipLog(0,ilevel,idV));
         }
@@ -693,7 +694,408 @@ public class BoardGrid extends View {
                     break;
             }
         }
-
+        if ((y_pushed==1)&&(x_pushed==1)){
+            switch(x_pushed_number){
+                case 1:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(0,ilevel,idV));
+                            chLog.add(new ChipLog(2,ilevel,idV));
+                            chLog.add(new ChipLog(3,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(0,ilevel,idV));
+                            chLog.add(new ChipLog(2,ilevel,idV));
+                            chLog.add(new ChipLog(1,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 2:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(3,ilevel,idV));
+                            chLog.add(new ChipLog(6,ilevel,idV));
+                            chLog.add(new ChipLog(2,ilevel,idV));
+                            chLog.add(new ChipLog(5,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(2,ilevel,idV));
+                            chLog.add(new ChipLog(5,ilevel,idV));
+                            chLog.add(new ChipLog(1,ilevel,idV));
+                            chLog.add(new ChipLog(4,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 3:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(6,ilevel,idV));
+                            chLog.add(new ChipLog(9,ilevel,idV));
+                            chLog.add(new ChipLog(5,ilevel,idV));
+                            chLog.add(new ChipLog(8,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(5,ilevel,idV));
+                            chLog.add(new ChipLog(8,ilevel,idV));
+                            chLog.add(new ChipLog(4,ilevel,idV));
+                            chLog.add(new ChipLog(7,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 4:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(9,ilevel,idV));
+                            chLog.add(new ChipLog(12,ilevel,idV));
+                            chLog.add(new ChipLog(8,ilevel,idV));
+                            chLog.add(new ChipLog(11,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(8,ilevel,idV));
+                            chLog.add(new ChipLog(11,ilevel,idV));
+                            chLog.add(new ChipLog(7,ilevel,idV));
+                            chLog.add(new ChipLog(10,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 5:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(12,ilevel,idV));
+                            chLog.add(new ChipLog(15,ilevel,idV));
+                            chLog.add(new ChipLog(11,ilevel,idV));
+                            chLog.add(new ChipLog(14,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(11,ilevel,idV));
+                            chLog.add(new ChipLog(14,ilevel,idV));
+                            chLog.add(new ChipLog(10,ilevel,idV));
+                            chLog.add(new ChipLog(13,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 6:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(15,ilevel,idV));
+                            chLog.add(new ChipLog(18,ilevel,idV));
+                            chLog.add(new ChipLog(14,ilevel,idV));
+                            chLog.add(new ChipLog(17,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(14,ilevel,idV));
+                            chLog.add(new ChipLog(17,ilevel,idV));
+                            chLog.add(new ChipLog(13,ilevel,idV));
+                            chLog.add(new ChipLog(16,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 7:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(18,ilevel,idV));
+                            chLog.add(new ChipLog(21,ilevel,idV));
+                            chLog.add(new ChipLog(17,ilevel,idV));
+                            chLog.add(new ChipLog(20,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(17,ilevel,idV));
+                            chLog.add(new ChipLog(20,ilevel,idV));
+                            chLog.add(new ChipLog(16,ilevel,idV));
+                            chLog.add(new ChipLog(19,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 8:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(21,ilevel,idV));
+                            chLog.add(new ChipLog(24,ilevel,idV));
+                            chLog.add(new ChipLog(20,ilevel,idV));
+                            chLog.add(new ChipLog(23,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(20,ilevel,idV));
+                            chLog.add(new ChipLog(23,ilevel,idV));
+                            chLog.add(new ChipLog(19,ilevel,idV));
+                            chLog.add(new ChipLog(22,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 9:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(24,ilevel,idV));
+                            chLog.add(new ChipLog(27,ilevel,idV));
+                            chLog.add(new ChipLog(23,ilevel,idV));
+                            chLog.add(new ChipLog(26,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(23,ilevel,idV));
+                            chLog.add(new ChipLog(26,ilevel,idV));
+                            chLog.add(new ChipLog(22,ilevel,idV));
+                            chLog.add(new ChipLog(25,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 10:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(27,ilevel,idV));
+                            chLog.add(new ChipLog(30,ilevel,idV));
+                            chLog.add(new ChipLog(26,ilevel,idV));
+                            chLog.add(new ChipLog(29,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(26,ilevel,idV));
+                            chLog.add(new ChipLog(29,ilevel,idV));
+                            chLog.add(new ChipLog(25,ilevel,idV));
+                            chLog.add(new ChipLog(28,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 11:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(30,ilevel,idV));
+                            chLog.add(new ChipLog(33,ilevel,idV));
+                            chLog.add(new ChipLog(29,ilevel,idV));
+                            chLog.add(new ChipLog(32,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(29,ilevel,idV));
+                            chLog.add(new ChipLog(32,ilevel,idV));
+                            chLog.add(new ChipLog(28,ilevel,idV));
+                            chLog.add(new ChipLog(31,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 12:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(33,ilevel,idV));
+                            chLog.add(new ChipLog(36,ilevel,idV));
+                            chLog.add(new ChipLog(32,ilevel,idV));
+                            chLog.add(new ChipLog(35,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(32,ilevel,idV));
+                            chLog.add(new ChipLog(35,ilevel,idV));
+                            chLog.add(new ChipLog(31,ilevel,idV));
+                            chLog.add(new ChipLog(34,ilevel,idV));
+                            break;
+                    }
+                    break;
+            }
+        }
+        if((x_pushed ==4) && (y_pushed==1)){
+            switch (x_pushed_number){
+                case 1:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(3,ilevel,idV));
+                            chLog.add(new ChipLog(2,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(2,ilevel,idV));
+                            chLog.add(new ChipLog(1,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(3,ilevel,idV));
+                            chLog.add(new ChipLog(2,ilevel,idV));
+                            chLog.add(new ChipLog(1,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 2:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(6,ilevel,idV));
+                            chLog.add(new ChipLog(5,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(5,ilevel,idV));
+                            chLog.add(new ChipLog(4,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(4,ilevel,idV));
+                            chLog.add(new ChipLog(5,ilevel,idV));
+                            chLog.add(new ChipLog(6,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 3:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(9,ilevel,idV));
+                            chLog.add(new ChipLog(8,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(8,ilevel,idV));
+                            chLog.add(new ChipLog(7,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(7,ilevel,idV));
+                            chLog.add(new ChipLog(8,ilevel,idV));
+                            chLog.add(new ChipLog(9,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 4:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(12,ilevel,idV));
+                            chLog.add(new ChipLog(11,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(11,ilevel,idV));
+                            chLog.add(new ChipLog(10,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(10,ilevel,idV));
+                            chLog.add(new ChipLog(11,ilevel,idV));
+                            chLog.add(new ChipLog(12,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 5:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(15,ilevel,idV));
+                            chLog.add(new ChipLog(14,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(14,ilevel,idV));
+                            chLog.add(new ChipLog(13,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(13,ilevel,idV));
+                            chLog.add(new ChipLog(14,ilevel,idV));
+                            chLog.add(new ChipLog(15,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 6:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(18,ilevel,idV));
+                            chLog.add(new ChipLog(17,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(17,ilevel,idV));
+                            chLog.add(new ChipLog(16,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(16,ilevel,idV));
+                            chLog.add(new ChipLog(17,ilevel,idV));
+                            chLog.add(new ChipLog(18,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 7:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(21,ilevel,idV));
+                            chLog.add(new ChipLog(20,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(20,ilevel,idV));
+                            chLog.add(new ChipLog(19,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(21,ilevel,idV));
+                            chLog.add(new ChipLog(19,ilevel,idV));
+                            chLog.add(new ChipLog(20,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 8:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(24,ilevel,idV));
+                            chLog.add(new ChipLog(23,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(23,ilevel,idV));
+                            chLog.add(new ChipLog(22,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(22,ilevel,idV));
+                            chLog.add(new ChipLog(23,ilevel,idV));
+                            chLog.add(new ChipLog(24,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 9:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(27,ilevel,idV));
+                            chLog.add(new ChipLog(26,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(26,ilevel,idV));
+                            chLog.add(new ChipLog(25,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(25,ilevel,idV));
+                            chLog.add(new ChipLog(26,ilevel,idV));
+                            chLog.add(new ChipLog(27,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 10:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(30,ilevel,idV));
+                            chLog.add(new ChipLog(29,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(29,ilevel,idV));
+                            chLog.add(new ChipLog(28,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(28,ilevel,idV));
+                            chLog.add(new ChipLog(29,ilevel,idV));
+                            chLog.add(new ChipLog(30,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 11:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(33,ilevel,idV));
+                            chLog.add(new ChipLog(32,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(32,ilevel,idV));
+                            chLog.add(new ChipLog(31,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(31,ilevel,idV));
+                            chLog.add(new ChipLog(33,ilevel,idV));
+                            chLog.add(new ChipLog(32,ilevel,idV));
+                            break;
+                    }
+                    break;
+                case 12:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(36,ilevel,idV));
+                            chLog.add(new ChipLog(35,ilevel,idV));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(35,ilevel,idV));
+                            chLog.add(new ChipLog(34,ilevel,idV));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(34,ilevel,idV));
+                            chLog.add(new ChipLog(35,ilevel,idV));
+                            chLog.add(new ChipLog(36,ilevel,idV));
+                            break;
+                    }
+                    break;
+                }
+            }
     }
 }
 

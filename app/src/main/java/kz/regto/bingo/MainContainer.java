@@ -6,6 +6,8 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import java.util.LinkedList;
 
@@ -157,6 +159,10 @@ public class MainContainer extends ViewGroup {
                     View currentChild = this.getChildAt(i);
                     // Change ImageView with your disired type view
                     if (currentChild instanceof EntryAnimated) {
+
+                        Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
+                        currentChild.setAnimation(rotate_animation);
+
                         this.removeView(currentChild);
                         break;
                     }
@@ -176,6 +182,11 @@ public class MainContainer extends ViewGroup {
             if (operatedLog.getpLevel()==0)
                 for(int i=0; i<this.getChildCount();i++){
                     if (this.getChildAt(i).getId()==operatedLog.getId_object()){
+
+                        Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
+                        rotate_animation.setStartOffset((int) (Math.random() * ((100) + 1)));
+                        this.getChildAt(i).setAnimation(rotate_animation);
+
                         this.removeView(this.getChildAt(i));
                         break;
                     }
