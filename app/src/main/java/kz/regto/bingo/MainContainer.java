@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -66,6 +67,11 @@ public class MainContainer extends ViewGroup {
                 case "RectView":
                     RectView rV = (RectView)v;
                     v.layout(rV.left_X,rV.top_Y,rV.right_X,rV.bottom_Y);
+                    break;
+                case "VerticalTextView":
+                    int hght = (int)this.getHeight()/2-(int)this.getHeight()/12;
+                    v.layout(0, 0, (int)this.getWidth()/14,hght);
+                    v.bringToFront();
                     break;
             }
         }
@@ -203,6 +209,19 @@ public class MainContainer extends ViewGroup {
             this.invalidate();
         }
 
+    }
+
+    public View getChild(int id){
+        View rView=null;
+        int childCount = this.getChildCount();
+        for(int i=0; i<childCount;i++) {
+            View vV = getChildAt(i);
+            if (vV.getId()==id) {
+                rView = vV;
+                break;
+            }
+        }
+        return rView;
     }
 
     private class LogChanges{

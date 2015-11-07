@@ -4,8 +4,7 @@
         android:id="@android:id/progress">
         <clip>
             <shape>
-                <gradient android:startColor="#E56F05" android:endColor="#ffe500"
-                    android:angle="45"/>
+                <solid android:endColor="#ffe500" android:angle="45"/>
             </shape>
         </clip>
     </item>

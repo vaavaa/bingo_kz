@@ -2,4 +2,6 @@
 <resources>
     <integer name="first_row_height">8</integer>"
     <integer name="second_row_height">30</integer>"
+    <integer name="third_row_height">10</integer>"
+
 </resources>

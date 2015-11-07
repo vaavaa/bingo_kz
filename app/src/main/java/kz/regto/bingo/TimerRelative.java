@@ -24,7 +24,7 @@ public class TimerRelative extends RelativeLayout {
     private TextView timerValue;
     private ProgressBar progressBar;
     private long startTime = 0L;
-
+    private int gameCode =0;
 
     private long secCounter = 50000;
     private long secCounterPlus = 2000;
@@ -77,7 +77,11 @@ public class TimerRelative extends RelativeLayout {
         addView(view);
     }
 
-
+    public String GenerateNewGameCode(){
+        String ReturnValue = "A".concat("00000").concat(Integer.toString(gameCode));
+        gameCode++;
+        return ReturnValue;
+    }
 
     public void initAttrs(Context context, AttributeSet attrs) {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.TimerRelative, 0, 0);

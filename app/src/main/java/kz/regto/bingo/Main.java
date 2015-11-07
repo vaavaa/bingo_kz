@@ -1,15 +1,14 @@
 package kz.regto.bingo;
 
 import android.content.pm.ActivityInfo;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class Main extends AppCompatActivity implements TimerEvent {
 
@@ -32,10 +31,8 @@ public class Main extends AppCompatActivity implements TimerEvent {
         //Ставка в 100
         findViewById(R.id.entry100).setSelected(true);
         mc=(MainContainer)findViewById(R.id.main_board);
-    }
 
-    public Main getCurrentActivity(){
-        return this;
+
     }
 
     private void showSystemUi() {
@@ -56,9 +53,19 @@ public class Main extends AppCompatActivity implements TimerEvent {
     public void TimerOver(){
         mc.ClearBoard();
     }
+
     @Override
     public void TimerStarted(){
-        Log.v("1", "Таймер начался");
+//        TextView GameCode;
+//        String nCode;
+//
+////        TimerRelative tR = (TimerRelative)findViewById(R.id.gameTimer);
+////        nCode=tR.GenerateNewGameCode();
+//        GameCode = (TextView)findViewById(R.id.GameCode);
+//        //GameCode.setText(nCode);
+//
+//        Animation rotate_animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+//        GameCode.setAnimation(rotate_animation);
     }
 
 
