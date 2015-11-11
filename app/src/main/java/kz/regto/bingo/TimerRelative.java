@@ -26,7 +26,7 @@ public class TimerRelative extends RelativeLayout {
     private long startTime = 0L;
     private int gameCode =0;
 
-    private long secCounter = 50000;
+    private long secCounter = 100000;
     private long secCounterPlus = 2000;
     private long secCounterPlus2 = 2000;
     private boolean bTimer= true;

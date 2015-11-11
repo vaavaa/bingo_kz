@@ -204,7 +204,7 @@ public class BoardGrid extends View {
         idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
         touchedView.setId(idV);
         main_container_parent = (MainContainer)BoardGrid.this.getParent();
-        ilevel = main_container_parent.setChildName(touchedView);
+        ilevel = main_container_parent.setChildName(touchedView, this);
         for (BoardGridEvents hl : listeners) hl.entrySet(ilevel);
     }
 
@@ -1292,6 +1292,38 @@ public class BoardGrid extends View {
                     break;
             }
         }
+    }
+    public int SwitchILevel(int level){
+        int iEntry=0;
+        switch (level){
+            case 1:
+                iEntry=100;
+                break;
+            case 2:
+                iEntry=200;
+                break;
+            case 3:
+                iEntry=500;
+                break;
+            case 4:
+                iEntry=1000;
+                break;
+        }
+        return iEntry;
+    }
+
+    public boolean addNewChip(int objId,int level){
+        boolean bReturn=false;
+        int iEntry=0;
+        int iTotal=0;
+        iEntry = SwitchILevel(level);
+        for (ChipLog chiplog : chLog) {
+            if (chiplog.getId()==objId)iTotal = SwitchILevel(chiplog.getEntry())+iEntry;
+        }
+        if (iTotal>1000) bReturn=false;
+        else bReturn=true;
+
+        return bReturn;
     }
 }
 

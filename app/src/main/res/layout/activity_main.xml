@@ -95,14 +95,12 @@
             cl:layout_cellsHeight="@integer/third_row_height"
             cl:layout_cellsWidth="@integer/third_row_height"
             cl:layout_left="40"
-            cl:layout_top="@integer/second_row_height"
-            />
+            cl:layout_top="@integer/second_row_height"/>
         <!-- Начало поля -->
         <ImageView
             android:id="@+id/gold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/gold"
             cl:layout_cellsHeight="56"
             cl:layout_cellsWidth="186"
             cl:layout_left="7"
@@ -148,6 +146,7 @@
             android:layout_height="@dimen/auto_ball_size"
             android:layout_width="@dimen/auto_ball_size"
             android:gravity="center"
+            android:background="@drawable/auto_button_effect"
             cl:layout_cellsHeight="15"
             cl:layout_cellsWidth="15"
             cl:layout_left="15"
