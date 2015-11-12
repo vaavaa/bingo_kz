@@ -13,14 +13,18 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-public class Main extends AppCompatActivity implements TimerEvent {
+public class Main extends AppCompatActivity implements TimerEvent, BoardGridEvents {
 
     View mRootView;
     MainContainer mc;
-
+    TextView GameCode;
+    String sGameCode="AA-0001";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,9 @@ public class Main extends AppCompatActivity implements TimerEvent {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gold);
         image.setImageBitmap(getRoundedCornerBitmap(bitmap, 20));
 
+        GameCode = (TextView)findViewById(R.id.GameCode);
+        GameCode.setText(sGameCode);
+
     }
 
     private void showSystemUi() {
@@ -61,24 +68,70 @@ public class Main extends AppCompatActivity implements TimerEvent {
 
     @Override
     public void TimerOver(){
-        mc.ClearBoard();
+        clearBoard();
     }
 
     @Override
-    public void TimerStarted(){
-//        TextView GameCode;
-//        String nCode;
-//
-////        TimerRelative tR = (TimerRelative)findViewById(R.id.gameTimer);
-////        nCode=tR.GenerateNewGameCode();
-//        GameCode = (TextView)findViewById(R.id.GameCode);
-//        //GameCode.setText(nCode);
-//
-//        Animation rotate_animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-//        GameCode.setAnimation(rotate_animation);
+    public void TimerStarted(TimerRelative tR){
+        String nCode;
+
+        nCode=tR.GenerateNewGameCode(sGameCode);
+        if (GameCode!=null){
+            GameCode.setText(nCode);
+            sGameCode=nCode;
+            Animation rotate_animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+            rotate_animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    GameCode.setAlpha(1f);
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    GameCode.setAlpha(0.1f);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+
+            GameCode.setAnimation(rotate_animation);
+            GameCode.animate();
+        }
+        else {
+            sGameCode=nCode;
+        }
+
+    }
+    @Override
+    public void entrySet(int entryType){
+        int iEntry = getEntryfromLevel(entryType);
+        TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
+        iEntry = iEntry + Integer.parseInt(t2w.getField());
+        t2w.setField(Integer.toString(iEntry));
     }
 
 
+    public int getEntryfromLevel(int lvl){
+        int iEntry=0;
+         switch (lvl) {
+             case 1:
+                 iEntry=100;
+                 break;
+             case 2:
+                 iEntry=200;
+                 break;
+             case 3:
+                 iEntry=500;
+                 break;
+             case 4:
+                 iEntry=1000;
+                 break;
+         }
+        return iEntry;
+    }
     public void EntrySet(View view){
         findViewById(R.id.entry100).setSelected(false);
         findViewById(R.id.entry200).setSelected(false);
@@ -96,7 +149,7 @@ public class Main extends AppCompatActivity implements TimerEvent {
     }
 
     public void ClearBoard(View view){
-        mc.ClearBoard();
+        clearBoard();
     }
     public void stepBack(View view){
         mc.stepBack();
@@ -122,6 +175,12 @@ public class Main extends AppCompatActivity implements TimerEvent {
         canvas.drawBitmap(bitmap, rect, rect, paint);
 
         return output;
+    }
+
+    private void clearBoard(){
+        mc.ClearBoard();
+        TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
+        t2w.setField("0");
     }
 
 }

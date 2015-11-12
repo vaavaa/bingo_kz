@@ -16,6 +16,9 @@ public class TwoTextViews extends LinearLayout {
     private float size_text;
     private int color_text;
 
+    private TextView label_text;
+    private TextView field_text;
+
 
     public TwoTextViews(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -36,8 +39,8 @@ public class TwoTextViews extends LinearLayout {
 
     private void initView() {
         View view = inflate(getContext(), R.layout.twotextviews, null);
-        TextView label_text = (TextView) view.findViewById(R.id.label_text);
-        TextView field_text = (TextView) view.findViewById(R.id.field_text);
+        label_text = (TextView) view.findViewById(R.id.label_text);
+        field_text = (TextView) view.findViewById(R.id.field_text);
         label_text.setText(label);
         field_text.setText(field);
         label_text.setTextColor(color_text);
@@ -60,5 +63,23 @@ public class TwoTextViews extends LinearLayout {
         } finally {
             a.recycle();
         }
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getField() {
+        return field;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+        label_text.setText(label);
+    }
+
+    public void setField(String field) {
+        this.field = field;
+        field_text.setText(field);
     }
 }

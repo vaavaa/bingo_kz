@@ -5,6 +5,6 @@ package kz.regto.bingo;
  */
 public interface BoardGridEvents {
      void entrySet(int entryType);
-     void entryCanceled(int entryType);
-     void clearBoard();
+     //void entryCanceled(int entryType);
+     //void clearBoard();
 }

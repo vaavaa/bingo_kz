@@ -111,6 +111,8 @@ public class BoardGrid extends View {
 
         bg_paint.setColor(Color.rgb(220, 220, 200));
 
+        this.listeners.add((Main)ct);
+
     }
 
     private void MakeTouchedRectangleArea(Canvas canvas){

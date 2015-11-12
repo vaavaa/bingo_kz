@@ -24,12 +24,14 @@ public class TimerRelative extends RelativeLayout {
     private TextView timerValue;
     private ProgressBar progressBar;
     private long startTime = 0L;
-    private int gameCode =0;
 
-    private long secCounter = 100000;
+    private long secCounter = 5000;
     private long secCounterPlus = 2000;
     private long secCounterPlus2 = 2000;
     private boolean bTimer= true;
+
+    private String SER_CODE_LETTER="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private int SER_CODE_INT=1;
 
     private Handler customHandler = new Handler();
     private Animation anim = new AlphaAnimation(0.0f, 1.0f);
@@ -38,6 +40,9 @@ public class TimerRelative extends RelativeLayout {
     private long timeInMilliseconds = 0L;
     private long timeSwapBuff = 0L;
     private long updatedTime = 0L;
+
+    private TimerRelative tr;
+
     private List<TimerEvent> listeners = new ArrayList<TimerEvent>();
 
     public TimerRelative(Context context, AttributeSet attrs, int defStyle) {
@@ -57,6 +62,10 @@ public class TimerRelative extends RelativeLayout {
         initView(context);
     }
 
+    public String getText(){
+        return (String)timerValue.getText();
+    }
+
     private void initView(Context context) {
         View view = inflate(getContext(), R.layout.timer_relative, null);
         timerValue = (TextView) view.findViewById(R.id.timerValue);
@@ -67,19 +76,41 @@ public class TimerRelative extends RelativeLayout {
         anim.setRepeatMode(Animation.REVERSE);
         anim.setRepeatCount(Animation.INFINITE);
         progressBar.setMax((int) secCounter / 100);
-        this.addListener((Main)context);
+        this.addListener((Main) context);
         startTime = SystemClock.uptimeMillis();
+        tr=this;
 
-        for (TimerEvent hl : listeners) hl.TimerStarted();
         customHandler.postDelayed(updateTimerThread, 0);
-
+        for (TimerEvent hl : listeners) hl.TimerStarted(tr);
 
         addView(view);
     }
 
-    public String GenerateNewGameCode(){
-        String ReturnValue = "A".concat("00000").concat(Integer.toString(gameCode));
-        gameCode++;
+    public String GenerateNewGameCode(String serial){
+        String ser = serial.substring(0,serial.indexOf("-"));
+        String serCode = serial.substring(serial.indexOf("-")+1,serial.length());
+        String ReturnValue="";
+        serCode=serCode.replaceFirst("0*","");
+        SER_CODE_INT = Integer.parseInt(serCode);
+        int size_of_number;
+        if (SER_CODE_INT>9999) {
+            if (SER_CODE_LETTER.indexOf(ser.substring(1,1))==SER_CODE_LETTER.length()){
+                ser = SER_CODE_LETTER.substring(SER_CODE_LETTER.indexOf(ser.substring(0,1)+1),1);
+                ser=ser.concat(SER_CODE_LETTER.substring(1,1));
+            }
+            else {
+                ser=ser.substring(0,1)
+                        .concat(SER_CODE_LETTER.substring(SER_CODE_LETTER.indexOf(ser.substring(1, 1) + 1), 1));
+            }
+            SER_CODE_INT =1;
+        }
+        else SER_CODE_INT++;
+        serCode=Integer.toString(SER_CODE_INT);
+        size_of_number=4-serCode.length();
+        //Создали цифры
+        for (int i = size_of_number; i > 0; i--) ReturnValue = ReturnValue.concat("0");
+        ReturnValue=ReturnValue.concat(serCode);
+        ReturnValue = ser.concat("-").concat(ReturnValue);
         return ReturnValue;
     }
 
@@ -136,7 +167,7 @@ public class TimerRelative extends RelativeLayout {
                     i = 42;
                     ii = 55;
                     //Даем всем знать что таймер начался
-                    for (TimerEvent hl : listeners) hl.TimerStarted();
+                    for (TimerEvent hl : listeners) hl.TimerStarted(tr);
                     bTimer=true;
                 }
 
