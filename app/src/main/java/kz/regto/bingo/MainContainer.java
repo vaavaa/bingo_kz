@@ -20,7 +20,7 @@ public class MainContainer extends ViewGroup {
 
     int ilevelset=1;
     private LinkedList<LogChanges> mLog = new LinkedList<>();
-    private LinkedList<ChipLog> mainLogList=new LinkedList<ChipLog>();
+    private LinkedList<ChipLogLimit> limitLogList=new LinkedList<ChipLogLimit>();
 
     public MainContainer(Context context) {
         super(context);
@@ -98,8 +98,8 @@ public class MainContainer extends ViewGroup {
         return resourceId;
     }
 
-    private void addNewListMembers(LinkedList<ChipLog> pushLog){
-        for (ChipLog chiplog : pushLog) mainLogList.add(chiplog);
+    private void addNewListMembers(LinkedList<ChipLogLimit> pushLog){
+        for (ChipLogLimit chipLogLimit : pushLog) limitLogList.add(chipLogLimit);
     }
 
     public int setChildName(View child, BoardGrid boardGrid){
@@ -118,14 +118,12 @@ public class MainContainer extends ViewGroup {
                     if (idV==animPoint) {
                         //Фишка уже стоит на поле мы повышаем ее статус до заданого или на 1
                         int level=v.getBackground().getLevel();
-                        if (!boardGrid.addNewChip(v.getId(),ilevelset,mainLogList)){
+                        if (!boardGrid.addNewChip(v.getId(),ilevelset,limitLogList)){
                             Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.nope_rotate);
                             v.setAnimation(rotate_animation);
-                            v.animate();
-                            Log.v("1", "---------");
                         }
                         else {
-                            addNewListMembers(boardGrid.getMainLogList());
+                            addNewListMembers(boardGrid.getLimitLogList());
                             if (level ==ilevelset) {
                                 if (v.getText().equals("")) v.setText("2");
                                 else {
@@ -143,7 +141,6 @@ public class MainContainer extends ViewGroup {
 
                         iReturn=level;
                         v.bringToFront();
-                        v.invalidate();
                         invalidate();
                         break;
                     }
@@ -160,8 +157,8 @@ public class MainContainer extends ViewGroup {
                     child.bringToFront();
                     this.addView(child);
 
-                    addNewListMembers(boardGrid.getMainLogList());
                     mLog.add(new LogChanges(child.getId(), 0, ilevelset));
+                    addNewListMembers(boardGrid.getLimitLogList());
 
                     invalidate();
                     iReturn=ilevelset;
@@ -178,6 +175,7 @@ public class MainContainer extends ViewGroup {
 
     //блядскаяпроцедура которая все же удалила
     public void ClearBoard(){
+            limitLogList.clear();
             boolean doBreak = false;
             while (!doBreak) {
                 int childCount = this.getChildCount();

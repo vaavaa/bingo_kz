@@ -24,6 +24,7 @@ public class BoardGrid extends View {
     private Paint bg_paint;
     private List<BoardGridEvents> listeners = new ArrayList<BoardGridEvents>();
     private LinkedList<ChipLog> mainLogList=new LinkedList<ChipLog>();
+    private LinkedList<ChipLogLimit> limitLogList=new LinkedList<ChipLogLimit>();
 
 
     int left_X=0;
@@ -36,7 +37,7 @@ public class BoardGrid extends View {
     //Ни чего не нажато по Y;
     int y_pushed = 0;
     //какая ставка
-    int ilevel=0;
+    int ilevel=1;
 
     //Определеяем какое число нажато
     int x_pushed_number=-1;
@@ -191,6 +192,13 @@ public class BoardGrid extends View {
         mainLogList=smainLogList;
     }
 
+    public LinkedList<ChipLogLimit> getLimitLogList(){
+        return limitLogList;
+    }
+    public void setLimitLogList(LinkedList<ChipLogLimit> slimitLogList){
+        limitLogList=slimitLogList;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -218,6 +226,7 @@ public class BoardGrid extends View {
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
         boolean handled = false;
+        limitLogList.clear();
 
         int xTouch;
         int yTouch;
@@ -236,8 +245,12 @@ public class BoardGrid extends View {
                 yTouch_new = getYCrossed(xTouch, yTouch);
 
                 if (xTouch_new>0 && yTouch_new>0){
+                    int idV;
+                    idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
+
                     mainLogList=getPushedNumber(xTouch_new,yTouch_new);
-                    EntryGetsPoint(xTouch_new,yTouch_new);
+                    limitLogList.add(new ChipLogLimit(ilevel,idV));
+                    EntryGetsPoint(xTouch_new, yTouch_new);
                     GetUserTouch(xTouch_new, yTouch_new);
                     invalidate();
                 }
@@ -253,7 +266,11 @@ public class BoardGrid extends View {
                 xTouch_new = getXCrossed(xTouch, yTouch);
                 yTouch_new = getYCrossed(xTouch, yTouch);
                 if (xTouch_new>0 && yTouch_new>0){
+                    int idV;
+                    idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
+
                     mainLogList=getPushedNumber(xTouch_new,yTouch_new);
+                    limitLogList.add(new ChipLogLimit(ilevel,idV));
                     EntryGetsPoint(xTouch_new,yTouch_new);
                     invalidate();
                 }
@@ -436,6 +453,8 @@ public class BoardGrid extends View {
     // BORDER_ROW=3 - пересечение границы и строки
     // ROW_COLUMN=4 - пересечение столбца и строки
     // SPECIFIC_BUTTON=5 - нажата специфичная область
+        int idV;
+        idV = Integer.parseInt(Integer.toString(x)+Integer.toString(y));
 
         MainContainer main_container_parent;
         main_container_parent = (MainContainer)BoardGrid.this.getParent();
@@ -448,7 +467,7 @@ public class BoardGrid extends View {
 
         if ((y_pushed==5)&&(x_pushed==5)) {
             mRecOperate.RectArea(mRecOperateTemp[0].left,
-                    0, mRecOperateTemp[0].right, row_light*3+correlation_light);
+                    0, mRecOperateTemp[0].right, row_light * 3 + correlation_light);
             mRecOperate.setVisibility(View.VISIBLE);
             main_container_parent.invalidate();
             mRecOperateIsActive=true;
@@ -457,13 +476,13 @@ public class BoardGrid extends View {
         if ((y_pushed==4)&&(x_pushed==4)){
             if (mRectC[13].contains(x,y))
                 mRecOperate.RectArea(mRectC[0].right,
-                        y-row_light/2+correlation_light,
+                        y-row_light/2,
                         mRectC[13].left,
-                        y+row_light/2-correlation_light);
+                        y+row_light/2);
             else  mRecOperate.RectArea((int)(x-column_light/2)-correlation_light,
-                    ((int)y-row_light/2)-correlation_light,
-                    (x+column_light/2)+correlation_light,
-                    ((int)y+row_light/2)+correlation_light);
+                    ((int)y-row_light/2),
+                    (x+column_light/2),
+                    ((int)y+row_light/2));
             mRecOperate.setVisibility(View.VISIBLE);
             main_container_parent.invalidate();
             mRecOperateIsActive=true;
@@ -1321,14 +1340,15 @@ public class BoardGrid extends View {
         return iEntry;
     }
 
-    public boolean addNewChip(int objId,int level, LinkedList<ChipLog> chLog){
+    public boolean addNewChip(int objId,int level, LinkedList<ChipLogLimit> chLog){
         boolean bReturn;
         int iTotal=0;
-        for (ChipLog chiplog : chLog) {
-            if (chiplog.getId()==objId)
-                iTotal = iTotal+SwitchILevel(chiplog.getEntry());
+        for (ChipLogLimit chipLogLimit : chLog) {
+            if (chipLogLimit.getId()==objId)
+                iTotal = iTotal+SwitchILevel(chipLogLimit.getEntry());
         }
         iTotal=iTotal+SwitchILevel(level);
+        Log.v("1", Integer.toString(iTotal).concat(" ").concat(Integer.toString(objId)));
         if (iTotal>1000) bReturn=false;
         else bReturn=true;
 

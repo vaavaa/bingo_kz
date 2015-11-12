@@ -127,6 +127,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </kz.regto.bingo.MainContainer>
+        <kz.regto.bingo.VerticalTextView
+            android:id="@+id/GameCode"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/ball_text_size"
+            android:text="AA00001"
+            android:alpha="0.1"
+            cl:layout_cellsHeight="22"
+            cl:layout_cellsWidth="6"
+            cl:layout_left="10"
+            cl:layout_top="45"/>
+
         <!-- Конец поля -->
         <!-- Нижние кнопки -->
         <Button android:id="@+id/auto"
