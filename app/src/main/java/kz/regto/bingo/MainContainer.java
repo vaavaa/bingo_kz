@@ -20,6 +20,7 @@ public class MainContainer extends ViewGroup {
 
     int ilevelset=1;
     private LinkedList<LogChanges> mLog = new LinkedList<>();
+    private LinkedList<ChipLog> mainLogList=new LinkedList<ChipLog>();
 
     public MainContainer(Context context) {
         super(context);
@@ -97,6 +98,10 @@ public class MainContainer extends ViewGroup {
         return resourceId;
     }
 
+    private void addNewListMembers(LinkedList<ChipLog> pushLog){
+        for (ChipLog chiplog : pushLog) mainLogList.add(chiplog);
+    }
+
     public int setChildName(View child, BoardGrid boardGrid){
         int iReturn = 0;
         int childCount = this.getChildCount();
@@ -113,11 +118,14 @@ public class MainContainer extends ViewGroup {
                     if (idV==animPoint) {
                         //Фишка уже стоит на поле мы повышаем ее статус до заданого или на 1
                         int level=v.getBackground().getLevel();
-                        if (!boardGrid.addNewChip(v.getId(),ilevelset)){
+                        if (!boardGrid.addNewChip(v.getId(),ilevelset,mainLogList)){
                             Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.nope_rotate);
-                            rotate_animation.setStartOffset((int) (Math.random() * ((100) + 1)));
+                            v.setAnimation(rotate_animation);
+                            v.animate();
+                            Log.v("1", "---------");
                         }
                         else {
+                            addNewListMembers(boardGrid.getMainLogList());
                             if (level ==ilevelset) {
                                 if (v.getText().equals("")) v.setText("2");
                                 else {
@@ -128,8 +136,6 @@ public class MainContainer extends ViewGroup {
                                 }
                             }
                             else level =ilevelset;
-
-
                             mLog.add(new LogChanges(v.getId(), v.getBackground().getLevel(), level));
                             v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", EntryName(level))));
                             v.getBackground().setLevel(level);
@@ -153,7 +159,10 @@ public class MainContainer extends ViewGroup {
                     child.getBackground().setLevel(ilevelset);
                     child.bringToFront();
                     this.addView(child);
+
+                    addNewListMembers(boardGrid.getMainLogList());
                     mLog.add(new LogChanges(child.getId(), 0, ilevelset));
+
                     invalidate();
                     iReturn=ilevelset;
                 }
@@ -215,6 +224,8 @@ public class MainContainer extends ViewGroup {
                         this.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(),
                                 getResourceByID("drawable", EntryName(operatedLog.getpLevel()))));
                         this.getChildAt(i).getBackground().setLevel(operatedLog.getpLevel());
+                        Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.nope_rotate);
+                        rotate_animation.setStartOffset((int) (Math.random() * ((100) + 1)));
                             }
                     }
             mLog.remove(operatedLog);

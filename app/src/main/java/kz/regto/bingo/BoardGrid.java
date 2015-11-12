@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.nfc.Tag;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -22,7 +23,8 @@ public class BoardGrid extends View {
     private Paint paint;
     private Paint bg_paint;
     private List<BoardGridEvents> listeners = new ArrayList<BoardGridEvents>();
-    private LinkedList<ChipLog> chLog = new LinkedList<>();
+    private LinkedList<ChipLog> mainLogList=new LinkedList<ChipLog>();
+
 
     int left_X=0;
     int top_Y=0;
@@ -182,7 +184,12 @@ public class BoardGrid extends View {
         }
     }
 
-
+    public LinkedList<ChipLog> getMainLogList(){
+            return mainLogList;
+    }
+    public void setMainLogList(LinkedList<ChipLog> smainLogList){
+        mainLogList=smainLogList;
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -229,9 +236,9 @@ public class BoardGrid extends View {
                 yTouch_new = getYCrossed(xTouch, yTouch);
 
                 if (xTouch_new>0 && yTouch_new>0){
+                    mainLogList=getPushedNumber(xTouch_new,yTouch_new);
                     EntryGetsPoint(xTouch_new,yTouch_new);
                     GetUserTouch(xTouch_new, yTouch_new);
-                    getPushedNumber(xTouch_new, yTouch_new);
                     invalidate();
                 }
                 handled = true;
@@ -246,6 +253,7 @@ public class BoardGrid extends View {
                 xTouch_new = getXCrossed(xTouch, yTouch);
                 yTouch_new = getYCrossed(xTouch, yTouch);
                 if (xTouch_new>0 && yTouch_new>0){
+                    mainLogList=getPushedNumber(xTouch_new,yTouch_new);
                     EntryGetsPoint(xTouch_new,yTouch_new);
                     invalidate();
                 }
@@ -518,12 +526,12 @@ public class BoardGrid extends View {
     }
     public int getResourceByID(String ResType,String ResName) {
         Resources resources = getContext().getResources();
-        final int resourceId = resources.getIdentifier(ResName, ResType,
+        return resources.getIdentifier(ResName, ResType,
                 getContext().getPackageName());
-        return resourceId;
     }
 
-    public void getPushedNumber(int x,int y){
+    public LinkedList<ChipLog> getPushedNumber(int x,int y){
+        LinkedList<ChipLog> chLog = new LinkedList<>();
         int idV;
         idV = Integer.parseInt(Integer.toString(x)+Integer.toString(y));
         //Zero
@@ -1292,6 +1300,7 @@ public class BoardGrid extends View {
                     break;
             }
         }
+        return chLog;
     }
     public int SwitchILevel(int level){
         int iEntry=0;
@@ -1312,14 +1321,14 @@ public class BoardGrid extends View {
         return iEntry;
     }
 
-    public boolean addNewChip(int objId,int level){
-        boolean bReturn=false;
-        int iEntry=0;
+    public boolean addNewChip(int objId,int level, LinkedList<ChipLog> chLog){
+        boolean bReturn;
         int iTotal=0;
-        iEntry = SwitchILevel(level);
         for (ChipLog chiplog : chLog) {
-            if (chiplog.getId()==objId)iTotal = SwitchILevel(chiplog.getEntry())+iEntry;
+            if (chiplog.getId()==objId)
+                iTotal = iTotal+SwitchILevel(chiplog.getEntry());
         }
+        iTotal=iTotal+SwitchILevel(level);
         if (iTotal>1000) bReturn=false;
         else bReturn=true;
 

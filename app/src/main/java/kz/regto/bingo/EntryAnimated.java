@@ -36,7 +36,6 @@ public class EntryAnimated extends TextView{
 
 
     private void init(final Context ct) {
-        this.animation();
         this.setGravity(Gravity.RIGHT);
         this.setTypeface(null, Typeface.BOLD);
     }
