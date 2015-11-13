@@ -19,12 +19,19 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.LinkedList;
+
 public class Main extends AppCompatActivity implements TimerEvent, BoardGridEvents {
 
     View mRootView;
     MainContainer mc;
     TextView GameCode;
     String sGameCode="AA-0001";
+    TimerRelative tR;
+    TextView WN;
+    int gWinNumber;
+    BoardGrid board;
+    TwoTextViews win;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +54,16 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gold);
         image.setImageBitmap(getRoundedCornerBitmap(bitmap, 20));
 
+        WN = (TextView)findViewById(R.id.WinNumber);
+        WN.bringToFront();
+
+        tR = (TimerRelative)findViewById(R.id.gameTimer);
+        tR.bringToFront();
+
+        board=(BoardGrid)findViewById(R.id.board_grid);
+
+        win =(TwoTextViews)findViewById(R.id.win);
+
         GameCode = (TextView)findViewById(R.id.GameCode);
         GameCode.setText(sGameCode);
 
@@ -68,11 +85,21 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
     @Override
     public void TimerOver(){
+        tR.setVisibility(View.GONE);
+        board.setBoard_blocked(true);
+        gWinNumber = tR.WinningNumber();
+        win.setField(Integer.toString(Integer.parseInt(win.getField())+GameResultCalculation()));
+        WN.setText(Integer.toString(gWinNumber));
+        WN.setVisibility(View.VISIBLE);
         clearBoard();
     }
 
     @Override
     public void TimerStarted(TimerRelative tR){
+        tR.setVisibility(View.VISIBLE);
+        if (WN!=null) WN.setVisibility(View.GONE);
+        if (board!=null) board.setBoard_blocked(false);
+        if (win!=null) win.setField("0");
         String nCode;
 
         nCode=tR.GenerateNewGameCode(sGameCode);
@@ -113,6 +140,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         t2w.setField(Integer.toString(iEntry));
     }
 
+    public void StartNextTimer(View v){
+        tR.StartTimer();
+    }
 
     public int getEntryfromLevel(int lvl){
         int iEntry=0;
@@ -177,10 +207,22 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         return output;
     }
 
+    private int GameResultCalculation(){
+        int total_sum=0;
+        LinkedList<ChipLog> FR= board.getMainLogList();
+        for (ChipLog cl:FR){
+            if (cl.NumberChip==gWinNumber){
+                total_sum=total_sum+(((int)36/cl.divideBy)*getEntryfromLevel(cl.getEntry()));
+            }
+        }
+        return total_sum;
+    }
+
     private void clearBoard(){
         mc.ClearBoard();
         TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
         t2w.setField("0");
+        board.setMainLogList(new LinkedList<ChipLog>());
     }
 
 }

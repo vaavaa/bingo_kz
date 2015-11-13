@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@android:id/progress">
-            <shape>
-                <solid android:endColor="#ffe500"/>
-            </shape>
-    </item>
-</layer-list>
+<shape   xmlns:android="http://schemas.android.com/apk/res/android"
+    android:innerRadiusRatio="2.3"
+    android:shape="ring"
+    android:thickness="3.8sp" >
+    <solid android:color="#ffe500" />
+</shape>

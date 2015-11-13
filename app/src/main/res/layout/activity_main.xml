@@ -16,31 +16,6 @@
         cl:columns="200"
         cl:spacing="1dp"
         tools:context=".MainActivity" >
-
-        <!-- Начало первой строки -->
-        <kz.regto.bingo.TwoTextViews
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            cl:color_text="@color/first_line_label"
-            cl:size_text="@dimen/f1st_row"
-            cl:label_text="Cайт:"
-            cl:field_text="www.BingoCard.kz"
-            cl:layout_cellsHeight="@integer/first_row_height"
-            cl:layout_cellsWidth="60"
-            cl:layout_left="0"
-            cl:layout_top="0"/>
-        <kz.regto.bingo.TwoTextViews
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            cl:color_text="@color/first_line_label"
-            cl:size_text="@dimen/f1st_row"
-            cl:label_text="Устройство:"
-            cl:field_text="185519"
-            cl:layout_cellsHeight="@integer/first_row_height"
-            cl:layout_cellsWidth="45"
-            cl:layout_left="155"
-            cl:layout_top="0"/>
-        <!-- Конец первой строки -->
         <!-- Начало второй строки -->
         <kz.regto.bingo.TwoTextViews
             android:layout_height="wrap_content"
@@ -54,12 +29,13 @@
             cl:layout_left="0"
             cl:layout_top="@integer/first_row_height"/>
         <kz.regto.bingo.TwoTextViews
+            android:id="@+id/win"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             cl:color_text="@color/second_line_label"
             cl:size_text="@dimen/s2nd_row"
             cl:label_text="Выйгрыш:"
-            cl:field_text="10000"
+            cl:field_text="0"
             cl:layout_cellsHeight="@integer/second_row_height"
             cl:layout_cellsWidth="35"
             cl:layout_left="40"
@@ -77,14 +53,6 @@
             cl:layout_left="85"
             cl:layout_top="@integer/first_row_height"/>
 
-        <kz.regto.bingo.TimerRelative
-            android:id="@+id/gameTimer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            cl:layout_cellsHeight="@integer/second_row_height"
-            cl:layout_cellsWidth="60"
-            cl:layout_left="140"
-            cl:layout_top="@integer/first_row_height"/>
         <!-- Конец второй строки -->
         <TextView android:id="@+id/first"  android:layout_width="@dimen/ball_size"
             android:layout_height="@dimen/ball_size"
@@ -95,8 +63,149 @@
             android:textColor="@color/ball_numeric_color"
             cl:layout_cellsHeight="@integer/third_row_height"
             cl:layout_cellsWidth="@integer/third_row_height"
-            cl:layout_left="40"
+            cl:layout_left="148"
             cl:layout_top="@integer/second_row_height"/>
+        <TextView android:id="@+id/f2"  android:layout_width="@dimen/ball_size"
+            android:layout_height="@dimen/ball_size"
+            android:background="@drawable/round_shape"
+            android:gravity="center"
+            android:text="@string/init_figure"
+            android:textSize="@dimen/ball_text_size"
+            android:textColor="@color/ball_numeric_color"
+            cl:layout_cellsHeight="@integer/third_row_height"
+            cl:layout_cellsWidth="@integer/third_row_height"
+            cl:layout_left="138"
+            cl:layout_top="@integer/second_row_height"/>
+        <TextView android:id="@+id/f3"  android:layout_width="@dimen/ball_size"
+            android:layout_height="@dimen/ball_size"
+            android:background="@drawable/round_shape"
+            android:gravity="center"
+            android:text="@string/init_figure"
+            android:textSize="@dimen/ball_text_size"
+            android:textColor="@color/ball_numeric_color"
+            cl:layout_cellsHeight="@integer/third_row_height"
+            cl:layout_cellsWidth="@integer/third_row_height"
+            cl:layout_left="148"
+            cl:layout_top="@integer/second_row_height"/>
+        <TextView android:id="@+id/f4"  android:layout_width="@dimen/ball_size"
+            android:layout_height="@dimen/ball_size"
+            android:background="@drawable/round_shape"
+            android:gravity="center"
+            android:text="@string/init_figure"
+            android:textSize="@dimen/ball_text_size"
+            android:textColor="@color/ball_numeric_color"
+            cl:layout_cellsHeight="@integer/third_row_height"
+            cl:layout_cellsWidth="@integer/third_row_height"
+            cl:layout_left="128"
+            cl:layout_top="@integer/second_row_height"/>
+        <TextView android:id="@+id/f5"  android:layout_width="@dimen/ball_size"
+            android:layout_height="@dimen/ball_size"
+            android:background="@drawable/round_shape"
+            android:gravity="center"
+            android:text="@string/init_figure"
+            android:textSize="@dimen/ball_text_size"
+            android:textColor="@color/ball_numeric_color"
+            cl:layout_cellsHeight="@integer/third_row_height"
+            cl:layout_cellsWidth="@integer/third_row_height"
+            cl:layout_left="118"
+            cl:layout_top="@integer/second_row_height"/>
+        <TextView android:id="@+id/f6"  android:layout_width="@dimen/ball_size"
+            android:layout_height="@dimen/ball_size"
+            android:background="@drawable/round_shape"
+            android:gravity="center"
+            android:text="@string/init_figure"
+            android:textSize="@dimen/ball_text_size"
+            android:textColor="@color/ball_numeric_color"
+            cl:layout_cellsHeight="@integer/third_row_height"
+            cl:layout_cellsWidth="@integer/third_row_height"
+            cl:layout_left="108"
+            cl:layout_top="@integer/second_row_height"/>
+        <TextView android:id="@+id/f7"  android:layout_width="@dimen/ball_size"
+            android:layout_height="@dimen/ball_size"
+            android:background="@drawable/round_shape"
+            android:gravity="center"
+            android:text="@string/init_figure"
+            android:textSize="@dimen/ball_text_size"
+            android:textColor="@color/ball_numeric_color"
+            cl:layout_cellsHeight="@integer/third_row_height"
+            cl:layout_cellsWidth="@integer/third_row_height"
+            cl:layout_left="98"
+            cl:layout_top="@integer/second_row_height"/>
+        <TextView android:id="@+id/f8"  android:layout_width="@dimen/ball_size"
+            android:layout_height="@dimen/ball_size"
+            android:background="@drawable/round_shape"
+            android:gravity="center"
+            android:text="@string/init_figure"
+            android:textSize="@dimen/ball_text_size"
+            android:textColor="@color/ball_numeric_color"
+            cl:layout_cellsHeight="@integer/third_row_height"
+            cl:layout_cellsWidth="@integer/third_row_height"
+            cl:layout_left="88"
+            cl:layout_top="@integer/second_row_height"/>
+        <TextView android:id="@+id/f9"  android:layout_width="@dimen/ball_size"
+            android:layout_height="@dimen/ball_size"
+            android:background="@drawable/round_shape"
+            android:gravity="center"
+            android:text="@string/init_figure"
+            android:textSize="@dimen/ball_text_size"
+            android:textColor="@color/ball_numeric_color"
+            cl:layout_cellsHeight="@integer/third_row_height"
+            cl:layout_cellsWidth="@integer/third_row_height"
+            cl:layout_left="88"
+            cl:layout_top="@integer/second_row_height"/>
+        <TextView android:id="@+id/f10"  android:layout_width="@dimen/ball_size"
+            android:layout_height="@dimen/ball_size"
+            android:background="@drawable/round_shape"
+            android:gravity="center"
+            android:text="@string/init_figure"
+            android:textSize="@dimen/ball_text_size"
+            android:textColor="@color/ball_numeric_color"
+            cl:layout_cellsHeight="@integer/third_row_height"
+            cl:layout_cellsWidth="@integer/third_row_height"
+            cl:layout_left="78"
+            cl:layout_top="@integer/second_row_height"/>
+        <TextView android:id="@+id/f11"  android:layout_width="@dimen/ball_size"
+            android:layout_height="@dimen/ball_size"
+            android:background="@drawable/round_shape"
+            android:gravity="center"
+            android:text="@string/init_figure"
+            android:textSize="@dimen/ball_text_size"
+            android:textColor="@color/ball_numeric_color"
+            cl:layout_cellsHeight="@integer/third_row_height"
+            cl:layout_cellsWidth="@integer/third_row_height"
+            cl:layout_left="68"
+            cl:layout_top="@integer/second_row_height"/>
+
+        <TextView android:id="@+id/WinNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="85dp"
+            android:textColor="#000000"
+            android:text="@string/timerVal"
+            android:visibility="gone"
+            cl:layout_cellsHeight="20"
+            cl:layout_cellsWidth="20"
+            cl:layout_left="163"
+            cl:layout_top="14"/>
+        <kz.regto.bingo.TimerRelative
+            android:id="@+id/gameTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cl:layout_cellsHeight="10"
+            cl:layout_cellsWidth="20"
+            cl:layout_left="165"
+            cl:layout_top="18"/>
+        <ImageView
+            android:id="@+id/glass"
+            android:src="@drawable/glass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cl:layout_cellsHeight="30"
+            cl:layout_cellsWidth="28"
+            cl:layout_left="158"
+            cl:layout_top="10"
+            android:onClick="StartNextTimer"/>
         <!-- Начало поля -->
         <ImageView
             android:id="@+id/gold"
@@ -153,6 +262,15 @@
             cl:layout_cellsWidth="15"
             cl:layout_left="0"
             cl:layout_top="100"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/glass"
+            android:alpha="@integer/img_transparent"
+            cl:layout_cellsHeight="15"
+            cl:layout_cellsWidth="15"
+            cl:layout_left="0"
+            cl:layout_top="100"/>
         <Button android:id="@+id/x2"
             android:text="2x"
             android:textSize="@dimen/x2_text_size"
@@ -160,6 +278,15 @@
             android:layout_width="@dimen/auto_ball_size"
             android:gravity="center"
             android:background="@drawable/auto_button_effect"
+            cl:layout_cellsHeight="15"
+            cl:layout_cellsWidth="15"
+            cl:layout_left="15"
+            cl:layout_top="100"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/glass"
+            android:alpha="@integer/img_transparent"
             cl:layout_cellsHeight="15"
             cl:layout_cellsWidth="15"
             cl:layout_left="15"
@@ -233,6 +360,15 @@
               cl:layout_left="170"
               cl:layout_top="100"
             android:onClick="ClearBoard"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/glass"
+            android:alpha="@integer/img_transparent"
+            cl:layout_cellsHeight="15"
+            cl:layout_cellsWidth="15"
+            cl:layout_left="170"
+            cl:layout_top="100"/>
 
         <Button android:id="@+id/card_step_back"
              android:textSize="@dimen/auto_text_size"
@@ -245,6 +381,15 @@
             cl:layout_left="185"
             cl:layout_top="100"
             android:onClick="stepBack"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/glass"
+            android:alpha="@integer/img_transparent"
+            cl:layout_cellsHeight="15"
+            cl:layout_cellsWidth="15"
+            cl:layout_left="185"
+            cl:layout_top="100"/>
         <!-- Нижние кнопки конец -->
     </kz.regto.bingo.CellLayout>
 

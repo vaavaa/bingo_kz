@@ -9,11 +9,13 @@ public class ChipLog {
     int NumberChip=-1;
     int Entry=0;
     int id=0;
+    int divideBy=1;
 
-    ChipLog(int chip, int entry, int lid){
+    ChipLog(int chip, int entry, int lid,int dby){
         NumberChip=chip;
         Entry=entry;
         id=lid;
+        divideBy=dby;
     }
 
     public int getEntry() {
@@ -26,5 +28,9 @@ public class ChipLog {
 
     public int getId() {
         return id;
+    }
+
+    public int getDivideBy() {
+        return divideBy;
     }
 }

@@ -1,5 +1,6 @@
 package kz.regto.bingo;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -11,6 +12,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,13 +24,12 @@ import java.util.List;
  */
 public class TimerRelative extends RelativeLayout {
     private TextView timerValue;
-    private ProgressBar progressBar;
     private long startTime = 0L;
 
-    private long secCounter = 5000;
+    private long secCounter = 30000;
     private long secCounterPlus = 2000;
     private long secCounterPlus2 = 2000;
-    private boolean bTimer= true;
+    private boolean bTimer= false;
 
     private String SER_CODE_LETTER="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private int SER_CODE_INT=1;
@@ -69,22 +70,34 @@ public class TimerRelative extends RelativeLayout {
     private void initView(Context context) {
         View view = inflate(getContext(), R.layout.timer_relative, null);
         timerValue = (TextView) view.findViewById(R.id.timerValue);
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar1);
 
         anim.setDuration(350); //You can manage the blinking time with this parameter
         anim.setStartOffset(20);
         anim.setRepeatMode(Animation.REVERSE);
         anim.setRepeatCount(Animation.INFINITE);
-        progressBar.setMax((int) secCounter / 100);
         this.addListener((Main) context);
         startTime = SystemClock.uptimeMillis();
         tr=this;
 
-        customHandler.postDelayed(updateTimerThread, 0);
-        for (TimerEvent hl : listeners) hl.TimerStarted(tr);
+        StartTimer();
 
         addView(view);
     }
+
+    public void StartTimer(){
+        if (!bTimer){
+        startTime = SystemClock.uptimeMillis();
+        customHandler.postDelayed(updateTimerThread, 0);
+        for (TimerEvent hl : listeners) hl.TimerStarted(tr);
+            bTimer=true;
+        }
+    }
+
+    public int WinningNumber(){
+        int wn = (int) (Math.random() * ((36) + 1));
+        return wn;
+    }
+
 
     public String GenerateNewGameCode(String serial){
         String ser = serial.substring(0,serial.indexOf("-"));
@@ -131,82 +144,32 @@ public class TimerRelative extends RelativeLayout {
     public void addListener(TimerEvent toAdd) { listeners.add(toAdd); }
 
     private Runnable updateTimerThread = new Runnable() {
-        int i = 42;
-        int ii = 55;
 
         public void run() {
 
             timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
             updatedTime = timeSwapBuff + timeInMilliseconds;
-            progressBar.setProgress((int) ((secCounter - updatedTime) / 100));
+            int secs = 0;
+            int mins = 0;
 
             if ((updatedTime) >= secCounter) {
-                int secs = 0;
-                int mins = 0;
                 secs = 0;
-                if (ii > 40) {
-                    timerValue.setTextSize(TypedValue.COMPLEX_UNIT_DIP, ii);
-                    ii--;
-                } else timerValue.setTextColor(Color.parseColor("#ffffff"));
-
-                if ((updatedTime) >= (secCounter + secCounterPlus)) {
-                    secs = (int) (secCounter) / 1000;
-                    mins = secs / 60;
-                    secs = secs % 60;
-                    //Даем всем знать что таймер кончился
-                    if (bTimer){
-                        for (TimerEvent hl : listeners) hl.TimerOver();
-                        bTimer=false;
-                    }
-                }
-
-                if ((updatedTime) >= (secCounter + secCounterPlus + secCounterPlus2)) {
-                    startTime = SystemClock.uptimeMillis();
-                    timeSwapBuff = 0;
-                    progressBar.setProgress(0);
-                    i = 42;
-                    ii = 55;
-                    //Даем всем знать что таймер начался
-                    for (TimerEvent hl : listeners) hl.TimerStarted(tr);
-                    bTimer=true;
-                }
-
+                mins = 0;
+                for (TimerEvent hl : listeners) hl.TimerOver();
+                bTimer=false;
                 timerValue.setText(Integer.toString(mins).concat(":").concat(String.format("%02d", secs)));
+                customHandler.removeCallbacks(updateTimerThread);
 
             } else {
-                long persnt = (int) updatedTime * 100 / secCounter;
-
-                if (persnt > 80) {
-                    if (timerValue.getCurrentTextColor() == Color.parseColor("#ffffff")) {
-                        timerValue.setTextColor(Color.parseColor("#A5C63B"));
-                        timerValue.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 55);
-                        timerValue.setVisibility(View.VISIBLE);
-                        timerValue.startAnimation(anim);
-                    }
-                }
-                if ((persnt >= 50) && (persnt < 80)) {
-                    if (i < 55) {
-                        timerValue.setTextSize(TypedValue.COMPLEX_UNIT_DIP, i);
-                        i++;
-                    }
-                }
-                if (persnt < 50) {
-                    timerValue.clearAnimation();
-                    if (timerValue.getCurrentTextColor() != Color.parseColor("#ffffff")) {
-                        timerValue.setTextColor(Color.parseColor("#ffffff"));
-                        timerValue.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 40);
-                        timerValue.clearAnimation();
-                        timerValue.setAlpha(1.0f);
-                    }
-                }
-
-                int secs = (int) ((secCounter - updatedTime) / 1000);
-                int mins = secs / 60;
+                //long persnt = (int) updatedTime * 100 / secCounter;
+                secs = (int) ((secCounter - updatedTime) / 1000);
+                mins = secs / 60;
                 secs = secs % 60;
-
                 timerValue.setText(Integer.toString(mins).concat(":").concat(String.format("%02d", secs)));
+                customHandler.postDelayed(this, 0);
             }
-            customHandler.postDelayed(this, 0);
+
+
         }
     };
 }
