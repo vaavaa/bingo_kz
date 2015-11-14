@@ -729,6 +729,52 @@ public class BoardGrid extends View {
                             break;
                     }
                     break;
+                case 13:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new ChipLog(3,ilevel,idV,12));
+                            chLog.add(new ChipLog(6,ilevel,idV,12));
+                            chLog.add(new ChipLog(9,ilevel,idV,12));
+                            chLog.add(new ChipLog(12,ilevel,idV,12));
+                            chLog.add(new ChipLog(15,ilevel,idV,12));
+                            chLog.add(new ChipLog(18,ilevel,idV,12));
+                            chLog.add(new ChipLog(21,ilevel,idV,12));
+                            chLog.add(new ChipLog(24,ilevel,idV,12));
+                            chLog.add(new ChipLog(27,ilevel,idV,12));
+                            chLog.add(new ChipLog(30,ilevel,idV,12));
+                            chLog.add(new ChipLog(33,ilevel,idV,12));
+                            chLog.add(new ChipLog(36,ilevel,idV,12));
+                            break;
+                        case 2:
+                            chLog.add(new ChipLog(2,ilevel,idV,12));
+                            chLog.add(new ChipLog(5,ilevel,idV,12));
+                            chLog.add(new ChipLog(8,ilevel,idV,12));
+                            chLog.add(new ChipLog(11,ilevel,idV,12));
+                            chLog.add(new ChipLog(14,ilevel,idV,12));
+                            chLog.add(new ChipLog(17,ilevel,idV,12));
+                            chLog.add(new ChipLog(20,ilevel,idV,12));
+                            chLog.add(new ChipLog(23,ilevel,idV,12));
+                            chLog.add(new ChipLog(26,ilevel,idV,12));
+                            chLog.add(new ChipLog(29,ilevel,idV,12));
+                            chLog.add(new ChipLog(32,ilevel,idV,12));
+                            chLog.add(new ChipLog(35,ilevel,idV,12));
+                            break;
+                        case 3:
+                            chLog.add(new ChipLog(1,ilevel,idV,12));
+                            chLog.add(new ChipLog(4,ilevel,idV,12));
+                            chLog.add(new ChipLog(7,ilevel,idV,12));
+                            chLog.add(new ChipLog(10,ilevel,idV,12));
+                            chLog.add(new ChipLog(13,ilevel,idV,12));
+                            chLog.add(new ChipLog(16,ilevel,idV,12));
+                            chLog.add(new ChipLog(19,ilevel,idV,12));
+                            chLog.add(new ChipLog(22,ilevel,idV,12));
+                            chLog.add(new ChipLog(25,ilevel,idV,12));
+                            chLog.add(new ChipLog(28,ilevel,idV,12));
+                            chLog.add(new ChipLog(31,ilevel,idV,12));
+                            chLog.add(new ChipLog(34,ilevel,idV,12));
+                            break;
+                    }
+                    break;
             }
         }
         //Пересечение двух границ
