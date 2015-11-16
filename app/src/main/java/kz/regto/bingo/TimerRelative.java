@@ -26,7 +26,7 @@ public class TimerRelative extends RelativeLayout {
     private TextView timerValue;
     private long startTime = 0L;
 
-    private long secCounter = 30000;
+    private long secCounter = 15000;
     private long secCounterPlus = 2000;
     private long secCounterPlus2 = 2000;
     private boolean bTimer= false;

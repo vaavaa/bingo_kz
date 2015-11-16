@@ -93,9 +93,8 @@ public class MainContainer extends ViewGroup {
 
     public int getResourceByID(String ResType,String ResName) {
         Resources resources = getContext().getResources();
-        final int resourceId = resources.getIdentifier(ResName, ResType,
+        return resources.getIdentifier(ResName, ResType,
                 getContext().getPackageName());
-        return resourceId;
     }
 
     private void addNewListMembers(LinkedList<ChipLogLimit> pushLog){

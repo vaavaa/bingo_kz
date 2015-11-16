@@ -32,6 +32,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     int gWinNumber;
     BoardGrid board;
     TwoTextViews win;
+    WinBallContainer wbc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +65,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
         win =(TwoTextViews)findViewById(R.id.win);
 
+        wbc = (WinBallContainer)findViewById(R.id.win_ball_container);
+
         GameCode = (TextView)findViewById(R.id.GameCode);
         GameCode.setText(sGameCode);
 
@@ -90,6 +93,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         gWinNumber = tR.WinningNumber();
         win.setField(Integer.toString(Integer.parseInt(win.getField())+GameResultCalculation()));
         WN.setText(Integer.toString(gWinNumber));
+        wbc.UpdateNewOne(Integer.toString(gWinNumber));
         WN.setVisibility(View.VISIBLE);
         clearBoard();
     }
