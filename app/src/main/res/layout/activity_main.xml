@@ -59,8 +59,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             cl:layout_cellsHeight="10"
-            cl:layout_cellsWidth="80"
-            cl:layout_left="120"
+            cl:layout_cellsWidth="100"
+            cl:layout_left="60"
             cl:layout_top="30"/>
 
         <TextView android:id="@+id/WinNumber"
