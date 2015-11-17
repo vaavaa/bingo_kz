@@ -115,8 +115,7 @@ public class BoardGrid extends View {
 
         bg_paint.setColor(Color.rgb(220, 220, 200));
 
-        this.listeners.add((Main) ct);
-
+        if (this.listeners.size()==0) this.listeners.add((Main) ct);
     }
 
     private void MakeTouchedRectangleArea(Canvas canvas){
@@ -211,6 +210,7 @@ public class BoardGrid extends View {
 
         touchedView=new EntryAnimated(this.getContext());
         touchedView.RectArea(xTouch_new - (int) (RADIUS_LIMIT / 2), yTouch_new - (int) (RADIUS_LIMIT / 2), xTouch_new + (int) (RADIUS_LIMIT / 2), yTouch_new + (int) (RADIUS_LIMIT / 2));
+
         //Object now has name for identification
         int idV;
         idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
