@@ -7,7 +7,7 @@
     <color name="connection">#cc0300</color>
     <color name="colorHL">#F2FFFFFF</color>
     <color name="first_line_label">#FFFFFF</color>
-    <color name="second_line_label">#FFFFFF</color>
+    <color name="second_line_label">#FFDB53</color>
 
     <color name="progress_bar_color">#ffe500</color>
 

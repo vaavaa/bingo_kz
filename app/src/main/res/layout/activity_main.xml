@@ -18,16 +18,17 @@
         tools:context=".MainActivity" >
         <!-- Начало второй строки -->
         <kz.regto.bingo.TwoTextViews
+            android:id="@+id/balance"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             cl:color_text="@color/second_line_label"
             cl:size_text="@dimen/s2nd_row"
             cl:label_text="Баланс:"
             cl:field_text="18000"
-            cl:layout_cellsHeight="@integer/second_row_height"
-            cl:layout_cellsWidth="30"
-            cl:layout_left="0"
-            cl:layout_top="@integer/first_row_height"/>
+            cl:layout_cellsHeight="10"
+            cl:layout_cellsWidth="60"
+            cl:layout_left="10"
+            cl:layout_top="5"/>
         <kz.regto.bingo.TwoTextViews
             android:id="@+id/win"
             android:layout_height="wrap_content"
@@ -36,10 +37,10 @@
             cl:size_text="@dimen/s2nd_row"
             cl:label_text="Выйгрыш:"
             cl:field_text="0"
-            cl:layout_cellsHeight="@integer/second_row_height"
-            cl:layout_cellsWidth="35"
-            cl:layout_left="40"
-            cl:layout_top="@integer/first_row_height"/>
+            cl:layout_cellsHeight="10"
+            cl:layout_cellsWidth="60"
+            cl:layout_left="10"
+            cl:layout_top="15"/>
         <kz.regto.bingo.TwoTextViews
             android:id="@+id/CurrentEntry"
             android:layout_height="wrap_content"
@@ -48,20 +49,13 @@
             cl:size_text="@dimen/s2nd_row"
             cl:label_text="Ставка:"
             cl:field_text="0"
-            cl:layout_cellsHeight="@integer/second_row_height"
-            cl:layout_cellsWidth="35"
-            cl:layout_left="85"
-            cl:layout_top="@integer/first_row_height"/>
+            cl:layout_cellsHeight="10"
+            cl:layout_cellsWidth="60"
+            cl:layout_left="10"
+            cl:layout_top="25"/>
 
         <!-- Конец второй строки -->
-        <kz.regto.bingo.WinBallContainer
-            android:id="@+id/win_ball_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            cl:layout_cellsHeight="10"
-            cl:layout_cellsWidth="100"
-            cl:layout_left="60"
-            cl:layout_top="30"/>
+
 
         <TextView android:id="@+id/WinNumber"
             android:layout_width="wrap_content"
@@ -83,34 +77,36 @@
             cl:layout_cellsWidth="20"
             cl:layout_left="165"
             cl:layout_top="18"/>
+
+        <kz.regto.bingo.WinBallContainer
+            android:id="@+id/win_ball_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cl:layout_cellsHeight="10"
+            cl:layout_cellsWidth="90"
+            cl:layout_left="20"
+            cl:layout_top="30"/>
+
         <ImageView
             android:id="@+id/glass"
-            android:src="@drawable/glass"
+            android:src="@drawable/glass_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             cl:layout_cellsHeight="30"
-            cl:layout_cellsWidth="28"
-            cl:layout_left="158"
+            cl:layout_cellsWidth="80"
+            cl:layout_left="110"
             cl:layout_top="10"
             android:onClick="StartNextTimer"/>
         <!-- Начало поля -->
-        <ImageView
-            android:id="@+id/gold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            cl:layout_cellsHeight="56"
-            cl:layout_cellsWidth="186"
-            cl:layout_left="7"
-            cl:layout_top="42"/>
 
         <kz.regto.bingo.MainContainer
             android:id="@+id/main_board"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            cl:layout_cellsHeight="50"
-            cl:layout_cellsWidth="180"
-            cl:layout_left="10"
-            cl:layout_top="45">
+            cl:layout_cellsHeight="56"
+            cl:layout_cellsWidth="186"
+            cl:layout_left="7"
+            cl:layout_top="42">
             <kz.regto.bingo.BoardGrid
                 android:id="@+id/board_grid"
                 android:layout_width="match_parent"
@@ -139,25 +135,17 @@
         <!-- Конец поля -->
         <!-- Нижние кнопки -->
         <Button android:id="@+id/auto"
-            android:text="A"
+            android:text=""
             android:layout_width="@dimen/auto_ball_size"
             android:layout_height="@dimen/auto_ball_size"
-            android:textSize="@dimen/auto_text_size"
-            android:background="@drawable/auto_button_effect"
+            android:textSize="@dimen/x2_text_size"
+            android:background="@drawable/auto_button"
             android:gravity="center"
             cl:layout_cellsHeight="15"
             cl:layout_cellsWidth="15"
-            cl:layout_left="0"
-            cl:layout_top="100"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/glass"
-            android:alpha="@integer/img_transparent"
-            cl:layout_cellsHeight="15"
-            cl:layout_cellsWidth="15"
-            cl:layout_left="0"
-            cl:layout_top="100"/>
+            cl:layout_left="10"
+            cl:layout_top="105"
+            android:onClick="botsEntry"/>
         <Button android:id="@+id/x2"
             android:text="2x"
             android:textSize="@dimen/x2_text_size"
@@ -167,17 +155,9 @@
             android:background="@drawable/auto_button_effect"
             cl:layout_cellsHeight="15"
             cl:layout_cellsWidth="15"
-            cl:layout_left="15"
-            cl:layout_top="100"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/glass"
-            android:alpha="@integer/img_transparent"
-            cl:layout_cellsHeight="15"
-            cl:layout_cellsWidth="15"
-            cl:layout_left="15"
-            cl:layout_top="100"/>
+            cl:layout_left="25"
+            cl:layout_top="105"
+            android:onClick="x2_button"/>
 
         <Button android:id="@+id/entry100"
             android:text="100"
@@ -191,7 +171,7 @@
             cl:layout_cellsHeight="12"
             cl:layout_cellsWidth="12"
             cl:layout_left="75"
-            cl:layout_top="100"
+            cl:layout_top="105"
             android:onClick="EntrySet"/>
         <Button android:id="@+id/entry200"
            android:text="200"
@@ -205,7 +185,7 @@
            cl:layout_cellsHeight="12"
            cl:layout_cellsWidth="12"
            cl:layout_left="87"
-           cl:layout_top="100"
+           cl:layout_top="105"
             android:onClick="EntrySet"/>
         <Button android:id="@+id/entry500"
              android:text="500"
@@ -219,7 +199,7 @@
              cl:layout_cellsHeight="12"
              cl:layout_cellsWidth="12"
              cl:layout_left="99"
-             cl:layout_top="100"
+             cl:layout_top="105"
             android:onClick="EntrySet"/>
         <Button android:id="@+id/entry1000"
               android:text="1000"
@@ -233,7 +213,7 @@
               cl:layout_cellsHeight="12"
               cl:layout_cellsWidth="12"
               cl:layout_left="111"
-              cl:layout_top="100"
+              cl:layout_top="105"
             android:onClick="EntrySet"/>
 
         <Button android:id="@+id/make_crd_null"
@@ -244,19 +224,9 @@
               android:gravity="center"
               cl:layout_cellsHeight="15"
               cl:layout_cellsWidth="15"
-              cl:layout_left="170"
-              cl:layout_top="100"
+              cl:layout_left="160"
+              cl:layout_top="105"
             android:onClick="ClearBoard"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/glass"
-            android:alpha="@integer/img_transparent"
-            cl:layout_cellsHeight="15"
-            cl:layout_cellsWidth="15"
-            cl:layout_left="170"
-            cl:layout_top="100"/>
-
         <Button android:id="@+id/card_step_back"
              android:textSize="@dimen/auto_text_size"
              android:layout_height="@dimen/entry_ball_size"
@@ -265,18 +235,9 @@
              android:gravity="center"
             cl:layout_cellsHeight="15"
             cl:layout_cellsWidth="15"
-            cl:layout_left="185"
-            cl:layout_top="100"
+            cl:layout_left="175"
+            cl:layout_top="105"
             android:onClick="stepBack"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/glass"
-            android:alpha="@integer/img_transparent"
-            cl:layout_cellsHeight="15"
-            cl:layout_cellsWidth="15"
-            cl:layout_left="185"
-            cl:layout_top="100"/>
         <!-- Нижние кнопки конец -->
     </kz.regto.bingo.CellLayout>
 

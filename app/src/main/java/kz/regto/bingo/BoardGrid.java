@@ -204,7 +204,7 @@ public class BoardGrid extends View {
 
 
     //Получаем пересечение прямоугольников
-    private void EntryGetsPoint(int xTouch_new, int yTouch_new){
+    public void EntryGetsPoint(int xTouch_new, int yTouch_new){
         EntryAnimated touchedView;
         MainContainer main_container_parent;
 
@@ -218,6 +218,25 @@ public class BoardGrid extends View {
         main_container_parent = (MainContainer)BoardGrid.this.getParent();
         ilevel = main_container_parent.setChildName(touchedView, this);
         for (BoardGridEvents hl : listeners) hl.entrySet(ilevel);
+    }
+
+    public void set_random_entry(){
+        int xTouch = (int) (Math.random() * ((this.getWidth()) + 1));
+        int yTouch = (int) (Math.random() * ((this.getHeight()) + 1));
+        int xTouch_new = getXCrossed(xTouch, yTouch);
+        int yTouch_new = getYCrossed(xTouch, yTouch);
+
+        if (xTouch_new>0 && yTouch_new>0){
+            int idV;
+            idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
+
+            limitLogList.add(new ChipLogLimit(ilevel,idV));
+            EntryGetsPoint(xTouch_new, yTouch_new);
+
+            copyToMainStore(getPushedNumber(xTouch_new, yTouch_new));
+            GetUserTouch(xTouch_new, yTouch_new);
+            invalidate();
+        }
     }
 
     private void copyToMainStore(LinkedList<ChipLog> nLogList){

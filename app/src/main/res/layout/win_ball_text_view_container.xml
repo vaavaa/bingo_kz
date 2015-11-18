@@ -11,7 +11,8 @@
         android:text="@string/init_figure"
         android:textSize="@dimen/ball_text_size"
         android:textColor="@color/ball_numeric_color"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        android:onClick="ball_clicked"/>
     <TextView android:id="@+id/f2"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
@@ -22,7 +23,8 @@
         android:textSize="@dimen/ball_text_size"
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
-        android:layout_toEndOf="@+id/f1"/>
+        android:layout_toEndOf="@+id/f1"
+        android:onClick="ball_clicked"/>
     <TextView android:id="@+id/f3"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
@@ -33,7 +35,8 @@
         android:textSize="@dimen/ball_text_size"
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
-        android:layout_toEndOf="@+id/f2"/>
+        android:layout_toEndOf="@+id/f2"
+        android:onClick="ball_clicked"/>
     <TextView android:id="@+id/f4"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
@@ -44,7 +47,8 @@
         android:textSize="@dimen/ball_text_size"
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
-        android:layout_toEndOf="@+id/f3"/>
+        android:layout_toEndOf="@+id/f3"
+        android:onClick="ball_clicked"/>
     <TextView android:id="@+id/f5"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
@@ -55,7 +59,8 @@
         android:textSize="@dimen/ball_text_size"
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
-        android:layout_toEndOf="@+id/f4"/>
+        android:layout_toEndOf="@+id/f4"
+        android:onClick="ball_clicked"/>
     <TextView android:id="@+id/f6"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
@@ -66,7 +71,8 @@
         android:textSize="@dimen/ball_text_size"
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
-        android:layout_toEndOf="@+id/f5"/>
+        android:layout_toEndOf="@+id/f5"
+        android:onClick="ball_clicked"/>
     <TextView android:id="@+id/f7"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
@@ -77,7 +83,8 @@
         android:textSize="@dimen/ball_text_size"
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
-        android:layout_toEndOf="@+id/f6"/>
+        android:layout_toEndOf="@+id/f6"
+        android:onClick="ball_clicked"/>
     <TextView android:id="@+id/f8"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
@@ -88,7 +95,8 @@
         android:textSize="@dimen/ball_text_size"
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
-        android:layout_toEndOf="@+id/f7"/>
+        android:layout_toEndOf="@+id/f7"
+        android:onClick="ball_clicked"/>
     <TextView android:id="@+id/f9"
         android:layout_width="@dimen/ball_size"
         android:layout_height="@dimen/ball_size"
@@ -98,5 +106,6 @@
         android:textSize="@dimen/ball_text_size"
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
-        android:layout_toEndOf="@+id/f8"/>
+        android:layout_toEndOf="@+id/f8"
+        android:onClick="ball_clicked"/>
 </RelativeLayout>

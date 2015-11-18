@@ -51,9 +51,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         mc=(MainContainer)findViewById(R.id.main_board);
 
         //Закругляем картинку
-        ImageView image=(ImageView)findViewById(R.id.gold);
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gold);
-        image.setImageBitmap(getRoundedCornerBitmap(bitmap, 20));
+//        ImageView image=(ImageView)findViewById(R.id.gold);
+//        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gold);
+//        image.setImageBitmap(getRoundedCornerBitmap(bitmap, 20));
 
         WN = (TextView)findViewById(R.id.WinNumber);
         WN.bringToFront();
@@ -107,6 +107,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         String nCode;
 
         nCode=tR.GenerateNewGameCode(sGameCode);
+
         if (GameCode!=null){
             GameCode.setText(nCode);
             sGameCode=nCode;
@@ -142,6 +143,28 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
         iEntry = iEntry + Integer.parseInt(t2w.getField());
         t2w.setField(Integer.toString(iEntry));
+    }
+    public void botsEntry(View view){
+        board.set_random_entry();
+    }
+
+    public void x2_button(View view){
+        int iEntry;
+        int ibalance;
+        TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
+        TwoTextViews balance =  (TwoTextViews)this.findViewById(R.id.balance);
+        ibalance = Integer.parseInt(t2w.getField());
+        iEntry = Integer.parseInt(t2w.getField());
+        if (2*iEntry<=ibalance){
+            LinkedList<ChipLog> cl = board.getMainLogList();
+            LinkedList<ChipLogLimit> cll = board.getLimitLogList();
+            for (ChipLog clp: cl){
+                if (board.addNewChip(clp.getId(),clp.getEntry(),cll)) {
+
+                }
+            }
+
+        }
     }
 
     public void StartNextTimer(View v){
@@ -227,6 +250,12 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
         t2w.setField("0");
         board.setMainLogList(new LinkedList<ChipLog>());
+    }
+
+    public void ball_clicked(View v){
+        Animation rotate_animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        v.setAnimation(rotate_animation);
+        v.animate();
     }
 
 }

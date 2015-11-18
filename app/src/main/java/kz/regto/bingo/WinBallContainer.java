@@ -53,6 +53,7 @@ public class WinBallContainer extends RelativeLayout {
         h = new Handler();
     }
 
+
     public void UpdateNewOne(String winNumber){
         lastWinNumber = winNumber;
         if  (iVisible<=9){
