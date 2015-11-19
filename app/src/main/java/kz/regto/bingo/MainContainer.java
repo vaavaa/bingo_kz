@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -51,7 +52,8 @@ public class MainContainer extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-          String className;
+
+        String className;
         int childCount = this.getChildCount();
         for(int i=0; i<childCount;i++) {
             View v = getChildAt(i);
@@ -63,16 +65,11 @@ public class MainContainer extends ViewGroup {
                     v.layout(vV.left_X,vV.top_Y,vV.right_X,vV.bottom_Y);
                     break;
                 case "BoardGrid":
-                    v.layout(0,0,this.getWidth(),this.getHeight());
+                    v.layout(35,35,this.getWidth(), this.getHeight());
                     break;
                 case "RectView":
                     RectView rV = (RectView)v;
-                    v.layout(rV.left_X,rV.top_Y,rV.right_X,rV.bottom_Y);
-                    break;
-                case "VerticalTextView":
-                    int hght = (int)this.getHeight()/2-(int)this.getHeight()/12;
-                    v.layout(0, 0, (int)this.getWidth()/14,hght);
-                    v.bringToFront();
+                    v.layout(rV.left_X, rV.top_Y, rV.right_X, rV.bottom_Y);
                     break;
             }
         }
@@ -89,6 +86,30 @@ public class MainContainer extends ViewGroup {
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int width = 0;
+        int height = 0;
+
+        width = MeasureSpec.getSize(widthMeasureSpec) - 70;
+        height = MeasureSpec.getSize(heightMeasureSpec) - 70;
+
+        String className;
+        int childCount = this.getChildCount();
+        for(int i=0; i<childCount;i++) {
+            View v = getChildAt(i);
+            className = v.getClass().getName();
+            className= className.substring(className.lastIndexOf(".") + 1);
+            switch (className){
+                case "BoardGrid":
+                    int childWidthSpec = MeasureSpec.makeMeasureSpec(width,
+                            MeasureSpec.EXACTLY);
+                    int childHeightSpec = MeasureSpec.makeMeasureSpec(height,
+                            MeasureSpec.EXACTLY);
+                    v.measure(childWidthSpec, childHeightSpec);
+                    break;
+            }
+        }
+
+        setMeasuredDimension(width, height);
     }
 
     public int getResourceByID(String ResType,String ResName) {

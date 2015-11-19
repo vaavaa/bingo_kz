@@ -91,11 +91,11 @@ public class WinBallContainer extends RelativeLayout {
             }
 
             if (rInt ==(iVisible-1)){
+                Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
+                tViews[rInt].setAnimation(rotate_animation);
                 rInt=1;
                 h.removeCallbacks(showInfo);
                 tViews[iVisible-1].setVisibility(View.VISIBLE);
-                Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
-                tViews[rInt].setAnimation(rotate_animation);
             }
             else {
                 rInt++;

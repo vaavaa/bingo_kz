@@ -153,17 +153,15 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         int ibalance;
         TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
         TwoTextViews balance =  (TwoTextViews)this.findViewById(R.id.balance);
-        ibalance = Integer.parseInt(t2w.getField());
+        ibalance = Integer.parseInt(balance.getField());
         iEntry = Integer.parseInt(t2w.getField());
         if (2*iEntry<=ibalance){
             LinkedList<ChipLog> cl = board.getMainLogList();
             LinkedList<ChipLogLimit> cll = board.getLimitLogList();
             for (ChipLog clp: cl){
-                if (board.addNewChip(clp.getId(),clp.getEntry(),cll)) {
-
-                }
+                mc.setIlevelset(clp.getEntry());
+                board.EntryGetsPoint(clp.getId(),clp.getX(),clp.getY());
             }
-
         }
     }
 

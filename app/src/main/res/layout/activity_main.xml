@@ -28,7 +28,7 @@
             cl:layout_cellsHeight="10"
             cl:layout_cellsWidth="60"
             cl:layout_left="10"
-            cl:layout_top="5"/>
+            cl:layout_top="3"/>
         <kz.regto.bingo.TwoTextViews
             android:id="@+id/win"
             android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
             cl:layout_cellsHeight="10"
             cl:layout_cellsWidth="60"
             cl:layout_left="10"
-            cl:layout_top="15"/>
+            cl:layout_top="11"/>
         <kz.regto.bingo.TwoTextViews
             android:id="@+id/CurrentEntry"
             android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
             cl:layout_cellsHeight="10"
             cl:layout_cellsWidth="60"
             cl:layout_left="10"
-            cl:layout_top="25"/>
+            cl:layout_top="19"/>
 
         <!-- Конец второй строки -->
 
@@ -109,8 +109,8 @@
             cl:layout_top="42">
             <kz.regto.bingo.BoardGrid
                 android:id="@+id/board_grid"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
             <kz.regto.bingo.RectView
                 android:id="@+id/zRectView"
                 android:layout_width="wrap_content"
