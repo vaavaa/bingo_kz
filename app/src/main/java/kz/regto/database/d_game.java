@@ -10,8 +10,16 @@ public class d_game {
     int win_ball;
     int state;
     int device_id;
+    String gameCode;
     String dtime;
 
+    public String getGameCode() {
+        return gameCode;
+    }
+
+    public void setGameCode(String gameCode) {
+        this.gameCode = gameCode;
+    }
 
     public int getId() {
         return id;

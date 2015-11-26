@@ -1,19 +1,12 @@
 package kz.regto.bingo;
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.util.ArrayList;
@@ -27,12 +20,16 @@ public class TimerRelative extends RelativeLayout {
     private long startTime = 0L;
 
     private long secCounter = 30000;
-    private long secCounterPlus = 2000;
-    private long secCounterPlus2 = 2000;
     private boolean bTimer= false;
 
-    private String SER_CODE_LETTER="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private SupportTimer sp=new SupportTimer();
+
+
+    private final String SER_CODE_LETTER="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private int SER_CODE_INT=1;
+
+    private final String URL_number = "http://192.168.1.3/json/index.php";
+    private final String URL_timer = "http://192.168.1.3/json/timer.php";
 
     private Handler customHandler = new Handler();
     private Animation anim = new AlphaAnimation(0.0f, 1.0f);
@@ -45,6 +42,7 @@ public class TimerRelative extends RelativeLayout {
     private TimerRelative tr;
 
     private List<TimerEvent> listeners = new ArrayList<TimerEvent>();
+
 
     public TimerRelative(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -68,6 +66,7 @@ public class TimerRelative extends RelativeLayout {
     }
 
     private void initView(Context context) {
+
         View view = inflate(getContext(), R.layout.timer_relative, null);
         timerValue = (TextView) view.findViewById(R.id.timerValue);
 
@@ -76,17 +75,22 @@ public class TimerRelative extends RelativeLayout {
         anim.setRepeatMode(Animation.REVERSE);
         anim.setRepeatCount(Animation.INFINITE);
         this.addListener((Main) context);
-        startTime = SystemClock.uptimeMillis();
+
         tr=this;
 
-        StartTimer();
 
+        StartTimer();
         addView(view);
+
+        //Инициируем получение времени
+        sp.execute(URL_timer, URL_number);
+
     }
 
     public void StartTimer(){
         if (!bTimer){
-        startTime = SystemClock.uptimeMillis();
+            startTime = sp.GetCurrentTime();
+        //startTime = SystemClock.uptimeMillis();
         customHandler.postDelayed(updateTimerThread, 0);
         for (TimerEvent hl : listeners) hl.TimerStarted(tr);
             bTimer=true;
@@ -94,7 +98,8 @@ public class TimerRelative extends RelativeLayout {
     }
 
     public int WinningNumber(){
-        int wn = (int) (Math.random() * ((36) + 1));
+        //Get win ball
+        int wn =sp.GetWinBall();
         return wn;
     }
 
@@ -147,7 +152,11 @@ public class TimerRelative extends RelativeLayout {
 
         public void run() {
 
-            timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
+
+
+            //timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
+            timeInMilliseconds = sp.GetCurrentTime()- startTime;
+
             updatedTime = timeSwapBuff + timeInMilliseconds;
             int secs = 0;
             int mins = 0;
@@ -155,13 +164,13 @@ public class TimerRelative extends RelativeLayout {
             if ((updatedTime) >= secCounter) {
                 secs = 0;
                 mins = 0;
-                for (TimerEvent hl : listeners) hl.TimerOver();
                 bTimer=false;
                 timerValue.setText(Integer.toString(mins).concat(":").concat(String.format("%02d", secs)));
+                for (TimerEvent hl : listeners) hl.TimerOver();
                 customHandler.removeCallbacks(updateTimerThread);
 
+
             } else {
-                //long persnt = (int) updatedTime * 100 / secCounter;
                 secs = (int) ((secCounter - updatedTime) / 1000);
                 mins = secs / 60;
                 secs = secs % 60;

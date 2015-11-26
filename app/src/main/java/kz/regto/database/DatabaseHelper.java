@@ -28,7 +28,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "win_ball INTEGER NOT NULL DEFAULT '-1' , " +
             "state INTEGER NOT NULL DEFAULT '0' , " +
             "device_id INTEGER NOT NULL DEFAULT '0', " +
-            "dtime DATETIME NOT NULL)";
+            "dtime DATETIME NOT NULL,"+
+            "game_code VARCHAR(10))";
     private static final String CREATE_TABLE_balance = "CREATE TABLE balance " +
             "(game_id INTEGER NOT NULL, operation_type INTEGER NOT NULL DEFAULT '0'," +
             " sum INTEGER NOT NULL)";

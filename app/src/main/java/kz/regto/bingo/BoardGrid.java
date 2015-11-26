@@ -201,7 +201,8 @@ public class BoardGrid extends View {
     public void EntryGetsPoint(int xTouch_new, int yTouch_new){
         EntryAnimated touchedView;
         MainContainer main_container_parent;
-
+        xTouch_new = xTouch_new+33;
+        yTouch_new = yTouch_new+33;
         touchedView=new EntryAnimated(this.getContext());
         touchedView.RectArea(xTouch_new - (int) (RADIUS_LIMIT / 2), yTouch_new - (int) (RADIUS_LIMIT / 2), xTouch_new + (int) (RADIUS_LIMIT / 2), yTouch_new + (int) (RADIUS_LIMIT / 2));
 
@@ -214,24 +215,6 @@ public class BoardGrid extends View {
         for (BoardGridEvents hl : listeners) hl.entrySet(ilevel);
     }
 
-    //Получаем пересечение прямоугольников
-    public void EntryGetsPoint(int idV, int x, int y){
-
-        EntryAnimated touchedView;
-        MainContainer main_container_parent;
-
-        limitLogList.add(new ChipLogLimit(ilevel,idV));
-
-        touchedView=new EntryAnimated(this.getContext());
-
-        touchedView.setId(idV);
-        main_container_parent = (MainContainer)BoardGrid.this.getParent();
-        ilevel = main_container_parent.setChildName(touchedView, this);
-
-        copyToMainStore(getPushedNumber(x, y));
-
-        for (BoardGridEvents hl : listeners) hl.entrySet(ilevel);
-    }
 
     public void set_random_entry(){
         int xTouch = (int) (Math.random() * ((this.getWidth()) + 1));
@@ -310,8 +293,6 @@ public class BoardGrid extends View {
                     if (xTouch_new>0 && yTouch_new>0){
                         int idV;
                         idV = Integer.parseInt(Integer.toString(xTouch_new) + Integer.toString(yTouch_new));
-
-
                         limitLogList.add(new ChipLogLimit(ilevel,idV));
                         EntryGetsPoint(xTouch_new,yTouch_new);
                         copyToMainStore(getPushedNumber(xTouch_new,yTouch_new));
@@ -322,38 +303,16 @@ public class BoardGrid extends View {
                     break;
 
                 case MotionEvent.ACTION_MOVE:
-    //                final int pointerCount = event.getPointerCount();
-    //                for (actionIndex = 0; actionIndex < pointerCount; actionIndex++) {
-    //                    // Some pointer has moved, search it by pointer id
-    //
-    //                    xTouch = (int) event.getX(actionIndex);
-    //                    yTouch = (int) event.getY(actionIndex);
-    //
-    //                    xTouch_new = getXCrossed(xTouch, yTouch);
-    //                    yTouch_new = getYCrossed(xTouch, yTouch);
-    //
-    //                    if (xTouch_new!=moveXpoint[actionIndex]&&yTouch_new!=moveYpoint[actionIndex]){
-    //                        moveXpoint[actionIndex]=xTouch_new;
-    //                        moveYpoint[actionIndex]=yTouch_new;
-    //                        touchedView=new AnimatedPoint(this.getContext());
-    //                        touchedView.RectArea(xTouch_new - (int) (RADIUS_LIMIT / 2), yTouch_new - (int) (RADIUS_LIMIT / 2), xTouch_new + (int) (RADIUS_LIMIT / 2), yTouch_new + (int) (RADIUS_LIMIT / 2));
-    //                        //Object now has name for an identification
-    //                        touchedView.name =Integer.toString(xTouch_new - (int) (RADIUS_LIMIT / 2)) + Integer.toString(yTouch_new - (int) (RADIUS_LIMIT / 2))+Integer.toString(xTouch_new + (int) (RADIUS_LIMIT / 2))+Integer.toString(yTouch_new + (int) (RADIUS_LIMIT / 2));
-    //                        main_container_parent = (main_container)grid.this.getParent();
-    //                        main_container_parent.setName(touchedView);
-    //                    }
-    //                }
-    //                invalidate();
                     handled = true;
                     break;
 
                 case MotionEvent.ACTION_UP:
                     if (mRecOperateIsActive){
-                        mRecOperate.setVisibility(View.GONE);
-                        mRecOperate1.setVisibility(View.GONE);
                         mRecOperateIsActive=false;
-                        invalidate();
                     }
+                    mRecOperate.setVisibility(View.GONE);
+                    mRecOperate1.setVisibility(View.GONE);
+                    invalidate();
                     handled = true;
                     break;
 
@@ -508,6 +467,7 @@ public class BoardGrid extends View {
         mRecOperate =(RectView)main_container_parent.getChild(R.id.zRectView);
         mRecOperate1=(RectView)main_container_parent.getChild(R.id.xRectView);
 
+
         //pushed color
         mRecOperate.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
         mRecOperate1.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
@@ -588,7 +548,15 @@ public class BoardGrid extends View {
             main_container_parent.invalidate();
             mRecOperateIsActive=true;
         }
+        mRecOperate.right_X = mRecOperate.right_X+33;
+        mRecOperate.left_X = mRecOperate.left_X+33;
+        mRecOperate.bottom_Y=mRecOperate.bottom_Y+33;
+        mRecOperate.top_Y=mRecOperate.top_Y+33;
 
+        mRecOperate1.right_X = mRecOperate1.right_X+33;
+        mRecOperate1.left_X = mRecOperate1.left_X+33;
+        mRecOperate1.bottom_Y=mRecOperate1.bottom_Y+33;
+        mRecOperate1.top_Y=mRecOperate1.top_Y+33;
     }
     public int getResourceByID(String ResType,String ResName) {
         Resources resources = getContext().getResources();

@@ -21,6 +21,9 @@ import android.widget.TextView;
 
 import java.util.LinkedList;
 
+import kz.regto.database.DatabaseHelper;
+import kz.regto.database.d_game;
+
 public class Main extends AppCompatActivity implements TimerEvent, BoardGridEvents {
 
     View mRootView;
@@ -33,6 +36,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     BoardGrid board;
     TwoTextViews win;
     WinBallContainer wbc;
+    //DatabaseHelper dbs = new DatabaseHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +45,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //database initialisation
+
 
         //Убираем шторку status bar.
         mRootView = getWindow().getDecorView();
@@ -71,6 +78,20 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         GameCode.setText(sGameCode);
 
     }
+
+//    private boolean newGameInDatatabase(String gameCode){
+//        boolean bReturn=false;
+//
+//        if (dbs.getSQLQueryCount("SELECT * from game WHERE state=0")==0){
+//            d_game dGame= new d_game();
+//            dGame.setState(0);
+//            dGame.setWin_ball(-1);
+//            dGame.setGameCode(gameCode);
+//            dbs.createNewGame(dGame);
+//            bReturn = true;
+//        }
+//        return bReturn;
+//    }
 
     private void showSystemUi() {
         ActionBar bar = getSupportActionBar();
@@ -107,8 +128,10 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         String nCode;
 
         nCode=tR.GenerateNewGameCode(sGameCode);
+        //newGameInDatatabase(nCode);
 
         if (GameCode!=null){
+
             GameCode.setText(nCode);
             sGameCode=nCode;
             Animation rotate_animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
@@ -160,7 +183,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             LinkedList<ChipLogLimit> cll = board.getLimitLogList();
             for (ChipLog clp: cl){
                 mc.setIlevelset(clp.getEntry());
-                board.EntryGetsPoint(clp.getId(),clp.getX(),clp.getY());
+                board.EntryGetsPoint(clp.getX(),clp.getY());
             }
         }
     }

@@ -65,7 +65,7 @@ public class MainContainer extends ViewGroup {
                     v.layout(vV.left_X,vV.top_Y,vV.right_X,vV.bottom_Y);
                     break;
                 case "BoardGrid":
-                    v.layout(35,35,this.getWidth(), this.getHeight());
+                    v.layout(33,33,v.getMeasuredWidth(), this.getMeasuredHeight());
                     break;
                 case "RectView":
                     RectView rV = (RectView)v;
@@ -89,8 +89,8 @@ public class MainContainer extends ViewGroup {
         int width = 0;
         int height = 0;
 
-        width = MeasureSpec.getSize(widthMeasureSpec) - 70;
-        height = MeasureSpec.getSize(heightMeasureSpec) - 70;
+        width = MeasureSpec.getSize(widthMeasureSpec) - 33;
+        height = MeasureSpec.getSize(heightMeasureSpec) - 33;
 
         String className;
         int childCount = this.getChildCount();
