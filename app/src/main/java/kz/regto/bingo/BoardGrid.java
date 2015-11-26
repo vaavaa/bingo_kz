@@ -7,10 +7,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.nfc.Tag;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -46,9 +49,11 @@ public class BoardGrid extends View {
 
     RectView mRecOperate;
     RectView mRecOperate1;
+    RectView mHintOperate;
     Rect[] mRecOperateTemp=new Rect[2];
 
-    boolean mRecOperateIsActive=false;
+    private boolean mRecOperateIsActive=false;
+    private boolean mHintOperateIsActive = false;
 
     boolean board_blocked=false;
 
@@ -212,6 +217,7 @@ public class BoardGrid extends View {
         touchedView.setId(idV);
         main_container_parent = (MainContainer)BoardGrid.this.getParent();
         ilevel = main_container_parent.setChildName(touchedView, this);
+        showHint(xTouch_new,yTouch_new);
         for (BoardGridEvents hl : listeners) hl.entrySet(ilevel);
     }
 
@@ -451,6 +457,33 @@ public class BoardGrid extends View {
         }
         else result = resultB[0];
         return result;
+    }
+
+    private void showHint(int xTouch,int yTouch){
+        Runnable mRunnable;
+        Handler mHandler=new Handler();
+        MainContainer main_container_parent;
+        main_container_parent = (MainContainer)BoardGrid.this.getParent();
+        mHintOperate =(RectView)main_container_parent.getChild(R.id.xhint);
+        mHintOperate.RectArea(xTouch - 30, yTouch - 50, xTouch + 30, yTouch - 20);
+        //pushed color
+        mHintOperate.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
+        mHintOperate.setText("+1300");
+
+        Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.hint_fade_out);
+        mHintOperate.setAnimation(rotate_animation);
+
+        mHintOperate.bringToFront();
+        mHintOperate.setVisibility(View.VISIBLE);
+        main_container_parent.invalidate();
+        mRunnable=new Runnable() {
+            @Override
+            public void run() {
+
+                mHintOperate.setVisibility(View.GONE); //This will remove the View. and free s the space occupied by the View
+            }
+        };
+        mHandler.postDelayed(mRunnable, 2500);
     }
 
     private void GetUserTouch(int x,int y){

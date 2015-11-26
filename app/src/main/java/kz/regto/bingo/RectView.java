@@ -6,11 +6,12 @@ import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.TextView;
 
 /**
  * Created by spt on 26.10.2015.
  */
-public class RectView extends View
+public class RectView extends TextView
 {
     public int left_X=0;
     public int top_Y=0;

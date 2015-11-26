@@ -67,6 +67,9 @@ public class TimerRelative extends RelativeLayout {
 
     private void initView(Context context) {
 
+        //Инициируем получение времени
+        sp.execute(URL_timer, URL_number);
+
         View view = inflate(getContext(), R.layout.timer_relative, null);
         timerValue = (TextView) view.findViewById(R.id.timerValue);
 
@@ -82,8 +85,7 @@ public class TimerRelative extends RelativeLayout {
         StartTimer();
         addView(view);
 
-        //Инициируем получение времени
-        sp.execute(URL_timer, URL_number);
+
 
     }
 
