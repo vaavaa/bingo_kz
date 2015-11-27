@@ -469,7 +469,7 @@ public class BoardGrid extends View {
 
         mHintOperate.RectArea(xTouch - 30, yTouch - 40, xTouch + 30, yTouch - 20);
         //pushed color
-        //mHintOperate.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
+        mHintOperate.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
         mHintOperate.setText("+1300");
 
         Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.hint_fade_out);

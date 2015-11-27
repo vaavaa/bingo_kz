@@ -36,7 +36,7 @@ public class RectView extends TextView
     }
 
     private void init(final Context ct) {
-        this.setBackgroundResource(R.drawable.rect_view);
+        //this.setBackgroundResource(R.drawable.rect_view);
         //this.invalidate();
 //        if(rectColor==0) rectColor=this.getResourceByID("color", "colorHL");
 //        //Собственный метод
