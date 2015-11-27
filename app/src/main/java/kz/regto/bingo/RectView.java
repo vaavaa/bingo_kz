@@ -36,10 +36,12 @@ public class RectView extends TextView
     }
 
     private void init(final Context ct) {
-        if(rectColor==0) rectColor=this.getResourceByID("color", "colorHL");
-        //Собственный метод
-        this.setBackgroundColor(ContextCompat.getColor(ct,rectColor));
-        this.getBackground().setAlpha(45);
+        this.setBackgroundResource(R.drawable.rect_view);
+        //this.invalidate();
+//        if(rectColor==0) rectColor=this.getResourceByID("color", "colorHL");
+//        //Собственный метод
+//        this.setBackgroundColor(ContextCompat.getColor(ct,rectColor));
+//        this.getBackground().setAlpha(45);
     }
 
     public void RectArea(int X, int Y, int rX, int rY) {
@@ -57,6 +59,7 @@ public class RectView extends TextView
     public int getRectColor() {
         return rectColor;
     }
+
     public void setRectColor(int rctColor){
         rectColor=rctColor;
     }

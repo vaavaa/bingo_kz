@@ -114,16 +114,19 @@
             <kz.regto.bingo.RectView
                 android:id="@+id/zRectView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:background="@drawable/rect_view"/>
             <kz.regto.bingo.RectView
                 android:id="@+id/xRectView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:background="@drawable/rect_view"/>
             <kz.regto.bingo.RectView
                 android:id="@+id/xhint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:textStyle="bold"/>
         </kz.regto.bingo.MainContainer>
         <kz.regto.bingo.VerticalTextView
             android:id="@+id/GameCode"
@@ -134,8 +137,8 @@
             android:alpha="0.1"
             cl:layout_cellsHeight="22"
             cl:layout_cellsWidth="6"
-            cl:layout_left="15"
-            cl:layout_top="45"/>
+            cl:layout_left="12"
+            cl:layout_top="46"/>
 
         <!-- Конец поля -->
         <!-- Нижние кнопки -->

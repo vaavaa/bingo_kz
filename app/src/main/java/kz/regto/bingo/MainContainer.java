@@ -13,10 +13,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import java.util.LinkedList;
 
-
-/**
- * Created by spt on 23.10.2015.
- */
 public class MainContainer extends ViewGroup {
 
     int ilevelset=1;

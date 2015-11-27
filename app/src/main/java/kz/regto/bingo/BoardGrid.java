@@ -465,9 +465,11 @@ public class BoardGrid extends View {
         MainContainer main_container_parent;
         main_container_parent = (MainContainer)BoardGrid.this.getParent();
         mHintOperate =(RectView)main_container_parent.getChild(R.id.xhint);
-        mHintOperate.RectArea(xTouch - 30, yTouch - 50, xTouch + 30, yTouch - 20);
+
+
+        mHintOperate.RectArea(xTouch - 30, yTouch - 40, xTouch + 30, yTouch - 20);
         //pushed color
-        mHintOperate.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
+        //mHintOperate.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
         mHintOperate.setText("+1300");
 
         Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.hint_fade_out);
@@ -502,8 +504,8 @@ public class BoardGrid extends View {
 
 
         //pushed color
-        mRecOperate.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
-        mRecOperate1.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
+        //mRecOperate.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
+        //mRecOperate1.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
 
         if ((y_pushed==5)&&(x_pushed==5)) {
             mRecOperate.RectArea(mRecOperateTemp[0].left,
