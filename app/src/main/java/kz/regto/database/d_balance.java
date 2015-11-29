@@ -4,9 +4,9 @@ package kz.regto.database;
  * Created by Старцев on 24.11.2015.
  */
 public class d_balance {
-    int game_id;
-    int operation;
-    int sum;
+    private int game_id;
+    private int operation;
+    private int sum;
 
     public void setGame_id(int game_id) {
         this.game_id = game_id;

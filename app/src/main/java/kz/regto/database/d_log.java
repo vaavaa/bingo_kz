@@ -4,8 +4,8 @@ package kz.regto.database;
  * Created by Старцев on 24.11.2015.
  */
 public class d_log {
-    int game_id;
-    int log_id;
+    private int game_id;
+    private int log_id;
 
     public void setLog_id(int log_id) {
         this.log_id = log_id;

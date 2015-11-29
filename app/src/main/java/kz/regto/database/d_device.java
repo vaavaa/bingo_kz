@@ -4,9 +4,18 @@ package kz.regto.database;
  * Created by Старцев on 24.11.2015.
  */
 public class d_device {
-    int device_id;
-    String DeviceCode;
-    int status;
+    private  int device_id;
+    private String DeviceCode;
+    private int status;
+    private int balance;
+
+    public void setBalance(int balance) {
+        this.balance = balance;
+    }
+
+    public int getBalance() {
+        return balance;
+    }
 
     public int getDevice_id() {
         return device_id;

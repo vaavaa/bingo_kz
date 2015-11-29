@@ -4,13 +4,13 @@ package kz.regto.database;
  * Created by Старцев on 23.11.2015.
  */
 public class d_entry_set {
-    int log_id;
-    int chip_number;
-    int entry_value;
-    int entry_id;
-    int divided_by;
-    int x;
-    int y;
+    private int log_id;
+    private int chip_number;
+    private int entry_value;
+    private int entry_id;
+    private int divided_by;
+    private int x;
+    private int y;
 
     public int getX() {
         return x;

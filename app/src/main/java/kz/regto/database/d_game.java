@@ -1,17 +1,15 @@
 package kz.regto.database;
 
-import java.util.Date;
-
 /**
  * Created by Старцев on 23.11.2015.
  */
 public class d_game {
-    int id;
-    int win_ball;
-    int state;
-    int device_id;
-    String gameCode;
-    String dtime;
+    private int id;
+    private int win_ball=-1;
+    private int state;
+    private int device_id;
+    private String gameCode;
+    private String dtime;
 
     public String getGameCode() {
         return gameCode;
