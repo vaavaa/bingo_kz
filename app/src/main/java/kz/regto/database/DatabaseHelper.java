@@ -37,18 +37,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "(game_id INTEGER NOT NULL, operation_type INTEGER NOT NULL DEFAULT '0'," +
             " sum INTEGER NOT NULL)";
     private static final String CREATE_TABLE_device = "CREATE TABLE device (device_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-            " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', balance INTEGER NOT NULL DEFAULT '0')";
+            " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', balance INTEGER NOT NULL DEFAULT '0', network_path VARCHAR(250))";
     private static final String CREATE_TABLE_entry_set = "    CREATE TABLE entry_set (\n" +
             "                    log_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
             "                    chip_number INTEGER NOT NULL,\n" +
             "                    entry_value INTEGER NOT NULL,\n" +
             "                    entry_id INTEGER NOT NULL,\n" +
-            "                    divided_by INTEGER NOT NULL, x INTEGER NOT NULL, y INTEGER NOT NULL)";
-    private static final String CREATE_TABLE_log = "   CREATE TABLE log\n" +
-            "            (\n" +
-            "                    game_id INTEGER NOT NULL,\n" +
-            "                    log_id INTEGER NOT NULL\n" +
-            "            )";
+            "                    divided_by INTEGER NOT NULL, x INTEGER NOT NULL, y INTEGER NOT NULL," +
+            "                    game_id INTEGER NOT NULL,"+
+            "                    sum INTEGER NOT NULL)";
 
 
     public DatabaseHelper(Context context) {
@@ -63,8 +60,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_balance);
         db.execSQL(CREATE_TABLE_device);
         db.execSQL(CREATE_TABLE_entry_set);
-        db.execSQL(CREATE_TABLE_log);
-
     }
 
     @Override
@@ -74,8 +69,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_balance);
         db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_device);
         db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_entry_set);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_log);
-
 
         // create new tables
         onCreate(db);
@@ -145,7 +138,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         boolean bReturn;
         String delete_sql = "DELETE FROM balance \n"+
                 "WHERE game_id=" + gameId;
-        //SQLiteDatabase db = this.getWritableDatabase();
         try {
             db.execSQL(delete_sql);
             bReturn = true;
@@ -163,7 +155,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "operation_type ="+dBalance.getOperation() +",\n" +
                 "WHERE id=" +dBalance.getGame_id();
         try {
-            //SQLiteDatabase db = this.getWritableDatabase();
             db.execSQL(update_sql);
             bReturn = true;
         }
@@ -177,94 +168,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // ------------------------ end "balance" table methods ----------------//
 
 
-    // ------------------------ "log" table methods ----------------//
-    public boolean createNewLog(d_log dLog) {
-        boolean bReturn;
-        String insert_sql = "insert into log (game_id, log_id)\n" +
-                "VALUES ("+dLog.getGame_id()+","+dLog.getLog_id()+")";
-        try {
-            //SQLiteDatabase db = this.getWritableDatabase();
-            db.execSQL(insert_sql);
-            bReturn = true;}
-        catch (Exception ex){
-            bReturn = false;
-        }
-        return bReturn;
-    }
-
-    public List<d_entry_set> getLog(int game_id) {
-
-        String selectQuery = "SELECT * FROM entry_set left join log on entry_set.log_id = log.log_id" +
-                " WHERE log.game_id="+Integer.toString(game_id);
-        List<d_entry_set> dLog = new ArrayList<>();
-
-        Cursor c = dbr.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                d_entry_set td = new d_entry_set();
-                td.setLog_id(c.getInt(c.getColumnIndex("log_id")));
-                td.setChip_number((c.getInt(c.getColumnIndex("chip_number"))));
-                td.setEntry_value(c.getInt(c.getColumnIndex("entry_value")));
-                td.setEntry_id(c.getInt(c.getColumnIndex("entry_id")));
-                td.setDivided_by(c.getInt(c.getColumnIndex("divided_by")));
-                td.setX(c.getInt(c.getColumnIndex("x")));
-                td.setY(c.getInt(c.getColumnIndex("y")));
-
-                dLog.add(td);
-            } while (c.moveToNext());
-            c.close();
-        }
-        return dLog;
-    }
-
-    /**
-     * Deleting a log by game_id
-     */
-    public boolean deleteLogByGame_id(int gameId) {
-        boolean bReturn;
-        String delete_sql = "DELETE FROM log \n"+
-                "WHERE game_id=" + gameId;
-        //SQLiteDatabase db = this.getWritableDatabase();
-        try {
-            db.execSQL(delete_sql);
-            bReturn = true;
-        }
-        catch (Exception ex){
-            bReturn=false;
-        }
-        return bReturn;
-    }
-
-    /**
-     * Deleting a log by log_id
-     */
-    public boolean deleteLogByLog_id(int logId) {
-        boolean bReturn;
-        String delete_sql = "DELETE FROM log \n"+
-                "WHERE log_id=" + logId;
-        //SQLiteDatabase db = this.getWritableDatabase();
-        try {
-            db.execSQL(delete_sql);
-            bReturn = true;
-        }
-        catch (Exception ex){
-            bReturn=false;
-        }
-        return bReturn;
-    }
-
-
-    // ------------------------ end "log" table methods ----------------//
     // ------------------------ "device" table methods ----------------//
     /**
      * Creating a device
+     * Device Status
+     * 0 - inactive
+     * 1- active
      */
     public boolean createNewDevice(d_device dDevice) {
         boolean bReturn;
-        String insert_sql = "insert into device (device_code, status) " +
-                "VALUES ('"+dDevice.getDeviceCode()+"',"+dDevice.getStatus()+")";
+        String insert_sql = "insert into device (device_code, status, balance, network_path) " +
+                "VALUES ('"+dDevice.getDeviceCode()+"',"+dDevice.getStatus()+","+dDevice.getBalance()+","+dDevice.getNetwork_path()+")";
         try {
             //Есил там уже есть устройство, нм добавлять не нужно
             if (this.getSQLQueryCount("SELECT * FROM device")==0) db.execSQL(insert_sql);
@@ -288,6 +202,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             td.setDeviceCode(c.getString(c.getColumnIndex("device_code")));
             td.setStatus(c.getInt(c.getColumnIndex("status")));
             td.setDevice_id(c.getInt(c.getColumnIndex("device_id")));
+            td.setNetwork_path(c.getString(c.getColumnIndex("network_path")));
+            td.setBalance(c.getInt(c.getColumnIndex("balance")));
             c.close();
         }
         return td;
@@ -301,7 +217,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String update_sql = "Update device " +
                 "SET device_code ='"+dDevice.getDeviceCode()+"', " +
                 "status = "+dDevice.getStatus() +", "+
-                "balance = "+ dDevice.getBalance() +" "+
+                "balance = "+ dDevice.getBalance() +", "+
+                "network_path = "+dDevice.getNetwork_path() +" "+
                 "WHERE device_id = " +dDevice.getDevice_id();
         try {
             db.execSQL(update_sql);
@@ -368,9 +285,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor c = dbr.rawQuery(selectQuery, null);
         d_game td = null;
 
-        if (c != null){
-            c.moveToFirst();
-
+        if (c != null&&c.moveToFirst()){
             td = new d_game();
             td.setId(c.getInt(c.getColumnIndex("id")));
             td.setWin_ball((c.getInt(c.getColumnIndex("win_ball"))));
@@ -378,7 +293,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             td.setDevice_id(c.getInt(c.getColumnIndex("device_id")));
             c.close();
         }
-
         return td;
     }
 
@@ -417,7 +331,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
-        if (c.moveToFirst()) {
+        if (c!=null && c.moveToFirst()) {
             do {
                 d_game td = new d_game();
                 td.setId(c.getInt(c.getColumnIndex("id")));
@@ -429,8 +343,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 d_games.add(td);
             } while (c.moveToNext());
+            c.close();
         }
-        c.close();
         return d_games;
     }
 
@@ -483,23 +397,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public boolean createNewEntrySet(d_entry_set dEntrySet) {
         boolean bReturn;
-        String insert_sql = "INSERT INTO entry_set (chip_number,entry_value,entry_id,divided_by,x,y)\n" +
+        String insert_sql = "INSERT INTO entry_set (chip_number,entry_value,entry_id,divided_by,x,y,game_id, sum)\n" +
                 "VALUES ("+ Integer.toString(dEntrySet.getChip_number()) + ","
                 + dEntrySet.getEntry_value() + ","
                 + dEntrySet.getEntry_id() + ","
                 + dEntrySet.getDivided_by() + ","+
                 + dEntrySet.getX() + ","+
-                + dEntrySet.getY() + ")";
+                + dEntrySet.getY() + ","+
+                + dEntrySet.getGame_id()+","+
+                + dEntrySet.getSum()+ ")";
         try {
 
             db.execSQL(insert_sql);
-
-            //Добавляем лог к игре
-            d_log dLog = new d_log();
-            dLog.setGame_id(this.getActiveGame().getId());
-            dLog.setLog_id(this.getLastEntrySet().getLog_id());
-            this.createNewLog(dLog);
-
             bReturn = true;
         }
         catch (Exception ex){
@@ -525,6 +434,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             td.setDivided_by(c.getInt(c.getColumnIndex("divided_by")));
             td.setX(c.getInt(c.getColumnIndex("x")));
             td.setY(c.getInt(c.getColumnIndex("y")));
+            td.setGame_id(c.getInt(c.getColumnIndex("game_id")));
+            td.setSum(c.getInt(c.getColumnIndex("sum")));
             c.close();
         }
         return td;
@@ -536,8 +447,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(selectQuery, null);
         d_entry_set td =null;
 
-        if (c != null){
-                c.moveToFirst();
+        if (c != null&&c.moveToFirst()){
 
             td = new d_entry_set();
             td.setLog_id(c.getInt(c.getColumnIndex("log_id")));
@@ -547,6 +457,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             td.setDivided_by(c.getInt(c.getColumnIndex("divided_by")));
             td.setX(c.getInt(c.getColumnIndex("x")));
             td.setY(c.getInt(c.getColumnIndex("y")));
+            td.setGame_id(c.getInt(c.getColumnIndex("game_id")));
+            td.setSum(c.getInt(c.getColumnIndex("sum")));
             c.close();
         }
         return td;
@@ -558,25 +470,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<d_entry_set> getAllEntrySet() {
         List<d_entry_set> d_entry_set = new ArrayList<>();
         String selectQuery = "SELECT  * FROM entry_set";
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
+        Cursor c = dbr.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
-        if (c.moveToFirst()) {
+        if (c!=null && c.moveToFirst()) {
             do {
                 kz.regto.database.d_entry_set td = new d_entry_set();
+
                 td.setLog_id(c.getInt(c.getColumnIndex("log_id")));
                 td.setChip_number((c.getInt(c.getColumnIndex("chip_number"))));
                 td.setEntry_value(c.getInt(c.getColumnIndex("entry_value")));
                 td.setEntry_id(c.getInt(c.getColumnIndex("entry_id")));
                 td.setDivided_by(c.getInt(c.getColumnIndex("divided_by")));
+                td.setX(c.getInt(c.getColumnIndex("x")));
+                td.setY(c.getInt(c.getColumnIndex("y")));
+                td.setGame_id(c.getInt(c.getColumnIndex("game_id")));
+                td.setSum(c.getInt(c.getColumnIndex("sum")));
 
                 d_entry_set.add(td);
             } while (c.moveToNext());
             c.close();
         }
-
         return d_entry_set;
     }
 
@@ -593,9 +507,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "divided_by ="+dEntrySet.getDivided_by()+"\n"+
                 "x ="+dEntrySet.getX()+"\n"+
                 "y="+dEntrySet.getY()+"\n"+
+                "game_id="+dEntrySet.getGame_id()+"\n"+
+                "sum="+dEntrySet.getSum()+"\n"+
                 "WHERE log_id=" +dEntrySet.getLog_id();
         try{
-            //SQLiteDatabase db = this.getWritableDatabase();
             db.execSQL(update_sql);
             bReturn = true;
         }
@@ -605,6 +520,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return bReturn;
     }
 
+    public int getCurrentGameSum(int game_id) {
+        int iReturn=-1;
+        String group_sum_sql = "SELECT SUM(sum) as cur_sum  FROM entry_set WHERE game_id=" + game_id+" GROUP BY game_id";
+        try{
+            Cursor c = dbr.rawQuery(group_sum_sql, null);
+            if (c!=null && c.moveToFirst()){
+                iReturn = c.getInt(c.getColumnIndex("cur_sum"));
+                c.close();
+            }
+
+        }
+        catch (Exception ex){
+            iReturn = -1;
+        }
+        return iReturn;
+    }
+
     /**
      * Deleting a EntrySet
      */
@@ -612,9 +544,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         boolean bReturn;
         String delete_sql = "DELETE FROM entry_set \n"+
                 "WHERE log_id=" + log_id;
-        //SQLiteDatabase db = this.getWritableDatabase();
         try {
-            this.deleteLogByLog_id(log_id);
+            db.execSQL(delete_sql);
+            bReturn = true;
+        }
+        catch (Exception ex){
+            bReturn=false;
+        }
+        return bReturn;
+    }
+
+    /**
+     * Deleting a EntrySet by game_id
+     */
+    public boolean deleteEntrySetByGameID(int game_id) {
+        boolean bReturn;
+        String delete_sql = "DELETE FROM entry_set \n"+
+                "WHERE game_id=" + game_id;
+        try {
             db.execSQL(delete_sql);
             bReturn = true;
         }
@@ -631,14 +578,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public int getSQLQueryCount(String countQuery) {
         int count=0;
         if (countQuery.length()>0){
-            //SQLiteDatabase db = this.getReadableDatabase();
             try {
                 Cursor cursor = db.rawQuery(countQuery, null);
                 count = cursor.getCount();
                 cursor.close();
             }
             catch (Exception ex){
-                count = 0;
+                count = -1;
             }
         }
         // return count
@@ -651,7 +597,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         boolean bReturn=false;
         if (sql_query.length()>0 ){
            try{
-                //SQLiteDatabase db = this.getWritableDatabase();
                 db.execSQL(sql_query);
                 bReturn = true;}
            catch (Exception ex){

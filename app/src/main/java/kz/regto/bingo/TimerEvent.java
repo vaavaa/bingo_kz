@@ -5,5 +5,5 @@ package kz.regto.bingo;
  */
 public interface TimerEvent {
     void TimerStarted(TimerRelative tr);
-    void TimerOver();
+    void TimerOver(TimerRelative tr);
 }

@@ -1,43 +1,31 @@
 package kz.regto.bingo;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by spt on 03.11.2015.
- */
 public class TimerRelative extends RelativeLayout {
-    private TextView timerValue;
-    private long startTime = 0L;
+
 
     private long secCounter = 30000;
     private boolean bTimer= false;
-
-    private SupportTimer sp=new SupportTimer();
-
-
     private final String SER_CODE_LETTER="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private int SER_CODE_INT=1;
 
     private final String URL_number = "http://192.168.1.3/json/index.php";
     private final String URL_timer = "http://192.168.1.3/json/timer.php";
 
+    private long startTime = 0L;
+    private TextView timerValue;
+    private TextView WinNumber;
+    private SupportTimer sp=new SupportTimer();
     private Handler customHandler = new Handler();
-    private Animation anim = new AlphaAnimation(0.0f, 1.0f);
 
-
-    private long timeInMilliseconds = 0L;
-    private long timeSwapBuff = 0L;
-    private long updatedTime = 0L;
 
     private TimerRelative tr;
 
@@ -46,13 +34,11 @@ public class TimerRelative extends RelativeLayout {
 
     public TimerRelative(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        initAttrs(context, attrs);
         initView(context);
     }
 
     public TimerRelative(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initAttrs(context, attrs);
         initView(context);
     }
 
@@ -72,37 +58,41 @@ public class TimerRelative extends RelativeLayout {
 
         View view = inflate(getContext(), R.layout.timer_relative, null);
         timerValue = (TextView) view.findViewById(R.id.timerValue);
+        WinNumber = (TextView) view.findViewById(R.id.WinNumber);
 
-        anim.setDuration(350); //You can manage the blinking time with this parameter
-        anim.setStartOffset(20);
-        anim.setRepeatMode(Animation.REVERSE);
-        anim.setRepeatCount(Animation.INFINITE);
         this.addListener((Main) context);
-
         tr=this;
 
-
-        StartTimer();
         addView(view);
-
-
-
     }
 
     public void StartTimer(){
         if (!bTimer){
             startTime = sp.GetCurrentTime();
-        //startTime = SystemClock.uptimeMillis();
+
+        //Сменили видимость выйгравшего номера и таймера
+        TimerVisibility(true);
+
         customHandler.postDelayed(updateTimerThread, 0);
         for (TimerEvent hl : listeners) hl.TimerStarted(tr);
             bTimer=true;
         }
     }
+    public void StopTimer(){
+        bTimer=false;
+        //Сменили видимость выйгравшего номера и таймера
+        TimerVisibility(false);
+        for (TimerEvent hl : listeners) hl.TimerOver(tr);
+        customHandler.removeCallbacks(updateTimerThread);
+    }
 
-    public int WinningNumber(){
+    public String WinningNumber(){
         //Get win ball
+        String sReturn;
         int wn =sp.GetWinBall();
-        return wn;
+        if (wn<9) sReturn = "0".concat(Integer.toString(wn));
+        else sReturn = Integer.toString(wn);
+        return sReturn;
     }
 
 
@@ -134,49 +124,35 @@ public class TimerRelative extends RelativeLayout {
         return ReturnValue;
     }
 
-    public void initAttrs(Context context, AttributeSet attrs) {
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.TimerRelative, 0, 0);
-
-        try {
-//            label = a.getString(R.styleable.TwoTextViews_label_text);
-//            field = a.getString(R.styleable.TwoTextViews_field_text);
-//            size_text = a.getDimensionPixelSize(R.styleable.TwoTextViews_size_text, 0);
-//            color_text=a.getColor(R.styleable.TwoTextViews_color_text, 0);
-
-        } finally {
-            a.recycle();
-        }
-    }
     //Принимаем подписчиков на события таймера
-    public void addListener(TimerEvent toAdd) { listeners.add(toAdd); }
+    public void addListener(TimerEvent toAdd) { listeners.add(toAdd);}
+
+    private void TimerVisibility(boolean bTimer){
+        if (bTimer) {
+            WinNumber.setVisibility(View.INVISIBLE);
+            timerValue.setVisibility(View.VISIBLE);
+        }
+        else{
+            WinNumber.setVisibility(View.VISIBLE);
+            timerValue.setVisibility(View.INVISIBLE);
+        }
+
+    }
 
     private Runnable updateTimerThread = new Runnable() {
 
         public void run() {
 
-
-
-            //timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
-            timeInMilliseconds = sp.GetCurrentTime()- startTime;
-
-            updatedTime = timeSwapBuff + timeInMilliseconds;
+            long updatedTime = sp.GetCurrentTime() - startTime;
             int secs = 0;
             int mins = 0;
 
-            if ((updatedTime) >= secCounter) {
-                secs = 0;
-                mins = 0;
-                bTimer=false;
-                timerValue.setText(Integer.toString(mins).concat(":").concat(String.format("%02d", secs)));
-                for (TimerEvent hl : listeners) hl.TimerOver();
-                customHandler.removeCallbacks(updateTimerThread);
-
-
-            } else {
+            if ((updatedTime) >= secCounter) StopTimer();
+            else {
                 secs = (int) ((secCounter - updatedTime) / 1000);
                 mins = secs / 60;
                 secs = secs % 60;
-                timerValue.setText(Integer.toString(mins).concat(":").concat(String.format("%02d", secs)));
+                timerValue.setText(String.format("%02d", mins).concat(":").concat(String.format("%02d", secs)));
                 customHandler.postDelayed(this, 0);
             }
 

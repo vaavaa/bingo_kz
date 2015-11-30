@@ -11,9 +11,27 @@ public class d_entry_set {
     private int divided_by;
     private int x;
     private int y;
+    private int game_id;
+    private int sum;
+
+    public void setSum(int sum) {
+        this.sum = sum;
+    }
+
+    public int getSum() {
+        return sum;
+    }
 
     public int getX() {
         return x;
+    }
+
+    public void setGame_id(int game_id) {
+        this.game_id = game_id;
+    }
+
+    public int getGame_id() {
+        return game_id;
     }
 
     public void setX(int x) {

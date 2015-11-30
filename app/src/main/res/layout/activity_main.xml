@@ -55,29 +55,6 @@
             cl:layout_top="19"/>
 
         <!-- Конец второй строки -->
-
-
-        <TextView android:id="@+id/WinNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="85dp"
-            android:textColor="#000000"
-            android:text="@string/timerVal"
-            android:visibility="gone"
-            cl:layout_cellsHeight="20"
-            cl:layout_cellsWidth="20"
-            cl:layout_left="163"
-            cl:layout_top="14"/>
-        <kz.regto.bingo.TimerRelative
-            android:id="@+id/gameTimer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            cl:layout_cellsHeight="10"
-            cl:layout_cellsWidth="20"
-            cl:layout_left="165"
-            cl:layout_top="18"/>
-
         <kz.regto.bingo.WinBallContainer
             android:id="@+id/win_ball_container"
             android:layout_width="wrap_content"
@@ -86,17 +63,14 @@
             cl:layout_cellsWidth="90"
             cl:layout_left="20"
             cl:layout_top="30"/>
-
-        <ImageView
-            android:id="@+id/glass"
-            android:src="@drawable/glass_label"
+        <kz.regto.bingo.TimerRelative
+            android:id="@+id/gameTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             cl:layout_cellsHeight="30"
             cl:layout_cellsWidth="80"
             cl:layout_left="110"
-            cl:layout_top="10"
-            android:onClick="StartNextTimer"/>
+            cl:layout_top="10"/>
         <!-- Начало поля -->
 
         <kz.regto.bingo.MainContainer
@@ -247,6 +221,15 @@
             cl:layout_top="105"
             android:onClick="stepBack"/>
         <!-- Нижние кнопки конец -->
+        <!-- Locker -->
+        <kz.regto.bingo.Lock android:id="@+id/r_lock"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            cl:layout_cellsHeight="112"
+            cl:layout_cellsWidth="194"
+            cl:layout_left="3"
+            cl:layout_top="4"/>
+
     </kz.regto.bingo.CellLayout>
 
 </FrameLayout>
