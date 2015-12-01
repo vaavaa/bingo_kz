@@ -119,6 +119,14 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     public void PinCheck(View v){
         screen_lock_starting_procedure();
     }
+
+    //0) Проверяем статус устройства, если активировано, то просто разблокируем, если нет
+    //1) Просим линк из объекта устройства
+    //2) Если линк есть, стучимся для проверки пин кода
+    //3) Линк не работает, просим ввести линк, не работает сеть, просим дать нам сеть
+    //4) Пин совпал, запросили баланс, если больше нуля, разблокировали и записали баланс в переменную устройства, запустили таймер.
+    //5) Пин не совпал - сообщили что не совпал
+    //6) Баланс равен 0 - сообщили
     public void screen_lock_starting_procedure (){
         if (BingoDevice.getStatus()!=1){
             Network ntw = new Network();
@@ -134,19 +142,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                 PinCode pinCode =  Jprs.tPinCode(url);
                 if (pinCode!=null)
                     if  (iPinCode ==pinCode.getPinCode()) {
-                        url = BingoDevice.getNetwork_path().concat("/balance.php");
-                        Balance balance = Jprs.tBalance(url);
-                        if (balance!=null) {
-                            if (balance.getBalance()>0) {
-                                BingoDevice.setBalance(balance.getBalance());
-                                screen_lock(false);
-                                TimerStarted((TimerRelative)findViewById(R.id.gameTimer));
-                            }
-                        }
-                        else {
-                            Toast toast = Toast.makeText(this,"Balance is not correct",Toast.LENGTH_SHORT);
-                            toast.show();
-                        }
+                          screen_lock(false);
+                          TimerStarted((TimerRelative)findViewById(R.id.gameTimer));
                     }
                     else{
                         Toast toast = Toast.makeText(this,"PIN is not correct",Toast.LENGTH_SHORT);
@@ -164,18 +161,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                 toast.show();
             }
         }
-        //
-        //1) Просим линк из объекта
-        //2) Если линк есть, стучимся для проверки пин кода
-        //3) Линк не работает, просим ввести линк, не работает сеть, просим дать нам сеть
-        //4) Пин совпал, запросили баланс, если больше нуля, разблокировали и записали баланс в переменную устройства, запустили таймер.
-        //5) Пин не совпал - сообщили что не совпал
-        //6) Баланс равен 0 - сообщили
 
-        screen_lock(true);
-
-
-    }
     public void screen_lock(boolean bSkrn){
         Runnable mRunnable;
         Handler mHandler=new Handler();
@@ -239,6 +225,21 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
     @Override
     public void TimerStarted(TimerRelative tR){
+        String url = BingoDevice.getNetwork_path().concat("/balance.php");
+        JSONParser Jprs = new JSONParser();
+        Balance balance = Jprs.tBalance(url);
+        if (balance!=null) {
+            if (balance.getBalance()>0){
+                BingoDevice.setBalance(balance.getBalance());
+                //Прописать в баланс текстовое поле
+            }
+            else {
+                Toast toast = Toast.makeText(this,"Balance is not correct",Toast.LENGTH_SHORT);
+                toast.show();
+                screen_lock(true);
+            }
+
+            }
         if (WN!=null) WN.setVisibility(View.GONE);
         if (board!=null) board.setBoard_blocked(false);
         if (win!=null) win.setField("0");
