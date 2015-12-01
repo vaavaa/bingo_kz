@@ -17,7 +17,9 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.LinkedList;
 
@@ -25,6 +27,7 @@ import kz.regto.database.DatabaseHelper;
 import kz.regto.database.Utils;
 import kz.regto.database.d_device;
 import kz.regto.database.d_game;
+import kz.regto.json.Balance;
 import kz.regto.json.Network;
 import kz.regto.json.JSONParser;
 import kz.regto.json.PinCode;
@@ -113,16 +116,64 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             findViewById(R.id.auto).setVisibility(View.VISIBLE);
         }
     }
+    public void PinCheck(View v){
+        screen_lock_starting_procedure();
+    }
     public void screen_lock_starting_procedure (){
+        if (BingoDevice.getStatus()!=1){
+            Network ntw = new Network();
+            JSONParser Jprs = new JSONParser();
+            if (ntw.isNetworkAvailable(this)){
+                if(BingoDevice.getNetwork_path().length()==0){
+                    EditText ET1 =  (EditText)findViewById(R.id.n_path);
+                    if ((ET1.getText().toString().length()>0)) BingoDevice.setNetwork_path(ET1.getText().toString());
+                }
+                EditText ET =  (EditText)findViewById(R.id.pin);
+                int iPinCode = Integer.parseInt(ET.getText().toString());
+                String url = BingoDevice.getNetwork_path().concat("/pincode.php");
+                PinCode pinCode =  Jprs.tPinCode(url);
+                if (pinCode!=null)
+                    if  (iPinCode ==pinCode.getPinCode()) {
+                        url = BingoDevice.getNetwork_path().concat("/balance.php");
+                        Balance balance = Jprs.tBalance(url);
+                        if (balance!=null) {
+                            if (balance.getBalance()>0) {
+                                BingoDevice.setBalance(balance.getBalance());
+                                screen_lock(false);
+                                TimerStarted((TimerRelative)findViewById(R.id.gameTimer));
+                            }
+                        }
+                        else {
+                            Toast toast = Toast.makeText(this,"Balance is not correct",Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    }
+                    else{
+                        Toast toast = Toast.makeText(this,"PIN is not correct",Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                else {
+                      Toast toast = Toast.makeText(this,"Server is not reachable, path could be wrong",Toast.LENGTH_SHORT);
+                      toast.show();
+                    }
+
+
+            }
+            else {
+                Toast toast = Toast.makeText(this, "Network is down, pls. check internet connection", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+        //
         //1) Просим линк из объекта
         //2) Если линк есть, стучимся для проверки пин кода
         //3) Линк не работает, просим ввести линк, не работает сеть, просим дать нам сеть
-        //4) Пин совпал, запросили баланс, если больше нуля, разблокировали
+        //4) Пин совпал, запросили баланс, если больше нуля, разблокировали и записали баланс в переменную устройства, запустили таймер.
         //5) Пин не совпал - сообщили что не совпал
         //6) Баланс равен 0 - сообщили
 
         screen_lock(true);
-        screen_lock(false);
+
 
     }
     public void screen_lock(boolean bSkrn){

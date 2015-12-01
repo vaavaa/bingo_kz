@@ -86,21 +86,24 @@ public class JSONParser {
     public CurrentTime getTimer(String url) {
         CurrentTime rMsg=null;
         String data = getJSON(url, 1000);
-        if (data!=null){
-            CurrentTime msg = new Gson().fromJson(data, CurrentTime.class);
-            rMsg = msg;
-        };
+        if (data!=null)
+            rMsg = new Gson().fromJson(data, CurrentTime.class);
+
         return rMsg;
     }
-    public PinCode getPinCode(String url) {
+    public PinCode tPinCode(String url) {
         PinCode rMsg=null;
         String data = getJSON(url, 1000);
-        if (data!=null){
-            PinCode msg = new Gson().fromJson(data, PinCode.class);
-            rMsg = msg;
-        };
+        if (data!=null)
+            rMsg = new Gson().fromJson(data, PinCode.class);
         return rMsg;
     }
-
+    public Balance tBalance(String url) {
+        Balance rMsg=null;
+        String data = getJSON(url, 1000);
+        if (data!=null)
+            rMsg = new Gson().fromJson(data, Balance.class);
+        return rMsg;
+    }
 
 }
