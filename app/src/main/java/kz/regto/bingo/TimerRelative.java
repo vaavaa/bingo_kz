@@ -3,6 +3,7 @@ package kz.regto.bingo;
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -70,13 +71,14 @@ public class TimerRelative extends RelativeLayout {
         if (!bTimer){
             startTime = sp.GetCurrentTime();
             secCounter =sp.GetFinalTime()-startTime;
+            Log.v("1",Long.toString(secCounter));
 
         //Сменили видимость выйгравшего номера и таймера
         TimerVisibility(true);
 
         customHandler.postDelayed(updateTimerThread, 0);
-        for (TimerEvent hl : listeners) hl.TimerStarted();
-            bTimer=true;
+        //for (TimerEvent hl : listeners) hl.TimerStarted();
+        bTimer=true;
         }
     }
     public void StopTimer(){
@@ -130,12 +132,12 @@ public class TimerRelative extends RelativeLayout {
 
     private void TimerVisibility(boolean bTimer){
         if (bTimer) {
-            WinNumber.setVisibility(View.INVISIBLE);
+            WinNumber.setVisibility(View.GONE);
             timerValue.setVisibility(View.VISIBLE);
         }
         else{
             WinNumber.setVisibility(View.VISIBLE);
-            timerValue.setVisibility(View.INVISIBLE);
+            timerValue.setVisibility(View.GONE);
         }
 
     }

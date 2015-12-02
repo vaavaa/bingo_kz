@@ -41,7 +41,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     MainContainer mc;
     TextView GameCode;
     String sGameCode="AA-0001";
-    TimerRelative tR;
     TextView WN;
     int gWinNumber;
     BoardGrid board;
@@ -100,6 +99,37 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         setButtonsVisible(false);
 
     }
+    public void setButtonsUnclickable(boolean bEnable){
+        findViewById(R.id.card_step_back).setEnabled(!bEnable);
+        findViewById(R.id.make_crd_null).setEnabled(!bEnable);
+        findViewById(R.id.entry1000).setEnabled(!bEnable);
+        findViewById(R.id.entry500).setEnabled(!bEnable);
+        findViewById(R.id.entry200).setEnabled(!bEnable);
+        findViewById(R.id.entry100).setEnabled(!bEnable);
+        findViewById(R.id.x2).setEnabled(!bEnable);
+        findViewById(R.id.auto).setEnabled(!bEnable);
+        if (bEnable) {
+            findViewById(R.id.card_step_back).setAlpha(.5f);
+            findViewById(R.id.make_crd_null).setAlpha(.5f);
+            findViewById(R.id.entry1000).setAlpha(.5f);
+            findViewById(R.id.entry500).setAlpha(.5f);
+            findViewById(R.id.entry200).setAlpha(.5f);
+            findViewById(R.id.entry100).setAlpha(.5f);
+            findViewById(R.id.x2).setAlpha(.5f);
+            findViewById(R.id.auto).setAlpha(.5f);
+        }
+        else {
+            findViewById(R.id.card_step_back).setAlpha(1f);
+            findViewById(R.id.make_crd_null).setAlpha(1f);
+            findViewById(R.id.entry1000).setAlpha(1f);
+            findViewById(R.id.entry500).setAlpha(1f);
+            findViewById(R.id.entry200).setAlpha(1f);
+            findViewById(R.id.entry100).setAlpha(1f);
+            findViewById(R.id.x2).setAlpha(1f);
+            findViewById(R.id.auto).setAlpha(1f);
+        }
+    }
+
     public void setButtonsVisible(boolean bVisible){
         if (!bVisible) {
             findViewById(R.id.card_step_back).setVisibility(View.INVISIBLE);
@@ -110,6 +140,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             findViewById(R.id.entry100).setVisibility(View.INVISIBLE);
             findViewById(R.id.x2).setVisibility(View.INVISIBLE);
             findViewById(R.id.auto).setVisibility(View.INVISIBLE);
+
         }
         else {
             findViewById(R.id.card_step_back).setVisibility(View.VISIBLE);
@@ -246,8 +277,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
     @Override
     public void TimerOver(){
+        setButtonsUnclickable(true);
         board.setBoard_blocked(true);
-        gWinNumber = Integer.parseInt(tR.WinningNumber());
+        gWinNumber = Integer.parseInt(timerRelative.WinningNumber());
         win.setField(Integer.toString(Integer.parseInt(win.getField()) + GameResultCalculation()));
         clearBoard();
     }
@@ -266,7 +298,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                 Balance.setField(Integer.toString(balance.getBalance()));
 
                 String nCode;
-                nCode=tR.GenerateNewGameCode(sGameCode);
+                nCode=timerRelative.GenerateNewGameCode(sGameCode);
 
                 if (GameCode!=null){
 
@@ -346,9 +378,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         }
     }
 
-    public void StartNextTimer(View v){
-        tR.StartTimer();
-    }
+    public void StartNextTimer(View v){TimerStarted();}
 
     public int getEntryfromLevel(int lvl){
         int iEntry=0;
