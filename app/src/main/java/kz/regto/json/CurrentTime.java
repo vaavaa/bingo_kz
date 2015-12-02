@@ -6,6 +6,7 @@ package kz.regto.json;
 public class CurrentTime {
     private long currenttime;
     private int winnumber;
+    private long finalCounter;
 
     public long getCurrenttime() {
         return currenttime;
@@ -23,4 +24,10 @@ public class CurrentTime {
         this.winnumber = winnumber;
     }
 
+    public long getFinalCounter() {
+        return finalCounter;
+    }
+    public void setFinalCounter(long finalCounter) {
+        this.finalCounter = finalCounter;
+    }
 }

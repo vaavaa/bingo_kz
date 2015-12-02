@@ -8,7 +8,7 @@ public class d_device {
     private String DeviceCode;
     private int status;
     private int balance;
-    private String network_path;
+    private String network_path="";
 
     public String getNetwork_path() {
         return network_path;

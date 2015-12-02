@@ -1,5 +1,6 @@
 package kz.regto.bingo;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -16,8 +17,10 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +47,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     BoardGrid board;
     TwoTextViews win;
     Lock lck;
+    FrameLayout frameLayout;
     public d_device BingoDevice;
+    TimerRelative timerRelative;
 
 
 
@@ -70,13 +75,14 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         db.openDB();
 
         BingoDevice = db.getDevice();
-
         if (BingoDevice==null){
             //Создаем устройство
-            d_device dDevice = new d_device();
-            dDevice.setDeviceCode(new Utils().getUniquePsuedoID());
-            db.createNewDevice(dDevice);
+            BingoDevice = new d_device();
+            BingoDevice.setDeviceCode(new Utils().getUniquePsuedoID());
+            db.createNewDevice(BingoDevice);
         }
+        //Get Timer class
+        timerRelative = (TimerRelative)findViewById(R.id.gameTimer);
 
         //Ставка в 100
         findViewById(R.id.entry100).setSelected(true);
@@ -116,8 +122,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             findViewById(R.id.auto).setVisibility(View.VISIBLE);
         }
     }
-    public void PinCheck(View v){
-        screen_lock_starting_procedure();
+
+    public void setLockerElement(FrameLayout FL){
+        frameLayout = FL;
     }
 
     //0) Проверяем статус устройства, если активировано, то просто разблокируем, если нет
@@ -127,40 +134,62 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     //4) Пин совпал, запросили баланс, если больше нуля, разблокировали и записали баланс в переменную устройства, запустили таймер.
     //5) Пин не совпал - сообщили что не совпал
     //6) Баланс равен 0 - сообщили
-    public void screen_lock_starting_procedure (){
-        if (BingoDevice.getStatus()!=1){
+    public void screen_lock_starting_procedure () {
+        //hide keyboard
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+        if (BingoDevice.getStatus() != 1) {
             Network ntw = new Network();
             JSONParser Jprs = new JSONParser();
-            if (ntw.isNetworkAvailable(this)){
-                if(BingoDevice.getNetwork_path().length()==0){
-                    EditText ET1 =  (EditText)findViewById(R.id.n_path);
-                    if ((ET1.getText().toString().length()>0)) BingoDevice.setNetwork_path(ET1.getText().toString());
-                }
-                EditText ET =  (EditText)findViewById(R.id.pin);
-                int iPinCode = Integer.parseInt(ET.getText().toString());
-                String url = BingoDevice.getNetwork_path().concat("/pincode.php");
-                PinCode pinCode =  Jprs.tPinCode(url);
-                if (pinCode!=null)
-                    if  (iPinCode ==pinCode.getPinCode()) {
-                          screen_lock(false);
-                          TimerStarted((TimerRelative)findViewById(R.id.gameTimer));
+            if (ntw.isNetworkAvailable(this)) {
+                EditText ET1 = (EditText) frameLayout.findViewById(R.id.n_path);
+                if (ET1.getText().toString().length() > 0)
+                        BingoDevice.setNetwork_path(ET1.getText().toString());
+
+                if (BingoDevice.getNetwork_path().length()!= 0){
+                    ET1.setText(BingoDevice.getNetwork_path());
+                    final EditText ET = (EditText) frameLayout.findViewById(R.id.pin);
+                    if (ET.getText().toString().length()>0) {
+                        int iPinCode = Integer.parseInt(ET.getText().toString());
+                        String url = BingoDevice.getNetwork_path().concat("/pincode.php");
+                        PinCode pinCode = Jprs.tPinCode(url);
+                        if (pinCode != null) {
+                            if (iPinCode == pinCode.getPinCode()) {
+                                db.updateDevice(BingoDevice);
+                                screen_lock(false);
+                                TimerStarted_sub();
+                            } else {
+                                Toast toast = Toast.makeText(this, "PIN is not correct", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                        } else {
+                            Toast toast = Toast.makeText(this, "Server is not reachable, path could be wrong", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
                     }
-                    else{
-                        Toast toast = Toast.makeText(this,"PIN is not correct",Toast.LENGTH_SHORT);
+                    else {
+                        Toast toast = Toast.makeText(this, "PIN is not correct", Toast.LENGTH_SHORT);
                         toast.show();
                     }
+                }
                 else {
-                      Toast toast = Toast.makeText(this,"Server is not reachable, path could be wrong",Toast.LENGTH_SHORT);
-                      toast.show();
-                    }
-
-
-            }
-            else {
+                    Toast toast = Toast.makeText(this, "Server is not reachable, path could be wrong", Toast.LENGTH_SHORT);
+                    toast.show();
+                    ET1.setFocusable(true);
+                }
+            } else {
                 Toast toast = Toast.makeText(this, "Network is down, pls. check internet connection", Toast.LENGTH_SHORT);
                 toast.show();
             }
         }
+        else {
+            screen_lock(false);
+            TimerStarted();
+        }
+    }
 
     public void screen_lock(boolean bSkrn){
         Runnable mRunnable;
@@ -216,67 +245,78 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     }
 
     @Override
-    public void TimerOver(TimerRelative tR){
+    public void TimerOver(){
         board.setBoard_blocked(true);
         gWinNumber = Integer.parseInt(tR.WinningNumber());
         win.setField(Integer.toString(Integer.parseInt(win.getField()) + GameResultCalculation()));
         clearBoard();
     }
 
-    @Override
-    public void TimerStarted(TimerRelative tR){
+    private void TimerStarted_sub(){
         String url = BingoDevice.getNetwork_path().concat("/balance.php");
         JSONParser Jprs = new JSONParser();
         Balance balance = Jprs.tBalance(url);
         if (balance!=null) {
             if (balance.getBalance()>0){
                 BingoDevice.setBalance(balance.getBalance());
+                BingoDevice.setStatus(1);
                 //Прописать в баланс текстовое поле
+                db.updateDevice(BingoDevice);
+                TwoTextViews Balance =  (TwoTextViews)findViewById(R.id.balance);
+                Balance.setField(Integer.toString(balance.getBalance()));
+
+                String nCode;
+                nCode=tR.GenerateNewGameCode(sGameCode);
+
+                if (GameCode!=null){
+
+                    GameCode.setText(nCode);
+                    sGameCode=nCode;
+                    Animation rotate_animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+                    rotate_animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            GameCode.setAlpha(1f);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            GameCode.setAlpha(0.1f);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+
+                    GameCode.setAnimation(rotate_animation);
+                    GameCode.animate();
+                }
+                else {
+                    sGameCode=nCode;
+                }
+                timerRelative.StartTimer();
+
             }
             else {
-                Toast toast = Toast.makeText(this,"Balance is not correct",Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(this,"The balance is 0",Toast.LENGTH_SHORT);
                 toast.show();
                 screen_lock(true);
             }
 
-            }
-        if (WN!=null) WN.setVisibility(View.GONE);
-        if (board!=null) board.setBoard_blocked(false);
-        if (win!=null) win.setField("0");
-        String nCode;
-
-        nCode=tR.GenerateNewGameCode(sGameCode);
-        //newGameInDatatabase(nCode);
-
-        if (GameCode!=null){
-
-            GameCode.setText(nCode);
-            sGameCode=nCode;
-            Animation rotate_animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-            rotate_animation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                    GameCode.setAlpha(1f);
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    GameCode.setAlpha(0.1f);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-
-            GameCode.setAnimation(rotate_animation);
-            GameCode.animate();
         }
         else {
-            sGameCode=nCode;
+            Toast toast = Toast.makeText(this,"Balance is not correct",Toast.LENGTH_SHORT);
+            toast.show();
+            screen_lock(true);
         }
 
+    }
+
+    @Override
+    public void TimerStarted(){
+        TimerStarted_sub();
     }
     @Override
     public void entrySet(int entryType){

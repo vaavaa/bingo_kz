@@ -37,7 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "(game_id INTEGER NOT NULL, operation_type INTEGER NOT NULL DEFAULT '0'," +
             " sum INTEGER NOT NULL)";
     private static final String CREATE_TABLE_device = "CREATE TABLE device (device_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-            " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', balance INTEGER NOT NULL DEFAULT '0', network_path VARCHAR(250))";
+            " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', balance INTEGER NOT NULL DEFAULT '0', network_path TEXT DEFAULT '')";
     private static final String CREATE_TABLE_entry_set = "    CREATE TABLE entry_set (\n" +
             "                    log_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
             "                    chip_number INTEGER NOT NULL,\n" +
@@ -178,7 +178,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean createNewDevice(d_device dDevice) {
         boolean bReturn;
         String insert_sql = "insert into device (device_code, status, balance, network_path) " +
-                "VALUES ('"+dDevice.getDeviceCode()+"',"+dDevice.getStatus()+","+dDevice.getBalance()+","+dDevice.getNetwork_path()+")";
+                "VALUES ('"+dDevice.getDeviceCode()+"',"+dDevice.getStatus()+","+dDevice.getBalance()+",'"+dDevice.getNetwork_path()+"')";
         try {
             //Есил там уже есть устройство, нм добавлять не нужно
             if (this.getSQLQueryCount("SELECT * FROM device")==0) db.execSQL(insert_sql);
@@ -218,7 +218,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "SET device_code ='"+dDevice.getDeviceCode()+"', " +
                 "status = "+dDevice.getStatus() +", "+
                 "balance = "+ dDevice.getBalance() +", "+
-                "network_path = "+dDevice.getNetwork_path() +" "+
+                "network_path = '"+dDevice.getNetwork_path() +"' "+
                 "WHERE device_id = " +dDevice.getDevice_id();
         try {
             db.execSQL(update_sql);

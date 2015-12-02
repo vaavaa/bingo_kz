@@ -24,7 +24,7 @@
             cl:color_text="@color/second_line_label"
             cl:size_text="@dimen/s2nd_row"
             cl:label_text="Баланс:"
-            cl:field_text="18000"
+            cl:field_text="0"
             cl:layout_cellsHeight="10"
             cl:layout_cellsWidth="60"
             cl:layout_left="10"

@@ -69,12 +69,13 @@ public class TimerRelative extends RelativeLayout {
     public void StartTimer(){
         if (!bTimer){
             startTime = sp.GetCurrentTime();
+            secCounter =sp.GetFinalTime()-startTime;
 
         //Сменили видимость выйгравшего номера и таймера
         TimerVisibility(true);
 
         customHandler.postDelayed(updateTimerThread, 0);
-        for (TimerEvent hl : listeners) hl.TimerStarted(tr);
+        for (TimerEvent hl : listeners) hl.TimerStarted();
             bTimer=true;
         }
     }
@@ -82,7 +83,7 @@ public class TimerRelative extends RelativeLayout {
         bTimer=false;
         //Сменили видимость выйгравшего номера и таймера
         TimerVisibility(false);
-        for (TimerEvent hl : listeners) hl.TimerOver(tr);
+        for (TimerEvent hl : listeners) hl.TimerOver();
         customHandler.removeCallbacks(updateTimerThread);
     }
 

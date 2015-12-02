@@ -12,14 +12,16 @@ import kz.regto.json.JSONParser;
  */
 public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
 
-    private Long currentTime=0L;
+    private long currentTime=0L;
     private int currentBall=-1;
+    private long FinalTime=0L;
     JSONParser jpr = new JSONParser();
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         currentTime = SystemClock.uptimeMillis();
+        FinalTime = SystemClock.uptimeMillis()+30000;
     }
 
 
@@ -27,13 +29,15 @@ public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
 
         currentTime = progress[0].getCurrenttime();
         currentBall = progress[0].getWinnumber();
+        FinalTime = progress[0].getFinalCounter();
 
     }
 
     protected void onPostExecute(CurrentTime... result) {
         currentTime = result[0].getCurrenttime();
         currentBall = result[0].getWinnumber();
-     }
+        FinalTime = result[0].getFinalCounter();
+    }
 
     //Выполняем бесконечный цикл опроса сервера о текущем таймере
     //Если сервер не откликается возвращаем текущее время системы
@@ -72,6 +76,9 @@ public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
     }
     public int GetWinBall(){
         return currentBall;
+    }
+    public long GetFinalTime(){
+        return FinalTime;
     }
 
 }

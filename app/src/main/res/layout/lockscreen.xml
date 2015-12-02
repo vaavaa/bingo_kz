@@ -22,7 +22,8 @@
         android:layout_margin = "17dp"
         android:maxLength="250"
         android:textSize="@dimen/s2nd_row"
-        android:layout_gravity="left"/>
+        android:layout_gravity="left"
+        android:imeOptions="actionDone" />
     <EditText
         android:id="@+id/pin"
         android:inputType="numberPassword"
@@ -32,15 +33,6 @@
         android:layout_marginTop="17dp"
         android:maxLength="4"
         android:textSize="@dimen/s2nd_row"
-        android:layout_gravity="right"/>
-    <Button
-        android:id="@+id/pin_button"
-        android:background="@drawable/rect_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="17dp"
-        android:text="Ok"
-        android:textSize="@dimen/s2nd_row"
         android:layout_gravity="right"
-        android:onClick="PinCheck"/>
+        android:imeOptions="actionDone"/>
 </FrameLayout>

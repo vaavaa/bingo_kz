@@ -2,15 +2,21 @@ package kz.regto.bingo;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 public class Lock extends FrameLayout {
 
     private float y1,y2;
     static final int MIN_DISTANCE = 150;
+
 
     public Lock(Context context){
         super(context);
@@ -29,8 +35,9 @@ public class Lock extends FrameLayout {
 
     private void init(final Context ct) {
         FrameLayout Relative_Lock = (FrameLayout)inflate(getContext(), R.layout.lockscreen, null);
-        ImageButton ib = (ImageButton) Relative_Lock.findViewById(R.id.ib);
         this.addView(Relative_Lock);
+        Main prnt = (Main)ct;
+        prnt.setLockerElement(Relative_Lock);
     }
     @Override
 
@@ -57,4 +64,5 @@ public class Lock extends FrameLayout {
         }
         return super.onTouchEvent(event) || handled;
     }
+
 }
