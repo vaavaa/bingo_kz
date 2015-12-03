@@ -71,7 +71,6 @@ public class TimerRelative extends RelativeLayout {
         if (!bTimer){
             startTime = sp.GetCurrentTime();
             secCounter =sp.GetFinalTime()-startTime;
-            Log.v("1",Long.toString(secCounter));
 
         //Сменили видимость выйгравшего номера и таймера
         TimerVisibility(true);
@@ -85,6 +84,8 @@ public class TimerRelative extends RelativeLayout {
         bTimer=false;
         //Сменили видимость выйгравшего номера и таймера
         TimerVisibility(false);
+        //Устанавливаем текст в шарик
+
         for (TimerEvent hl : listeners) hl.TimerOver();
         customHandler.removeCallbacks(updateTimerThread);
     }
@@ -100,31 +101,8 @@ public class TimerRelative extends RelativeLayout {
 
 
     public String GenerateNewGameCode(String serial){
-        String ser = serial.substring(0,serial.indexOf("-"));
-        String serCode = serial.substring(serial.indexOf("-")+1,serial.length());
-        String ReturnValue="";
-        serCode=serCode.replaceFirst("0*","");
-        SER_CODE_INT = Integer.parseInt(serCode);
-        int size_of_number;
-        if (SER_CODE_INT>9999) {
-            if (SER_CODE_LETTER.indexOf(ser.substring(1,1))==SER_CODE_LETTER.length()){
-                ser = SER_CODE_LETTER.substring(SER_CODE_LETTER.indexOf(ser.substring(0,1)+1),1);
-                ser=ser.concat(SER_CODE_LETTER.substring(1,1));
-            }
-            else {
-                ser=ser.substring(0,1)
-                        .concat(SER_CODE_LETTER.substring(SER_CODE_LETTER.indexOf(ser.substring(1, 1) + 1), 1));
-            }
-            SER_CODE_INT =1;
-        }
-        else SER_CODE_INT++;
-        serCode=Integer.toString(SER_CODE_INT);
-        size_of_number=4-serCode.length();
-        //Создали цифры
-        for (int i = size_of_number; i > 0; i--) ReturnValue = ReturnValue.concat("0");
-        ReturnValue=ReturnValue.concat(serCode);
-        ReturnValue = ser.concat("-").concat(ReturnValue);
-        return ReturnValue;
+
+        return serial;
     }
 
     //Принимаем подписчиков на события таймера

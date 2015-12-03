@@ -7,6 +7,8 @@ public class CurrentTime {
     private long currenttime;
     private int winnumber;
     private long finalCounter;
+    private String game_code;
+    private int game_id;
 
     public long getCurrenttime() {
         return currenttime;
@@ -29,5 +31,21 @@ public class CurrentTime {
     }
     public void setFinalCounter(long finalCounter) {
         this.finalCounter = finalCounter;
+    }
+
+    public int getGame_id() {
+        return game_id;
+    }
+
+    public void setGame_id(int game_id) {
+        this.game_id = game_id;
+    }
+
+    public String getGame_code() {
+        return game_code;
+    }
+
+    public void setGame_code(String game_code) {
+        this.game_code = game_code;
     }
 }

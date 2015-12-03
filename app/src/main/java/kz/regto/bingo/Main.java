@@ -99,6 +99,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         setButtonsVisible(false);
 
     }
+
     public void setButtonsUnclickable(boolean bEnable){
         findViewById(R.id.card_step_back).setEnabled(!bEnable);
         findViewById(R.id.make_crd_null).setEnabled(!bEnable);
