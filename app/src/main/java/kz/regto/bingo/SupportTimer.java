@@ -15,6 +15,8 @@ public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
     private long currentTime=0L;
     private int currentBall=-1;
     private long FinalTime=0L;
+    private int server_game_id = 0;
+    private String game_code ="";
     JSONParser jpr = new JSONParser();
 
     @Override
@@ -30,6 +32,8 @@ public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
         currentTime = progress[0].getCurrenttime();
         currentBall = progress[0].getWinnumber();
         FinalTime = progress[0].getFinalCounter();
+        server_game_id = progress[0].getGame_id();
+        game_code = progress[0].getGame_code();
 
     }
 
@@ -37,6 +41,8 @@ public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
         currentTime = result[0].getCurrenttime();
         currentBall = result[0].getWinnumber();
         FinalTime = result[0].getFinalCounter();
+        server_game_id = result[0].getGame_id();
+        game_code = result[0].getGame_code();
     }
 
     //Выполняем бесконечный цикл опроса сервера о текущем таймере
@@ -48,24 +54,15 @@ public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
         int iProgress=-1;
 
            do {
-               if (r_URL_timer.length()>0) {
-                   tProgress = jpr.getTimer(r_URL_timer);
+               tProgress = jpr.getTimer(r_URL_timer);
                    if (tProgress!=null){
                        if (tProgress.getCurrenttime() == 0L) tProgress.setCurrenttime(SystemClock.uptimeMillis());
-                       if (tProgress.getWinnumber()==-1) tProgress.setWinnumber((int)(Math.random() * ((36) + 1)));
                    }
                    else {
                        tProgress=new CurrentTime();
                        tProgress.setCurrenttime(SystemClock.uptimeMillis());
                        tProgress.setWinnumber((int) (Math.random() * ((36) + 1)));
                    };
-
-               }
-               else {
-                   tProgress.setCurrenttime(SystemClock.uptimeMillis());
-                   tProgress.setWinnumber((int) (Math.random() * ((36) + 1)));
-               };
-
                publishProgress(tProgress);
            }while (!this.isCancelled());
         return tProgress;
@@ -80,5 +77,12 @@ public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
     public long GetFinalTime(){
         return FinalTime;
     }
+    public String getGameCode(){
+        return game_code;
+    }
+    public int getServer_game_id(){
+        return server_game_id;
+    }
+
 
 }

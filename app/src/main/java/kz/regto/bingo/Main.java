@@ -47,13 +47,14 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     TwoTextViews win;
     Lock lck;
     FrameLayout frameLayout;
-    public d_device BingoDevice;
     TimerRelative timerRelative;
 
 
 
     // Database Helper
     private DatabaseHelper db;
+    public d_device BingoDevice;
+    public d_game dGame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +81,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             BingoDevice.setDeviceCode(new Utils().getUniquePsuedoID());
             db.createNewDevice(BingoDevice);
         }
-        //Get Timer class
-        timerRelative = (TimerRelative)findViewById(R.id.gameTimer);
 
         //Ставка в 100
         findViewById(R.id.entry100).setSelected(true);
@@ -118,6 +117,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             findViewById(R.id.entry100).setAlpha(.5f);
             findViewById(R.id.x2).setAlpha(.5f);
             findViewById(R.id.auto).setAlpha(.5f);
+            board.setAlpha(.5f);
         }
         else {
             findViewById(R.id.card_step_back).setAlpha(1f);
@@ -128,6 +128,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             findViewById(R.id.entry100).setAlpha(1f);
             findViewById(R.id.x2).setAlpha(1f);
             findViewById(R.id.auto).setAlpha(1f);
+            board.setAlpha(1f);
         }
     }
 
@@ -157,6 +158,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
     public void setLockerElement(FrameLayout FL){
         frameLayout = FL;
+    }
+    public void setTimerElement(TimerRelative tr){
+        timerRelative = tr;
     }
 
     //0) Проверяем статус устройства, если активировано, то просто разблокируем, если нет
@@ -191,6 +195,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                         if (pinCode != null) {
                             if (iPinCode == pinCode.getPinCode()) {
                                 db.updateDevice(BingoDevice);
+
+                                timerRelative.HTTPRunTimer(BingoDevice.getNetwork_path().concat("/timer.php"));
                                 screen_lock(false);
                                 TimerStarted_sub();
                             } else {
@@ -216,9 +222,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                 Toast toast = Toast.makeText(this, "Network is down, pls. check internet connection", Toast.LENGTH_SHORT);
                 toast.show();
             }
-        }
-        else {
+        } else {
             screen_lock(false);
+            timerRelative.HTTPRunTimer(BingoDevice.getNetwork_path().concat("/timer.php"));
             TimerStarted();
         }
     }
@@ -278,11 +284,20 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
     @Override
     public void TimerOver(){
+        //Когда таймер кончился, ждем выпавшего шарика
         setButtonsUnclickable(true);
         board.setBoard_blocked(true);
-        gWinNumber = Integer.parseInt(timerRelative.WinningNumber());
+    }
+
+    @Override
+    public void GameOver(){
+        //ОБновили игру
+        db.updateGame(dGame);
+
         win.setField(Integer.toString(Integer.parseInt(win.getField()) + GameResultCalculation()));
         clearBoard();
+        //Запускаем новую игру
+        TimerStarted_sub();
     }
 
     private void TimerStarted_sub(){
@@ -297,12 +312,32 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                 db.updateDevice(BingoDevice);
                 TwoTextViews Balance =  (TwoTextViews)findViewById(R.id.balance);
                 Balance.setField(Integer.toString(balance.getBalance()));
+                //Создаем новую игру
 
-                String nCode;
-                nCode=timerRelative.GenerateNewGameCode(sGameCode);
+                String nCode = timerRelative.getNewGameCode();
+                dGame = new d_game();
+                dGame.setGameCode(nCode);
+                dGame.setServer_game_id(timerRelative.getServerGameCode());
+                if (dGame.getServer_game_id()==0) {
+                    //Если ошибка создания, то бдлокируем экран
+                    Toast toast = Toast.makeText(this, "Ошибка создания игры. Не найден номер игры на сервере.",Toast.LENGTH_SHORT);
+                    toast.show();
+                    screen_lock(true);
+                    return;
+                }
+                dGame.setWin_ball(Integer.parseInt(timerRelative.getWinningNumber()));
+                dGame.setDevice_id(db.getDevice().getDevice_id());
+                dGame.setState(0);
 
+                if (!db.createNewGame(dGame)){
+                    //Если ошибка создания, то бдлокируем экран
+                    Toast toast = Toast.makeText(this, "Ошибка создания игры.",Toast.LENGTH_SHORT);
+                    toast.show();
+                    screen_lock(true);
+                    return;
+                }
+                //Обновляем код на доске
                 if (GameCode!=null){
-
                     GameCode.setText(nCode);
                     sGameCode=nCode;
                     Animation rotate_animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
@@ -314,7 +349,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
-                            GameCode.setAlpha(0.1f);
+                            GameCode.setAlpha(0.4f);
                         }
 
                         @Override
@@ -329,6 +364,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                 else {
                     sGameCode=nCode;
                 }
+                //Запустили таймер
                 timerRelative.StartTimer();
 
             }
@@ -378,8 +414,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             }
         }
     }
-
-    public void StartNextTimer(View v){TimerStarted();}
 
     public int getEntryfromLevel(int lvl){
         int iEntry=0;

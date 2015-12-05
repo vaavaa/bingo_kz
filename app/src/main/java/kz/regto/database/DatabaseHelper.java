@@ -32,7 +32,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "state INTEGER NOT NULL DEFAULT '0' , " +
             "device_id INTEGER NOT NULL DEFAULT '0', " +
             "dtime DATETIME NOT NULL,"+
-            "game_code VARCHAR(10))";
+            "game_code VARCHAR(10),"+
+            "server_game_id INTEGER NOT NULL)";
     private static final String CREATE_TABLE_balance = "CREATE TABLE balance " +
             "(game_id INTEGER NOT NULL, operation_type INTEGER NOT NULL DEFAULT '0'," +
             " sum INTEGER NOT NULL)";
@@ -180,8 +181,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String insert_sql = "insert into device (device_code, status, balance, network_path) " +
                 "VALUES ('"+dDevice.getDeviceCode()+"',"+dDevice.getStatus()+","+dDevice.getBalance()+",'"+dDevice.getNetwork_path()+"')";
         try {
-            //Есил там уже есть устройство, нм добавлять не нужно
-            if (this.getSQLQueryCount("SELECT * FROM device")==0) db.execSQL(insert_sql);
+            //Еcли там уже есть устройство, нам добавлять не нужно
+            if (this.getSQLQueryCount("SELECT * FROM device")==0) {
+                db.execSQL(insert_sql);
+                String sql = "SELECT last_insert_rowid() as lastid";
+                Cursor c = this.runResultedSQL(sql);
+                if (c!=null && c.moveToFirst()){
+                    dDevice.setDevice_id(c.getInt(c.getColumnIndex("lastid")));
+                    c.close();
+                }
+            }
             bReturn = true;}
         catch (Exception ex){
             bReturn = false;
@@ -259,13 +268,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public boolean createNewGame(d_game dGame) {
         boolean bReturn;
-        String insert_sql = "insert into game (win_ball,state,device_id,dtime,game_code) " +
-                "VALUES ("+Integer.toString(dGame.getWin_ball())+","+dGame.getState()+","+dGame.getDevice_id()+",'"+getDateTime()+"','"+dGame.getGameCode()+"')";
+        String insert_sql = "insert into game (win_ball,state,device_id,dtime,game_code, server_game_id) " +
+                "VALUES ("+Integer.toString(dGame.getWin_ball())+","+dGame.getState()+","+dGame.getDevice_id()+",'"+getDateTime()+"','"+dGame.getGameCode()+"',"+dGame.getServer_game_id()+")";
 
         //Если устройство активно мы начинаем новую игру
         if (this.getDevice().getStatus()==1) {
             try {
                if (this.getSQLQueryCount("SELECT game_code FROM game WHERE game_code='"+dGame.getGameCode()+"'")==0)  db.execSQL(insert_sql);
+                String sql = "SELECT last_insert_rowid() as lastid";
+                Cursor c = this.runResultedSQL(sql);
+                if (c!=null && c.moveToFirst()){
+                    dGame.setId(c.getInt(c.getColumnIndex("lastid")));
+                    c.close();
+                }
                 bReturn = true;}
             catch (Exception ex){
                 bReturn = false;
@@ -291,6 +306,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             td.setWin_ball((c.getInt(c.getColumnIndex("win_ball"))));
             td.setState(c.getInt(c.getColumnIndex("state")));
             td.setDevice_id(c.getInt(c.getColumnIndex("device_id")));
+            td.setServer_game_id(c.getInt(c.getColumnIndex("server_game_id")));
+            td.setGameCode(c.getString(c.getColumnIndex("game_code")));
+            td.setDtime(c.getString(c.getColumnIndex("dtime")));
             c.close();
         }
         return td;
@@ -312,6 +330,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             dGames.setWin_ball((c.getInt(c.getColumnIndex("win_ball"))));
             dGames.setState(c.getInt(c.getColumnIndex("state")));
             dGames.setDevice_id(c.getInt(c.getColumnIndex("device_id")));
+            dGames.setServer_game_id(c.getInt(c.getColumnIndex("server_game_id")));
+            dGames.setGameCode(c.getString(c.getColumnIndex("game_code")));
             dGames.setDtime(c.getString(c.getColumnIndex("dtime")));
             c.close();
         }
@@ -338,9 +358,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 td.setWin_ball((c.getInt(c.getColumnIndex("win_ball"))));
                 td.setState(c.getInt(c.getColumnIndex("state")));
                 td.setDevice_id(c.getInt(c.getColumnIndex("device_id")));
+                td.setServer_game_id(c.getInt(c.getColumnIndex("server_game_id")));
+                td.setGameCode(c.getString(c.getColumnIndex("game_code")));
                 td.setDtime(c.getString(c.getColumnIndex("dtime")));
-
-
                 d_games.add(td);
             } while (c.moveToNext());
             c.close();
@@ -359,7 +379,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "SET win_ball ="+dGame.getWin_ball()+",\n" +
                 "state ="+dGame.getState()+",\n" +
                 "device_id = "+dGame.getDevice_id()+",\n" +
-                "dtime = \""+dGame.getDtime()+"\"\n"+
+                "dtime = '"+dGame.getDtime()+"' "+
+                "game_code = '"+dGame.getGameCode()+"' "+
+                "server_game_id = '"+dGame.getServer_game_id()+"' "+
                 "WHERE id=" +dGame.getId();
         try {
             db.execSQL(update_sql);
@@ -379,7 +401,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String delete_sql = "DELETE FROM Game \n"+
                 "WHERE id=" + game_id;
         try {
-            //SQLiteDatabase db = this.getWritableDatabase();
             db.execSQL(delete_sql);
             bReturn = true;
         }

@@ -1,6 +1,7 @@
 package kz.regto.json;
 
 import android.os.StrictMode;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -63,14 +64,9 @@ public class JSONParser {
                             return sb.toString();
                     }
                 }
-                catch (ConnectException ex){
-                    Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
-                }
-
+                catch (ConnectException ex){}
             } catch (MalformedURLException ex) {
-                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             } finally {
                 if (c != null) {
                     try {
@@ -86,9 +82,9 @@ public class JSONParser {
     public CurrentTime getTimer(String url) {
         CurrentTime rMsg=null;
         String data = getJSON(url, 1000);
-        if (data!=null)
+        if (data!=null){
             rMsg = new Gson().fromJson(data, CurrentTime.class);
-
+        }
         return rMsg;
     }
     public PinCode tPinCode(String url) {
@@ -103,6 +99,17 @@ public class JSONParser {
         String data = getJSON(url, 1000);
         if (data!=null)
             rMsg = new Gson().fromJson(data, Balance.class);
+        return rMsg;
+    }
+
+    public CurrentTime getGameResult(String url) {
+        CurrentTime rMsg=null;
+        Log.v("1", url);
+        String data = getJSON(url, 1000);
+        if (data!=null){
+            rMsg = new Gson().fromJson(data, CurrentTime.class);
+            Log.v("1", Integer.toString(rMsg.getWinnumber()));
+        }
         return rMsg;
     }
 

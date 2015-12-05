@@ -7,8 +7,7 @@
         android:id="@+id/glass"
         android:src="@drawable/glass_label"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="StartNextTimer"/>
+        android:layout_height="wrap_content" />
     <TextView android:id="@+id/WinNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

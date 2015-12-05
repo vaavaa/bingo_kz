@@ -10,6 +10,7 @@ public class d_game {
     private int device_id;
     private String gameCode;
     private String dtime;
+    private int server_game_id;
 
     public String getGameCode() {
         return gameCode;
@@ -57,5 +58,13 @@ public class d_game {
 
     public void setDtime(String dtime) {
         this.dtime = dtime;
+    }
+
+    public int getServer_game_id() {
+        return server_game_id;
+    }
+
+    public void setServer_game_id(int server_game_id) {
+        this.server_game_id = server_game_id;
     }
 }

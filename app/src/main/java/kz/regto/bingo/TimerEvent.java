@@ -6,4 +6,5 @@ package kz.regto.bingo;
 public interface TimerEvent {
     void TimerStarted();
     void TimerOver();
+    void GameOver();
 }
