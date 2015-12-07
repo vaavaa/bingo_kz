@@ -13,11 +13,14 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import java.util.LinkedList;
 
+import kz.regto.database.d_entry_set;
+
 public class MainContainer extends ViewGroup {
 
     int ilevelset=1;
-    private LinkedList<LogChanges> mLog = new LinkedList<>();
     private LinkedList<ChipLogLimit> limitLogList=new LinkedList<ChipLogLimit>();
+    private Main main;
+
 
     public MainContainer(Context context) {
         super(context);
@@ -43,7 +46,7 @@ public class MainContainer extends ViewGroup {
             View v = getChildAt(i);
             this.addView(v, i, v.getLayoutParams());
         }
-
+        main = (Main)ct;
     }
 
     @Override
@@ -150,7 +153,7 @@ public class MainContainer extends ViewGroup {
                                 }
                             }
                             else level =ilevelset;
-                            mLog.add(new LogChanges(v.getId(), v.getBackground().getLevel(), level));
+ ;
                             v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", EntryName(level))));
                             v.getBackground().setLevel(level);
                         }
@@ -173,9 +176,6 @@ public class MainContainer extends ViewGroup {
                     child.bringToFront();
                     this.addView(child);
 
-                    mLog.add(new LogChanges(child.getId(), 0, ilevelset));
-                    addNewListMembers(boardGrid.getLimitLogList());
-
                     invalidate();
                     iReturn=ilevelset;
                 }
@@ -189,9 +189,8 @@ public class MainContainer extends ViewGroup {
         return nameDrawable;
     }
 
-    //блядскаяпроцедура которая все же удалила
+    //которая все же удалила
     public void ClearBoard(){
-            limitLogList.clear();
             boolean doBreak = false;
             while (!doBreak) {
                 int childCount = this.getChildCount();
@@ -208,7 +207,6 @@ public class MainContainer extends ViewGroup {
                         break;
                     }
                 }
-
                 if (i == childCount) {
                     doBreak = true;
                 }
@@ -217,35 +215,24 @@ public class MainContainer extends ViewGroup {
     }
 
     public void stepBack(){
-        LogChanges operatedLog;
-        if (mLog.size()>0){
-            operatedLog=mLog.get(mLog.size()-1);
-            if (operatedLog.getpLevel()==0)
-                for(int i=0; i<this.getChildCount();i++){
-                    if (this.getChildAt(i).getId()==operatedLog.getId_object()){
+        d_entry_set dEntrySet = main.db.getLastEntrySet();
+        TextView tw = (TextView)this.getChildAt(dEntrySet.getEntry_id());
+        if (tw!=null){
+           if (main.db.getGameIdSum(dEntrySet.getGame_id(),dEntrySet.getEntry_id())==dEntrySet.getSum()){
+              Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
+              rotate_animation.setStartOffset((int) (Math.random() * ((50) + 1)));
+              tw.setAnimation(rotate_animation);
+              this.removeView(tw);
+           }
+           else {
+              int sum_chk = Integer.parseInt(tw.getText().toString())-1;
+              if (sum_chk==0) tw.setText("");
+              else tw.setText(Integer.toString(sum_chk));
 
-                        Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
-                        rotate_animation.setStartOffset((int) (Math.random() * ((100) + 1)));
-                        this.getChildAt(i).setAnimation(rotate_animation);
-
-                        this.removeView(this.getChildAt(i));
-                        break;
-                    }
-                }
-            else {
-                for(int i=0; i<this.getChildCount();i++)
-                    if (this.getChildAt(i).getId()==operatedLog.getId_object()){
-                        this.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(),
-                                getResourceByID("drawable", EntryName(operatedLog.getpLevel()))));
-                        this.getChildAt(i).getBackground().setLevel(operatedLog.getpLevel());
-                        Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.nope_rotate);
-                        rotate_animation.setStartOffset((int) (Math.random() * ((100) + 1)));
-                            }
-                    }
-            mLog.remove(operatedLog);
-            this.invalidate();
+           }
+           this.invalidate();
+           main.db.deleteEntrySet(dEntrySet.getSys_id());
         }
-
     }
 
     public View getChild(int id){
@@ -259,42 +246,5 @@ public class MainContainer extends ViewGroup {
             }
         }
         return rView;
-    }
-
-    private class LogChanges{
-        int id_object =0;
-        int pLevel =0;
-        int cLevel=0;
-
-        LogChanges(int id, int p, int c){
-            id_object =id;
-            pLevel =p;
-            cLevel=c;
-        }
-
-        public int getId_object() {
-            return id_object;
-        }
-
-        public void setId_object(int id_object) {
-            this.id_object = id_object;
-        }
-
-        public int getcLevel() {
-            return cLevel;
-        }
-
-        public int getpLevel() {
-            return pLevel;
-        }
-
-        public void setcLevel(int cLevel) {
-            this.cLevel = cLevel;
-        }
-
-        public void setpLevel(int pLevel) {
-            this.pLevel = pLevel;
-        }
-
     }
 }

@@ -5,6 +5,8 @@ package kz.regto.database;
  */
 public class d_entry_set {
     //Инкриментный идентификатор
+    private int sys_id;
+    //Ид ставки
     private int log_id;
     //Цифра ставки
     private int chip_number;
@@ -33,6 +35,14 @@ public class d_entry_set {
         y=iY;
         game_id = i_game_id;
         sum = i_sum;
+    }
+
+    public int getSys_id() {
+        return sys_id;
+    }
+
+    public void setSys_id(int sys_id) {
+        this.sys_id = sys_id;
     }
 
     public void setSum(int sum) {

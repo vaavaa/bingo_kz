@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import kz.regto.database.DatabaseHelper;
 import kz.regto.database.Utils;
@@ -394,16 +395,15 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     public void x2_button(View view){
         int iEntry;
         int ibalance;
+        int gameSum=0;
         TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
         TwoTextViews balance =  (TwoTextViews)this.findViewById(R.id.balance);
         ibalance = Integer.parseInt(balance.getField());
-        iEntry = Integer.parseInt(t2w.getField());
-        if (2*iEntry<=ibalance){
-            LinkedList<ChipLog> cl = board.getMainLogList();
-            LinkedList<ChipLogLimit> cll = board.getLimitLogList();
-            for (ChipLog clp: cl){
-                mc.setIlevelset(clp.getEntry());
-                board.EntryGetsPoint(clp.getX(),clp.getY());
+        gameSum = db.getGameCurrentSum(dGame.getId());
+        if (ibalance > gameSum) {
+            List<d_entry_set> cl = db.getAllGameEntrySet(dGame.getId());
+            for (d_entry_set clp: cl){
+                db.createNewEntrySet(clp);
             }
         }
     }
@@ -433,12 +433,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
     private int GameResultCalculation(){
         int total_sum=0;
-        LinkedList<ChipLog> FR= board.getMainLogList();
-        for (ChipLog cl:FR){
-            if (cl.NumberChip==gWinNumber){
-                total_sum=total_sum+(((int)36/cl.divideBy)*getEntryfromLevel(cl.getEntry()));
-            }
-        }
+        total_sum = db.getGameSum(dGame.getId(), dGame.getWin_ball());
         return total_sum;
     }
 

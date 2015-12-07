@@ -24,7 +24,6 @@ public class BoardGrid extends View {
     private Paint bg_paint;
     private List<BoardGridEvents> listeners = new ArrayList<BoardGridEvents>();
     private LinkedList<d_entry_set> mainLogList=new LinkedList<d_entry_set>();
-    private LinkedList<d_entry_setLimit> limitLogList=new LinkedList<d_entry_setLimit>();
 
     private boolean WasEntrySet=true;
 
@@ -184,13 +183,6 @@ public class BoardGrid extends View {
         mainLogList=smainLogList;
     }
 
-    public LinkedList<d_entry_setLimit> getLimitLogList(){
-        return limitLogList;
-    }
-    public void setLimitLogList(LinkedList<d_entry_setLimit> slimitLogList){
-        limitLogList=slimitLogList;
-    }
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -229,7 +221,6 @@ public class BoardGrid extends View {
             int idV;
             idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
 
-            limitLogList.add(new d_entry_setLimit(ilevel,idV));
             EntryGetsPoint(xTouch_new, yTouch_new);
 
             copyToMainStore(getPushedNumber(xTouch_new, yTouch_new));
@@ -250,11 +241,8 @@ public class BoardGrid extends View {
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
         boolean handled = false;
-        limitLogList.clear();
-
         int xTouch;
         int yTouch;
-        int pointerId;
         int actionIndex = event.getActionIndex();
         int xTouch_new;
         int yTouch_new;
@@ -266,7 +254,6 @@ public class BoardGrid extends View {
                 case MotionEvent.ACTION_DOWN:
                     xTouch = (int) event.getX(0);
                     yTouch = (int) event.getY(0);
-
                     xTouch_new = getXCrossed(xTouch, yTouch);
                     yTouch_new = getYCrossed(xTouch, yTouch);
 
@@ -274,7 +261,7 @@ public class BoardGrid extends View {
                         int idV;
                         idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
 
-                        limitLogList.add(new d_entry_setLimit(ilevel,idV));
+
                         EntryGetsPoint(xTouch_new, yTouch_new);
 
                         copyToMainStore(getPushedNumber(xTouch_new, yTouch_new));
@@ -296,7 +283,6 @@ public class BoardGrid extends View {
                     if (xTouch_new>0 && yTouch_new>0){
                         int idV;
                         idV = Integer.parseInt(Integer.toString(xTouch_new) + Integer.toString(yTouch_new));
-                        limitLogList.add(new d_entry_setLimit(ilevel,idV));
                         EntryGetsPoint(xTouch_new,yTouch_new);
                         copyToMainStore(getPushedNumber(xTouch_new,yTouch_new));
 
@@ -450,6 +436,7 @@ public class BoardGrid extends View {
         mHintOperate.RectArea(xTouch - 30, yTouch - 40, xTouch + 30, yTouch - 20);
         //pushed color
         mHintOperate.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
+        db.getGameIdSum
         mHintOperate.setText("+1300");
 
         Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.hint_fade_out);
@@ -769,7 +756,7 @@ public class BoardGrid extends View {
                     }
                     break;
                 case 13:
-                    sum = (36/12)*entry;
+                    sum = 3*entry;
                     switch( y_pushed_number){
                         case 1:
                             chLog.add(new d_entry_set(3,ilevel,idV,12,x,y, entry,sum));
@@ -821,7 +808,7 @@ public class BoardGrid extends View {
         if ((y_pushed==1)&&(x_pushed==1)){
             switch(x_pushed_number){
                 case 1:
-                    sum = (36/3)*entry;
+                    sum = 12*entry;
                     switch( y_pushed_number){
                         case 1:
                             chLog.add(new d_entry_set(0,ilevel,idV,3,x,y, entry,sum));
@@ -836,7 +823,7 @@ public class BoardGrid extends View {
                     }
                     break;
                 case 2:
-                    sum = (36/4)*entry;
+                    sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
                             chLog.add(new d_entry_set(3,ilevel,idV,4,x,y, entry,sum));
@@ -853,7 +840,7 @@ public class BoardGrid extends View {
                     }
                     break;
                 case 3:
-                    sum = (36/4)*entry;
+                    sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
                             chLog.add(new d_entry_set(6,ilevel,idV,4,x,y, entry,sum));
@@ -870,7 +857,7 @@ public class BoardGrid extends View {
                     }
                     break;
                 case 4:
-                    sum = (36/4)*entry;
+                    sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
                             chLog.add(new d_entry_set(9,ilevel,idV,4,x,y, entry,sum));
@@ -887,7 +874,7 @@ public class BoardGrid extends View {
                     }
                     break;
                 case 5:
-                    sum = (36/4)*entry;
+                    sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
                             chLog.add(new d_entry_set(12,ilevel,idV,4,x,y, entry,sum));
@@ -904,7 +891,7 @@ public class BoardGrid extends View {
                     }
                     break;
                 case 6:
-                    sum = (36/4)*entry;
+                    sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
                             chLog.add(new d_entry_set(15,ilevel,idV,4,x,y, entry,sum));
@@ -921,7 +908,7 @@ public class BoardGrid extends View {
                     }
                     break;
                 case 7:
-                    sum = (36/4)*entry;
+                    sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
                             chLog.add(new d_entry_set(18,ilevel,idV,4,x,y, entry,sum));
@@ -938,7 +925,7 @@ public class BoardGrid extends View {
                     }
                     break;
                 case 8:
-                    sum = (36/4)*entry;
+                    sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
                             chLog.add(new d_entry_set(21,ilevel,idV,4,x,y, entry,sum));
@@ -955,7 +942,7 @@ public class BoardGrid extends View {
                     }
                     break;
                 case 9:
-                    sum = (36/4)*entry;
+                    sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
                             chLog.add(new d_entry_set(24,ilevel,idV,4,x,y, entry,sum));
@@ -972,7 +959,7 @@ public class BoardGrid extends View {
                     }
                     break;
                 case 10:
-                    sum = (36/4)*entry;
+                    sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
                             chLog.add(new d_entry_set(27,ilevel,idV,4,x,y, entry,sum));
@@ -989,7 +976,7 @@ public class BoardGrid extends View {
                     }
                     break;
                 case 11:
-                    sum = (36/4)*entry;
+                    sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
                             chLog.add(new d_entry_set(30,ilevel,idV,4,x,y, entry,sum));
@@ -1006,7 +993,7 @@ public class BoardGrid extends View {
                     }
                     break;
                 case 12:
-                    sum = (36/4)*entry;
+                    sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
                             chLog.add(new d_entry_set(33,ilevel,idV,4,x,y, entry,sum));
@@ -1444,23 +1431,6 @@ public class BoardGrid extends View {
             }
         }
         return chLog;
-    }
-
-    public boolean addNewChip(int objId,int level, LinkedList<d_entry_setLimit> chLog){
-        boolean bReturn;
-        int iTotal=0;
-        for (d_entry_setLimit d_entry_setLimit : chLog) {
-            if (d_entry_setLimit.getId()==objId)
-                iTotal = iTotal+getEntryfromLevel(d_entry_setLimit.getEntry());
-        }
-        iTotal=iTotal+SwitchILevel(level);
-
-        if (iTotal>1000) bReturn=false;
-        else bReturn=true;
-
-        WasEntrySet=bReturn;
-
-        return bReturn;
     }
 }
 
