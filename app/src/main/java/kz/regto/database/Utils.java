@@ -48,11 +48,11 @@ public class Utils {
     }
 
 
-        public static void showDummyWaitingDialog(final Context context, final Intent startingIntent, final int sleeptime) {
+    public static void showDummyWaitingDialog(final Context context, final Intent startingIntent, final int sleeptime) {
 
-            final ProgressDialog progressDialog = ProgressDialog.show(context, "Please wait...", "Loading data ...", true);
+        final ProgressDialog progressDialog = ProgressDialog.show(context, "Please wait...", "Loading data ...", true);
 
-            new Thread() {
+        new Thread() {
                 public void run() {
                     try{
                         // Do some work here
@@ -66,10 +66,10 @@ public class Utils {
                             progressDialog.dismiss();
                             // start selected activity
                             if ( startingIntent != null) context.startActivity(startingIntent);
-                        }
+                       }
                     }.start();
-                }
+             }
             }.start();
 
-        }
+    }
 }

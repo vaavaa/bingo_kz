@@ -4,15 +4,36 @@ package kz.regto.database;
  * Created by Старцев on 23.11.2015.
  */
 public class d_entry_set {
+    //Инкриментный идентификатор
     private int log_id;
+    //Цифра ставки
     private int chip_number;
+    //Значение ставки
     private int entry_value;
+    //Уникальный Ид ставки на поле
     private int entry_id;
+    //На что делим
     private int divided_by;
+    //х поля
     private int x;
+    //у поля
     private int y;
+    //Ид текущей игры
     private int game_id;
+    //Сумма ставки
     private int sum;
+
+    public d_entry_set(){}
+    public d_entry_set(int i_chip_number,int i_log_id, int idV, int i_divided_by, int iX,int iY, int i_game_id, int i_sum){
+        chip_number = i_chip_number;
+        log_id = i_log_id;
+        entry_id = idV;
+        divided_by = i_divided_by;
+        x= iX;
+        y=iY;
+        game_id = i_game_id;
+        sum = i_sum;
+    }
 
     public void setSum(int sum) {
         this.sum = sum;

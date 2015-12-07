@@ -17,12 +17,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import kz.regto.database.d_entry_set;
+
 public class BoardGrid extends View {
     private Paint paint;
     private Paint bg_paint;
     private List<BoardGridEvents> listeners = new ArrayList<BoardGridEvents>();
-    private LinkedList<ChipLog> mainLogList=new LinkedList<ChipLog>();
-    private LinkedList<ChipLogLimit> limitLogList=new LinkedList<ChipLogLimit>();
+    private LinkedList<d_entry_set> mainLogList=new LinkedList<d_entry_set>();
+    private LinkedList<d_entry_setLimit> limitLogList=new LinkedList<d_entry_setLimit>();
 
     private boolean WasEntrySet=true;
 
@@ -174,18 +176,18 @@ public class BoardGrid extends View {
         }
     }
 
-    public LinkedList<ChipLog> getMainLogList(){
+    public LinkedList<d_entry_set> getMainLogList(){
             return mainLogList;
     }
 
-    public void setMainLogList(LinkedList<ChipLog> smainLogList){
+    public void setMainLogList(LinkedList<d_entry_set> smainLogList){
         mainLogList=smainLogList;
     }
 
-    public LinkedList<ChipLogLimit> getLimitLogList(){
+    public LinkedList<d_entry_setLimit> getLimitLogList(){
         return limitLogList;
     }
-    public void setLimitLogList(LinkedList<ChipLogLimit> slimitLogList){
+    public void setLimitLogList(LinkedList<d_entry_setLimit> slimitLogList){
         limitLogList=slimitLogList;
     }
 
@@ -227,7 +229,7 @@ public class BoardGrid extends View {
             int idV;
             idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
 
-            limitLogList.add(new ChipLogLimit(ilevel,idV));
+            limitLogList.add(new d_entry_setLimit(ilevel,idV));
             EntryGetsPoint(xTouch_new, yTouch_new);
 
             copyToMainStore(getPushedNumber(xTouch_new, yTouch_new));
@@ -236,9 +238,9 @@ public class BoardGrid extends View {
         }
     }
 
-    private void copyToMainStore(LinkedList<ChipLog> nLogList){
+    private void copyToMainStore(LinkedList<d_entry_set> nLogList){
         if (WasEntrySet)
-            for (ChipLog cl: nLogList) mainLogList.add(cl);
+            for (d_entry_set cl: nLogList) mainLogList.add(cl);
     }
 
     public void setBoard_blocked(Boolean locktheboard){
@@ -272,7 +274,7 @@ public class BoardGrid extends View {
                         int idV;
                         idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
 
-                        limitLogList.add(new ChipLogLimit(ilevel,idV));
+                        limitLogList.add(new d_entry_setLimit(ilevel,idV));
                         EntryGetsPoint(xTouch_new, yTouch_new);
 
                         copyToMainStore(getPushedNumber(xTouch_new, yTouch_new));
@@ -294,7 +296,7 @@ public class BoardGrid extends View {
                     if (xTouch_new>0 && yTouch_new>0){
                         int idV;
                         idV = Integer.parseInt(Integer.toString(xTouch_new) + Integer.toString(yTouch_new));
-                        limitLogList.add(new ChipLogLimit(ilevel,idV));
+                        limitLogList.add(new d_entry_setLimit(ilevel,idV));
                         EntryGetsPoint(xTouch_new,yTouch_new);
                         copyToMainStore(getPushedNumber(xTouch_new,yTouch_new));
 
@@ -577,827 +579,9 @@ public class BoardGrid extends View {
                 getContext().getPackageName());
     }
 
-    public LinkedList<ChipLog> getPushedNumber(int x,int y){
-        LinkedList<ChipLog> chLog = new LinkedList<>();
-        int idV;
-        idV = Integer.parseInt(Integer.toString(x)+Integer.toString(y));
-        //Zero
-        if ((y_pushed==5)&&(x_pushed==5)) {
-            chLog.add(new ChipLog(0,ilevel,idV,1,x,y));
-        }
-        //Ячейки
-        if ((y_pushed==4)&&(x_pushed==4)){
-            switch (x_pushed_number){
-                case 1:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(3,ilevel,idV,1,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(2,ilevel,idV,1,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(1,ilevel,idV,1,x,y));
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(6,ilevel,idV,1,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(5,ilevel,idV,1,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(4,ilevel,idV,1,x,y));
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(9,ilevel,idV,1,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(8,ilevel,idV,1,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(7,ilevel,idV,1,x,y));
-                            break;
-                    }
-                    break;
-                case 4:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(12,ilevel,idV,1,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(11,ilevel,idV,1,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(10,ilevel,idV,1,x,y));
-                            break;
-                    }
-                    break;
-                case 5:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(15,ilevel,idV,1,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(14,ilevel,idV,1,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(13,ilevel,idV,1,x,y));
-                            break;
-                    }
-                    break;
-                case 6:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(18,ilevel,idV,1,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(17,ilevel,idV,1,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(16,ilevel,idV,1,x,y));
-                            break;
-                    }
-                    break;
-                case 7:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(21,ilevel,idV,1,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(20,ilevel,idV,1,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(19,ilevel,idV,1,x,y));
-                            break;
-                    }
-                    break;
-                case 8:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(24,ilevel,idV,1,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(23,ilevel,idV,1,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(22,ilevel,idV,1,x,y));
-                            break;
-                    }
-                    break;
-                case 9:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(27,ilevel,idV,1,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(26,ilevel,idV,1,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(25,ilevel,idV,1,x,y));
-                            break;
-                    }
-                    break;
-                case 10:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(30,ilevel,idV,1,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(29,ilevel,idV,1,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(28,ilevel,idV,1,x,y));
-                            break;
-                    }
-                    break;
-                case 11:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(33,ilevel,idV,1,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(32,ilevel,idV,1,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(31,ilevel,idV,1,x,y));
-                            break;
-                    }
-                    break;
-                case 12:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(36,ilevel,idV,1,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(35,ilevel,idV,1,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(34,ilevel,idV,1,x,y));
-                            break;
-                    }
-                    break;
-                case 13:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(3,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(6,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(9,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(12,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(15,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(18,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(21,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(24,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(27,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(30,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(33,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(36,ilevel,idV,12,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(2,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(5,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(8,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(11,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(14,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(17,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(20,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(23,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(26,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(29,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(32,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(35,ilevel,idV,12,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(1,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(4,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(7,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(10,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(13,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(16,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(19,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(22,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(25,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(28,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(31,ilevel,idV,12,x,y));
-                            chLog.add(new ChipLog(34,ilevel,idV,12,x,y));
-                            break;
-                    }
-                    break;
-            }
-        }
-        //Пересечение двух границ
-        if ((y_pushed==1)&&(x_pushed==1)){
-            switch(x_pushed_number){
-                case 1:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(0,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(2,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(3,ilevel,idV,3,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(0,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(2,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(1,ilevel,idV,3,x,y));
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(3,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(6,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(2,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(5,ilevel,idV,4,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(2,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(5,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(1,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(4,ilevel,idV,4,x,y));
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(6,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(9,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(5,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(8,ilevel,idV,4,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(5,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(8,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(4,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(7,ilevel,idV,4,x,y));
-                            break;
-                    }
-                    break;
-                case 4:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(9,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(12,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(8,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(11,ilevel,idV,4,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(8,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(11,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(7,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(10,ilevel,idV,4,x,y));
-                            break;
-                    }
-                    break;
-                case 5:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(12,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(15,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(11,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(14,ilevel,idV,4,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(11,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(14,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(10,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(13,ilevel,idV,4,x,y));
-                            break;
-                    }
-                    break;
-                case 6:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(15,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(18,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(14,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(17,ilevel,idV,4,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(14,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(17,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(13,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(16,ilevel,idV,4,x,y));
-                            break;
-                    }
-                    break;
-                case 7:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(18,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(21,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(17,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(20,ilevel,idV,4,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(17,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(20,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(16,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(19,ilevel,idV,4,x,y));
-                            break;
-                    }
-                    break;
-                case 8:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(21,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(24,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(20,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(23,ilevel,idV,4,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(20,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(23,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(19,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(22,ilevel,idV,4,x,y));
-                            break;
-                    }
-                    break;
-                case 9:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(24,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(27,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(23,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(26,ilevel,idV,4,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(23,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(26,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(22,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(25,ilevel,idV,4,x,y));
-                            break;
-                    }
-                    break;
-                case 10:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(27,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(30,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(26,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(29,ilevel,idV,4,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(26,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(29,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(25,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(28,ilevel,idV,4,x,y));
-                            break;
-                    }
-                    break;
-                case 11:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(30,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(33,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(29,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(32,ilevel,idV,4,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(29,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(32,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(28,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(31,ilevel,idV,4,x,y));
-                            break;
-                    }
-                    break;
-                case 12:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(33,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(36,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(32,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(35,ilevel,idV,4,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(32,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(35,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(31,ilevel,idV,4,x,y));
-                            chLog.add(new ChipLog(34,ilevel,idV,4,x,y));
-                            break;
-                    }
-                    break;
-            }
-        }
-        //Пересечение границы и столбца
-        if((x_pushed ==4) && (y_pushed==1)){
-            switch (x_pushed_number){
-                case 1:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(3,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(2,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(2,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(1,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(3,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(2,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(1,ilevel,idV,3,x,y));
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(6,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(5,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(5,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(4,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(4,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(5,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(6,ilevel,idV,3,x,y));
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(9,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(8,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(8,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(7,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(7,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(8,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(9,ilevel,idV,3,x,y));
-                            break;
-                    }
-                    break;
-                case 4:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(12,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(11,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(11,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(10,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(10,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(11,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(12,ilevel,idV,3,x,y));
-                            break;
-                    }
-                    break;
-                case 5:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(15,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(14,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(14,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(13,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(13,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(14,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(15,ilevel,idV,3,x,y));
-                            break;
-                    }
-                    break;
-                case 6:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(18,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(17,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(17,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(16,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(16,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(17,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(18,ilevel,idV,3,x,y));
-                            break;
-                    }
-                    break;
-                case 7:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(21,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(20,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(20,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(19,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(21,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(19,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(20,ilevel,idV,3,x,y));
-                            break;
-                    }
-                    break;
-                case 8:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(24,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(23,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(23,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(22,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(22,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(23,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(24,ilevel,idV,3,x,y));
-                            break;
-                    }
-                    break;
-                case 9:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(27,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(26,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(26,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(25,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(25,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(26,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(27,ilevel,idV,3,x,y));
-                            break;
-                    }
-                    break;
-                case 10:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(30,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(29,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(29,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(28,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(28,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(29,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(30,ilevel,idV,3,x,y));
-                            break;
-                    }
-                    break;
-                case 11:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(33,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(32,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(32,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(31,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(31,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(33,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(32,ilevel,idV,3,x,y));
-                            break;
-                    }
-                    break;
-                case 12:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(36,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(35,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(35,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(34,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(34,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(35,ilevel,idV,3,x,y));
-                            chLog.add(new ChipLog(36,ilevel,idV,3,x,y));
-                            break;
-                    }
-                    break;
-                }
-            }
-        //Пересечение границы и столбца
-        if((x_pushed ==1) && (y_pushed==4)){
-            switch (x_pushed_number){
-                case 1:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(3,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(0,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(2,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(0,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(0,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(1,ilevel,idV,2,x,y));
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(6,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(3,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(5,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(2,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(4,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(1,ilevel,idV,2,x,y));
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(9,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(6,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(5,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(8,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(7,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(4,ilevel,idV,2,x,y));
-                            break;
-                    }
-                    break;
-                case 4:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(12,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(9,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(11,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(8,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(10,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(7,ilevel,idV,2,x,y));
-                            break;
-                    }
-                    break;
-                case 5:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(15,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(12,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(14,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(11,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(13,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(10,ilevel,idV,2,x,y));
-                            break;
-                    }
-                    break;
-                case 6:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(18,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(15,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(17,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(14,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(16,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(13,ilevel,idV,2,x,y));
-                            break;
-                    }
-                    break;
-                case 7:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(21,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(18,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(20,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(17,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(16,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(19,ilevel,idV,2,x,y));
-                            break;
-                    }
-                    break;
-                case 8:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(24,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(21,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(23,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(20,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(22,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(19,ilevel,idV,2,x,y));
-                            break;
-                    }
-                    break;
-                case 9:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(27,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(24,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(26,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(23,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(25,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(22,ilevel,idV,2,x,y));
-                            break;
-                    }
-                    break;
-                case 10:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(30,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(27,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(29,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(26,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(28,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(25,ilevel,idV,2,x,y));
-                            break;
-                    }
-                    break;
-                case 11:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(33,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(30,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(32,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(29,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(31,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(28,ilevel,idV,2,x,y));
-                            break;
-                    }
-                    break;
-                case 12:
-                    switch( y_pushed_number){
-                        case 1:
-                            chLog.add(new ChipLog(36,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(33,ilevel,idV,2,x,y));
-                            break;
-                        case 2:
-                            chLog.add(new ChipLog(35,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(32,ilevel,idV,2,x,y));
-                            break;
-                        case 3:
-                            chLog.add(new ChipLog(34,ilevel,idV,2,x,y));
-                            chLog.add(new ChipLog(31,ilevel,idV,2,x,y));
-                            break;
-                    }
-                    break;
-            }
-        }
-        return chLog;
-    }
-    public int SwitchILevel(int level){
+    public int getEntryfromLevel(int lvl){
         int iEntry=0;
-        switch (level){
+        switch (lvl) {
             case 1:
                 iEntry=100;
                 break;
@@ -1414,12 +598,860 @@ public class BoardGrid extends View {
         return iEntry;
     }
 
-    public boolean addNewChip(int objId,int level, LinkedList<ChipLogLimit> chLog){
+    public LinkedList<d_entry_set> getPushedNumber(int x,int y){
+        LinkedList<d_entry_set> chLog = new LinkedList<>();
+        int idV;
+        int sum;
+
+        int entry = getEntryfromLevel (ilevel);
+        idV = Integer.parseInt(Integer.toString(x)+Integer.toString(y));
+        //Zero
+        if ((y_pushed==5)&&(x_pushed==5)) {
+            chLog.add(new d_entry_set(0,ilevel,idV,1,x,y, entry,36*entry));
+        }
+        //Ячейки
+        if ((y_pushed==4)&&(x_pushed==4)){
+            switch (x_pushed_number){
+                case 1:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(3,ilevel,idV,1,x,y,entry,36*entry));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(2,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(1,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                    }
+                    break;
+                case 2:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(6,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(5,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(4,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                    }
+                    break;
+                case 3:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(9,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(8,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(7,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                    }
+                    break;
+                case 4:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(12,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(11,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(10,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                    }
+                    break;
+                case 5:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(15,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(14,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(13,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                    }
+                    break;
+                case 6:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(18,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(17,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(16,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                    }
+                    break;
+                case 7:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(21,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(20,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(19,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                    }
+                    break;
+                case 8:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(24,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(23,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(22,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                    }
+                    break;
+                case 9:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(27,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(26,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(25,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                    }
+                    break;
+                case 10:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(30,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(29,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(28,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                    }
+                    break;
+                case 11:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(33,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(32,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(31,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                    }
+                    break;
+                case 12:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(36,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(35,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(34,ilevel,idV,1,x,y, entry,36*entry));
+                            break;
+                    }
+                    break;
+                case 13:
+                    sum = (36/12)*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(3,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(6,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(9,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(12,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(15,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(18,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(21,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(24,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(27,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(30,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(33,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(36,ilevel,idV,12,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(2,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(5,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(8,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(11,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(14,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(17,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(20,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(23,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(26,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(29,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(32,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(35,ilevel,idV,12,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(1,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(4,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(7,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(10,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(13,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(16,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(19,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(22,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(25,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(28,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(31,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(34,ilevel,idV,12,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+            }
+        }
+        //Пересечение двух границ
+        if ((y_pushed==1)&&(x_pushed==1)){
+            switch(x_pushed_number){
+                case 1:
+                    sum = (36/3)*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(0,ilevel,idV,3,x,y, entry,sum));
+                            chLog.add(new d_entry_set(2,ilevel,idV,3,x,y, entry,sum));
+                            chLog.add(new d_entry_set(3,ilevel,idV,3,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(0,ilevel,idV,3,x,y, entry,sum));
+                            chLog.add(new d_entry_set(2,ilevel,idV,3,x,y, entry,sum));
+                            chLog.add(new d_entry_set(1,ilevel,idV,3,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 2:
+                    sum = (36/4)*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(3,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(6,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(2,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(5,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(2,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(5,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(1,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(4,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 3:
+                    sum = (36/4)*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(6,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(9,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(5,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(8,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(5,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(8,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(4,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(7,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 4:
+                    sum = (36/4)*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(9,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(12,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(8,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(11,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(8,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(11,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(7,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(10,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 5:
+                    sum = (36/4)*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(12,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(15,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(11,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(14,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(11,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(14,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(10,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(13,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 6:
+                    sum = (36/4)*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(15,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(18,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(14,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(17,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(14,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(17,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(13,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(16,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 7:
+                    sum = (36/4)*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(18,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(21,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(17,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(20,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(17,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(20,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(16,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(19,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 8:
+                    sum = (36/4)*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(21,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(24,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(20,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(23,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(20,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(23,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(19,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(22,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 9:
+                    sum = (36/4)*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(24,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(27,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(23,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(26,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(23,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(26,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(22,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(25,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 10:
+                    sum = (36/4)*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(27,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(30,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(26,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(29,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(26,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(29,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(25,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(28,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 11:
+                    sum = (36/4)*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(30,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(33,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(29,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(32,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(29,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(32,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(28,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(31,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 12:
+                    sum = (36/4)*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(33,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(36,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(32,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(35,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(32,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(35,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(31,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(34,ilevel,idV,4,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+            }
+        }
+        //Пересечение границы и столбца
+        if((x_pushed ==4) && (y_pushed==1)){
+            switch (x_pushed_number){
+                case 1:
+                    sum = 18*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(3,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(2,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(2,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(1,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(3,ilevel,idV,3,x,y, entry,12*entry));
+                            chLog.add(new d_entry_set(2,ilevel,idV,3,x,y, entry,12*entry));
+                            chLog.add(new d_entry_set(1,ilevel,idV,3,x,y, entry,12*entry));
+                            break;
+                    }
+                    break;
+                case 2:
+                    sum = 18*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(6,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(5,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(5,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(4,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(4,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(5,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(6,ilevel,idV,3,x,y,entry,12*entry));
+                            break;
+                    }
+                    break;
+                case 3:
+                    sum = 18*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(9,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(8,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(8,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(7,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(7,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(8,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(9,ilevel,idV,3,x,y,entry,12*entry));
+                            break;
+                    }
+                    break;
+                case 4:
+                    sum = 18*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(12,ilevel,idV,2,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(11,ilevel,idV,2,x,y,entry,12*entry));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(11,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(10,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(10,ilevel,idV,3,x,y,entry, 12*entry));
+                            chLog.add(new d_entry_set(11,ilevel,idV,3,x,y,entry, 12*entry));
+                            chLog.add(new d_entry_set(12,ilevel,idV,3,x,y,entry, 12*entry));
+                            break;
+                    }
+                    break;
+                case 5:
+                    sum = 18*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(15,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(14,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(14,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(13,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(13,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(14,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(15,ilevel,idV,3,x,y,entry,12*entry));
+                            break;
+                    }
+                    break;
+                case 6:
+                    sum = 18*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(18,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(17,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(17,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(16,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(16,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(17,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(18,ilevel,idV,3,x,y,entry,12*entry));
+                            break;
+                    }
+                    break;
+                case 7:
+                    sum = 18*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(21,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(20,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(20,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(19,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(21,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(19,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(20,ilevel,idV,3,x,y,entry,12*entry));
+                            break;
+                    }
+                    break;
+                case 8:
+                    sum = 18*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(24,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(23,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(23,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(22,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(22,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(23,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(24,ilevel,idV,3,x,y,entry,12*entry));
+                            break;
+                    }
+                    break;
+                case 9:
+                    sum = 18*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(27,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(26,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(26,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(25,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(25,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(26,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(27,ilevel,idV,3,x,y,entry,12*entry));
+                            break;
+                    }
+                    break;
+                case 10:
+                    sum = 18*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(30,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(29,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(29,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(28,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(28,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(29,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(30,ilevel,idV,3,x,y,entry,12*entry));
+                            break;
+                    }
+                    break;
+                case 11:
+                    sum = 18*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(33,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(32,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(32,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(31,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(31,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(33,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(32,ilevel,idV,3,x,y,entry,12*entry));
+                            break;
+                    }
+                    break;
+                case 12:
+                    sum = 18*entry;
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(36,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(35,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(35,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(34,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(34,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(35,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(36,ilevel,idV,3,x,y,entry,12*entry));
+                            break;
+                    }
+                    break;
+                }
+            }
+        //Пересечение границы и столбца
+        if((x_pushed ==1) && (y_pushed==4)){
+            sum = 18*entry;
+            switch (x_pushed_number){
+                case 1:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(3,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(0,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(2,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(0,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(0,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(1,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 2:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(6,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(3,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(5,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(2,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(4,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(1,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 3:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(9,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(6,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(5,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(8,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(7,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(4,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 4:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(12,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(9,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(11,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(8,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(10,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(7,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 5:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(15,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(12,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(14,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(11,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(13,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(10,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 6:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(18,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(15,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(17,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(14,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(16,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(13,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 7:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(21,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(18,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(20,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(17,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(16,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(19,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 8:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(24,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(21,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(23,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(20,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(22,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(19,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 9:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(27,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(24,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(26,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(23,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(25,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(22,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 10:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(30,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(27,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(29,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(26,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(28,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(25,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 11:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(33,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(30,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(32,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(29,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(31,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(28,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+                case 12:
+                    switch( y_pushed_number){
+                        case 1:
+                            chLog.add(new d_entry_set(36,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(33,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 2:
+                            chLog.add(new d_entry_set(35,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(32,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                        case 3:
+                            chLog.add(new d_entry_set(34,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(31,ilevel,idV,2,x,y, entry,sum));
+                            break;
+                    }
+                    break;
+            }
+        }
+        return chLog;
+    }
+
+    public boolean addNewChip(int objId,int level, LinkedList<d_entry_setLimit> chLog){
         boolean bReturn;
         int iTotal=0;
-        for (ChipLogLimit chipLogLimit : chLog) {
-            if (chipLogLimit.getId()==objId)
-                iTotal = iTotal+SwitchILevel(chipLogLimit.getEntry());
+        for (d_entry_setLimit d_entry_setLimit : chLog) {
+            if (d_entry_setLimit.getId()==objId)
+                iTotal = iTotal+getEntryfromLevel(d_entry_setLimit.getEntry());
         }
         iTotal=iTotal+SwitchILevel(level);
 

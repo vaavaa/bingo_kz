@@ -2,13 +2,6 @@ package kz.regto.bingo;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -50,7 +43,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
 
     // Database Helper
-    private DatabaseHelper db;
+    public DatabaseHelper db;
     public d_device BingoDevice;
     public d_game dGame;
     public d_entry_set dEntrySet;
@@ -415,24 +408,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         }
     }
 
-    public int getEntryfromLevel(int lvl){
-        int iEntry=0;
-         switch (lvl) {
-             case 1:
-                 iEntry=100;
-                 break;
-             case 2:
-                 iEntry=200;
-                 break;
-             case 3:
-                 iEntry=500;
-                 break;
-             case 4:
-                 iEntry=1000;
-                 break;
-         }
-        return iEntry;
-    }
     public void EntrySet(View view){
         findViewById(R.id.entry100).setSelected(false);
         findViewById(R.id.entry200).setSelected(false);
@@ -454,28 +429,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     }
     public void stepBack(View view){
         mc.stepBack();
-    }
-
-    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
-        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
-                .getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(output);
-
-        final int color = 0xff424242;
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        final RectF rectF = new RectF(rect);
-        final float roundPx = pixels;
-
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
-
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
-
-        return output;
     }
 
     private int GameResultCalculation(){
