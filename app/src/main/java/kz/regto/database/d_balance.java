@@ -5,6 +5,7 @@ package kz.regto.database;
  */
 public class d_balance {
     private int game_id;
+    //0 это плюс, 1 это минус
     private int operation;
     private int sum;
 

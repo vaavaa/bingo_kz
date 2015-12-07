@@ -1,19 +1,10 @@
 package kz.regto.json;
 
 import android.os.StrictMode;
-import android.util.Log;
-
 import com.google.gson.Gson;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -104,11 +95,9 @@ public class JSONParser {
 
     public CurrentTime getGameResult(String url) {
         CurrentTime rMsg=null;
-        Log.v("1", url);
         String data = getJSON(url, 1000);
         if (data!=null){
             rMsg = new Gson().fromJson(data, CurrentTime.class);
-            Log.v("1", Integer.toString(rMsg.getWinnumber()));
         }
         return rMsg;
     }

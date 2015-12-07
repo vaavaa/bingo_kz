@@ -379,8 +379,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "SET win_ball ="+dGame.getWin_ball()+",\n" +
                 "state ="+dGame.getState()+",\n" +
                 "device_id = "+dGame.getDevice_id()+",\n" +
-                "dtime = '"+dGame.getDtime()+"' "+
-                "game_code = '"+dGame.getGameCode()+"' "+
+                "dtime = '" + getDateTime() +"', "+
+                "game_code = '"+dGame.getGameCode()+"', "+
                 "server_game_id = '"+dGame.getServer_game_id()+"' "+
                 "WHERE id=" +dGame.getId();
         try {

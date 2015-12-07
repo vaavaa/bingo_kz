@@ -354,14 +354,6 @@ public class BoardGrid extends View {
         result[0]=0;
         result[1]=0;
 
-//        //This is three buttons
-//            for (int i = 0; i <= 2; i++)
-//                if (mLastRow3[i].contains(xTouch, yTouch)) {
-//                    result[1] = mLastRow3[i].centerY();
-//                    mRecOperateTemp[1]=mLastRow3[i];
-//                    y_pushed = 5;
-//                    break;
-//                }
         //Нажата zero
             if (mRectC[0].contains(xTouch, yTouch)){
                 result[1] = mRectC[0].centerY();
@@ -369,15 +361,6 @@ public class BoardGrid extends View {
                 y_pushed = 5;
             }
 
-//        //Three buttons
-//        if (result[0] == 0)
-//            for (int i = 0; i <= 2; i++)
-//                if (mLastRow3[i].contains(xTouch, yTouch)) {
-//                    result[0] = mLastRow3[i].centerX();
-//                    mRecOperateTemp[0]=mLastRow3[i];
-//                    x_pushed=5;
-//                    break;
-//                }
         //Нажата zero
             if (mRectC[0].contains(xTouch, yTouch)) {
                 result[0] = mRectC[0].centerX();
@@ -480,7 +463,7 @@ public class BoardGrid extends View {
                 mHintOperate.setVisibility(View.GONE); //This will remove the View. and free s the space occupied by the View
             }
         };
-        mHandler.postDelayed(mRunnable, 2500);
+        mHandler.postDelayed(mRunnable, 1500);
     }
 
     private void GetUserTouch(int x,int y){

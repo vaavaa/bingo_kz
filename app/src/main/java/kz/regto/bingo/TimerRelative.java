@@ -22,14 +22,14 @@ public class TimerRelative extends RelativeLayout {
     private TextView timerValue;
     private TextView WinNumber;
     private SupportTimer sp=new SupportTimer();
-    private SupportGameResult sp_game=new SupportGameResult();
 
     private Handler customHandler = new Handler();
     private Handler GameResultHandler = new Handler();
 
     private List<TimerEvent> listeners = new ArrayList<>();
+    private int wn_number =-1;
 
-    Main prnt;
+    private Main prnt;
 
     public TimerRelative(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -73,7 +73,6 @@ public class TimerRelative extends RelativeLayout {
         TimerVisibility(true);
 
         customHandler.postDelayed(updateTimerThread, 0);
-        //for (TimerEvent hl : listeners) hl.TimerStarted();
         bTimer=true;
         }
     }
@@ -81,50 +80,73 @@ public class TimerRelative extends RelativeLayout {
         bTimer=false;
         //Сменили видимость выйгравшего номера и таймера
         TimerVisibility(false);
-        //Устанавливаем текст в шарик
-        String sWinNumber = this.getWinningNumber();
-        int gWinNumber = Integer.parseInt(sWinNumber);
-        if (gWinNumber!=-1){
-            GameOver();
-            WinNumber.setText(sWinNumber);
-        }
-        else {
-            WinNumber.setText("...");
-            //Создали строку запроса об окончании игры
-            String HttpGameResultRequest = prnt.BingoDevice.getNetwork_path().concat("timer.php?game_id="+prnt.dGame.getServer_game_id());
-            //Запустили процесс опроса сервера
-            sp_game.execute(HttpGameResultRequest,"");
-            //И опросника сервера
-            GameResultHandler.postDelayed(updateGameResult, 0);
-        }
+        WinNumber.setText("...");
+        //Запустили процесс опроса сервера
+        //И опросника сервера
+        GameResultHandler.postDelayed(updateGameResult, 0);
         //Сказали всем что таймер кончился
         for (TimerEvent hl : listeners) hl.TimerOver();
         //Остановили опросник времени
         customHandler.removeCallbacks(updateTimerThread);
     }
     public void GameOver(){
+        WinNumber.setText(this.getWinningNumber());
+
         GameResultHandler.removeCallbacks(updateGameResult);
-        for (TimerEvent hl : listeners) hl.GameOver();
         this.invalidate();
+        for (TimerEvent hl : listeners) hl.GameOver();
     }
 
     public String getWinningNumber(){
         //Get win ball
         String sReturn;
-        int wn =sp_game.GetWinBall();
+        int wn =wn_number;
         if (wn > -1) {
             if (wn<9){
-                //Сохраняем в базу
-                prnt.dGame.setWin_ball(wn);
-                prnt.dGame.setState(1);
                 sReturn = "0".concat(Integer.toString(wn));
             }
             else sReturn = Integer.toString(wn);
+            //Сохраняем в базу
+            prnt.dGame.setWin_ball(wn);
+            prnt.dGame.setState(1);
         }
         else sReturn = Integer.toString(wn);
         return sReturn;
     }
 
+    public String GenerateNewGameCode(String serial) {
+        final String SER_CODE_LETTER="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        int SER_CODE_INT=1;
+        String ser = serial.substring(0, serial.indexOf("-"));
+        String serCode = serial.substring(serial.indexOf("-") + 1, serial.length());
+        String ReturnValue = "";
+        serCode = serCode.replaceFirst("0*", "");
+        if (serCode.length() ==0) SER_CODE_INT = 1;
+        else SER_CODE_INT = Integer.parseInt(serCode);
+        int size_of_number;
+        if (SER_CODE_INT == 9999) {
+            if (SER_CODE_LETTER.indexOf(ser.substring(1, 2)) == SER_CODE_LETTER.length()-1) {
+                String letter0 = "A";
+                String letter = ser.substring(0,1);
+                int p_letter = SER_CODE_LETTER.indexOf(letter)+1;
+                ser = SER_CODE_LETTER.substring(p_letter,p_letter+1);
+                ser = ser.concat(letter0);
+            } else {
+                String letter = ser.substring(1, 2);
+                int p_letter = SER_CODE_LETTER.indexOf(letter)+1;
+                ser = ser.substring(0, 1)
+                        .concat(SER_CODE_LETTER.substring(p_letter, p_letter + 1));
+            }
+            SER_CODE_INT = 1;
+        } else SER_CODE_INT++;
+        serCode = Integer.toString(SER_CODE_INT);
+        size_of_number = 4 - serCode.length();
+        //Создали цифры
+        for (int i = size_of_number; i > 0; i--) ReturnValue = ReturnValue.concat("0");
+        ReturnValue = ReturnValue.concat(serCode);
+        ReturnValue = ser.concat("-").concat(ReturnValue);
+        return ReturnValue;
+    }
 
     public String getNewGameCode(){
         String game_code;
@@ -179,9 +201,8 @@ public class TimerRelative extends RelativeLayout {
            JSONParser jpr = new JSONParser();
             CurrentTime tProgress = jpr.getGameResult(prnt.BingoDevice.getNetwork_path().concat("timer.php?game_id="+prnt.dGame.getServer_game_id()));
             if (tProgress.getWinnumber() !=-1) {
-            // /if (sp_game.GetWinBall()!=-1) {
+                wn_number =tProgress.getWinnumber();
                 GameOver();
-            //}
             }
             else
             GameResultHandler.postDelayed(this,0);

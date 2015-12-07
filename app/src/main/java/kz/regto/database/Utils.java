@@ -1,12 +1,12 @@
 package kz.regto.database;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 
 import java.util.UUID;
 
-/**
- * Created by Старцев on 23.11.2015.
- */
 public class Utils {
 
 
@@ -46,4 +46,30 @@ public class Utils {
         // Finally, combine the values we have found by using the UUID class to create a unique identifier
         return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
     }
+
+
+        public static void showDummyWaitingDialog(final Context context, final Intent startingIntent, final int sleeptime) {
+
+            final ProgressDialog progressDialog = ProgressDialog.show(context, "Please wait...", "Loading data ...", true);
+
+            new Thread() {
+                public void run() {
+                    try{
+                        // Do some work here
+                        sleep(sleeptime);
+                    } catch (Exception e) {
+                    }
+                    // start next intent
+                    new Thread() {
+                        public void run() {
+                            // Dismiss the Dialog
+                            progressDialog.dismiss();
+                            // start selected activity
+                            if ( startingIntent != null) context.startActivity(startingIntent);
+                        }
+                    }.start();
+                }
+            }.start();
+
+        }
 }
