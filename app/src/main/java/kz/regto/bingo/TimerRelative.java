@@ -17,7 +17,6 @@ public class TimerRelative extends RelativeLayout {
 
 
     private long secCounter = 30000;
-    private boolean bTimer= false;
     private long startTime = 0L;
     private TextView timerValue;
     private TextView WinNumber;
@@ -66,18 +65,20 @@ public class TimerRelative extends RelativeLayout {
     }
 
     public void StartTimer(){
-        if (!bTimer){
-            startTime = sp.GetCurrentTime();
-            secCounter =sp.GetFinalTime()-startTime;
+       startTime = sp.GetCurrentTime();
+       secCounter =sp.GetFinalTime()-startTime;
         //Сменили видимость выйгравшего номера и таймера
         TimerVisibility(true);
 
         customHandler.postDelayed(updateTimerThread, 0);
-        bTimer=true;
-        }
     }
+    public void CloseAll() {
+        sp.cancel(true);
+        customHandler.removeCallbacks(updateTimerThread);
+        GameResultHandler.removeCallbacks(updateGameResult);
+    }
+
     public void StopTimer(){
-        bTimer=false;
         //Сменили видимость выйгравшего номера и таймера
         TimerVisibility(false);
         WinNumber.setText("...");
@@ -199,13 +200,15 @@ public class TimerRelative extends RelativeLayout {
         public void run() {
 
            JSONParser jpr = new JSONParser();
-            CurrentTime tProgress = jpr.getGameResult(prnt.BingoDevice.getNetwork_path().concat("timer.php?game_id="+prnt.dGame.getServer_game_id()));
-            if (tProgress.getWinnumber() !=-1) {
-                wn_number =tProgress.getWinnumber();
-                GameOver();
-            }
-            else
-            GameResultHandler.postDelayed(this,0);
+            CurrentTime tProgress = jpr.getGameResult(prnt.BingoDevice.getNetwork_path().concat("/timer.php?game_id="+prnt.dGame.getServer_game_id()));
+            if(tProgress!=null)
+                if (tProgress.getWinnumber() !=-1) {
+                    wn_number =tProgress.getWinnumber();
+                    GameOver();
+                }
+                else {GameResultHandler.postDelayed(this,0);}
+            else{GameResultHandler.postDelayed(this,0);}
+
         }
     };
 }

@@ -26,7 +26,7 @@ public class d_entry_set {
     private int sum;
 
     public d_entry_set(){}
-    public d_entry_set(int i_chip_number,int i_log_id, int idV, int i_divided_by, int iX,int iY, int i_game_id, int i_sum){
+    public d_entry_set(int i_chip_number,int i_log_id, int idV, int i_divided_by, int iX,int iY, int i_game_id, int i_sum, int ientry_value){
         chip_number = i_chip_number;
         log_id = i_log_id;
         entry_id = idV;
@@ -35,6 +35,7 @@ public class d_entry_set {
         y=iY;
         game_id = i_game_id;
         sum = i_sum;
+        entry_value = ientry_value;
     }
 
     public int getSys_id() {

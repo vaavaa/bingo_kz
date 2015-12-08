@@ -589,7 +589,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int getGameIdSum(int game_id, int idV) {
         int iReturn=-1;
-        String group_sum_sql = "SELECT SUM(sum) as cur_sum  FROM entry_set WHERE game_id=" + game_id+" AND entry_id="+idV+" GROUP BY game_id";
+        String group_sum_sql = "SELECT SUM(entry_value/divided_by) as cur_sum  FROM entry_set WHERE game_id=" + game_id+" AND entry_id="+idV+" GROUP BY entry_id";
         try{
             Cursor c = dbr.rawQuery(group_sum_sql, null);
             if (c!=null && c.moveToFirst()){

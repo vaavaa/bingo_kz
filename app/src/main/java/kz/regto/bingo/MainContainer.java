@@ -17,7 +17,7 @@ import kz.regto.database.d_entry_set;
 
 public class MainContainer extends ViewGroup {
 
-    int ilevelset=1;
+
     private LinkedList<ChipLogLimit> limitLogList=new LinkedList<ChipLogLimit>();
     private Main main;
 
@@ -74,22 +74,11 @@ public class MainContainer extends ViewGroup {
         }
     }
 
-    public void setIlevelset(int ilevelset) {
-        this.ilevelset = ilevelset;
-    }
-
-    public int getIlevelset() {
-        return ilevelset;
-    }
-
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int width = 0;
-        int height = 0;
-
-        width = MeasureSpec.getSize(widthMeasureSpec) - 33;
-        height = MeasureSpec.getSize(heightMeasureSpec) - 33;
+        int width = MeasureSpec.getSize(widthMeasureSpec) - 33;
+        int height = MeasureSpec.getSize(heightMeasureSpec) - 33;
 
         String className;
         int childCount = this.getChildCount();
@@ -116,80 +105,12 @@ public class MainContainer extends ViewGroup {
         return resources.getIdentifier(ResName, ResType,
                 getContext().getPackageName());
     }
-
-    private void addNewListMembers(LinkedList<ChipLogLimit> pushLog){
-        for (ChipLogLimit chipLogLimit : pushLog) limitLogList.add(chipLogLimit);
+    public void addCustomView(View Child){
+        this.addView(Child);
+        this.invalidate();
     }
 
-    public int setChildName(View child, BoardGrid boardGrid){
-        int iReturn = 0;
-        int childCount = this.getChildCount();
-        String className;
-        for(int i=0; i<childCount;i++) {
-            View vV = getChildAt(i);
-            className = vV.getClass().getName();
-            className= className.substring(className.lastIndexOf(".") + 1);
-            switch (className){
-                case "EntryAnimated":
-                    TextView v = (TextView)getChildAt(i);
-                    int idV=v.getId();
-                    int animPoint = child.getId();
-                    if (idV==animPoint) {
-                        //Фишка уже стоит на поле мы повышаем ее статус до заданого или на 1
-                        int level=v.getBackground().getLevel();
-                        if (!boardGrid.addNewChip(v.getId(),ilevelset,limitLogList)){
-                            Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.nope_rotate);
-                            v.setAnimation(rotate_animation);
-                        }
-                        else {
-                            addNewListMembers(boardGrid.getLimitLogList());
-                            if (level ==ilevelset) {
-                                if (v.getText().equals("")) v.setText("2");
-                                else {
-                                    String vText =(String)v.getText();
-                                    int ivText= 0;
-                                    ivText=Integer.parseInt(vText);
-                                    v.setText(Integer.toString(ivText+ 1));
-                                }
-                            }
-                            else level =ilevelset;
- ;
-                            v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", EntryName(level))));
-                            v.getBackground().setLevel(level);
-                        }
-
-                        iReturn=level;
-                        v.bringToFront();
-                        invalidate();
-                        break;
-                    }
-                    break;
-            }
-        }
-        className = child.getClass().getName();
-        className= className.substring(className.lastIndexOf(".") + 1);
-        switch (className){
-            case "EntryAnimated":
-                if (iReturn==0) {
-                    child.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", EntryName(ilevelset))));
-                    child.getBackground().setLevel(ilevelset);
-                    child.bringToFront();
-                    this.addView(child);
-
-                    invalidate();
-                    iReturn=ilevelset;
-                }
-                break;
-        }
-
-        return iReturn;
-    }
-    private String EntryName(int level){
-        String nameDrawable  = "card_entry" + Integer.toString(level);
-        return nameDrawable;
-    }
-
-    //которая все же удалила
+    //Удаляем все элементы с доски
     public void ClearBoard(){
             boolean doBreak = false;
             while (!doBreak) {
@@ -216,7 +137,7 @@ public class MainContainer extends ViewGroup {
 
     public void stepBack(){
         d_entry_set dEntrySet = main.db.getLastEntrySet();
-        TextView tw = (TextView)this.getChildAt(dEntrySet.getEntry_id());
+        TextView tw = (TextView) this.getChild(dEntrySet.getEntry_id());
         if (tw!=null){
            if (main.db.getGameIdSum(dEntrySet.getGame_id(),dEntrySet.getEntry_id())==dEntrySet.getSum()){
               Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
@@ -227,7 +148,7 @@ public class MainContainer extends ViewGroup {
            else {
               int sum_chk = Integer.parseInt(tw.getText().toString())-1;
               if (sum_chk==0) tw.setText("");
-              else tw.setText(Integer.toString(sum_chk));
+              else tw.setText(""+sum_chk);
 
            }
            this.invalidate();

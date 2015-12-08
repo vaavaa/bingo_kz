@@ -56,14 +56,9 @@ public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
            do {
                tProgress = jpr.getTimer(r_URL_timer);
                    if (tProgress!=null){
-                       if (tProgress.getCurrenttime() == 0L) tProgress.setCurrenttime(SystemClock.uptimeMillis());
-                   }
-                   else {
-                       tProgress=new CurrentTime();
-                       tProgress.setCurrenttime(SystemClock.uptimeMillis());
-                       tProgress.setWinnumber((int) (Math.random() * ((36) + 1)));
+                       publishProgress(tProgress);
                    };
-               publishProgress(tProgress);
+
            }while (!this.isCancelled());
         return tProgress;
     }

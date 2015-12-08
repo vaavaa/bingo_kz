@@ -7,11 +7,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -23,7 +25,7 @@ public class BoardGrid extends View {
     private Paint paint;
     private Paint bg_paint;
     private List<BoardGridEvents> listeners = new ArrayList<BoardGridEvents>();
-    private LinkedList<d_entry_set> mainLogList=new LinkedList<d_entry_set>();
+    private MainContainer mc;
 
     private boolean WasEntrySet=true;
 
@@ -31,8 +33,6 @@ public class BoardGrid extends View {
     int x_pushed = 0;
     //Ни чего не нажато по Y;
     int y_pushed = 0;
-    //какая ставка
-    int ilevel=1;
 
     //Определеяем какое число нажато
     int x_pushed_number=-1;
@@ -88,9 +88,10 @@ public class BoardGrid extends View {
 
 
     private void init(final Context ct) {
-        // Generate bitmap used for background
+
         paint= new Paint();
         bg_paint = new Paint();
+
 
         paint.setColor(Color.rgb(220, 220, 220));
         paint.setStyle(Paint.Style.FILL);
@@ -175,14 +176,6 @@ public class BoardGrid extends View {
         }
     }
 
-    public LinkedList<d_entry_set> getMainLogList(){
-            return mainLogList;
-    }
-
-    public void setMainLogList(LinkedList<d_entry_set> smainLogList){
-        mainLogList=smainLogList;
-    }
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -190,24 +183,29 @@ public class BoardGrid extends View {
         MakeTouchedRectangleArea(canvas);
     }
 
-
-    //Получаем пересечение прямоугольников
     public void EntryGetsPoint(int xTouch_new, int yTouch_new){
         EntryAnimated touchedView;
-        MainContainer main_container_parent;
         xTouch_new = xTouch_new+33;
         yTouch_new = yTouch_new+33;
         touchedView=new EntryAnimated(this.getContext());
         touchedView.RectArea(xTouch_new - (int) (RADIUS_LIMIT / 2), yTouch_new - (int) (RADIUS_LIMIT / 2), xTouch_new + (int) (RADIUS_LIMIT / 2), yTouch_new + (int) (RADIUS_LIMIT / 2));
 
+        Main main = (Main)getContext();
         //Object now has name for identification
         int idV;
         idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
         touchedView.setId(idV);
-        main_container_parent = (MainContainer)BoardGrid.this.getParent();
-        ilevel = main_container_parent.setChildName(touchedView, this);
-        showHint(xTouch_new,yTouch_new);
-        for (BoardGridEvents hl : listeners) hl.entrySet(ilevel);
+        //Ему нжуен только ИД и координаты
+        d_entry_set dEntrySet  = new d_entry_set();
+        dEntrySet.setX(xTouch_new);
+        dEntrySet.setY(yTouch_new);
+        dEntrySet.setLog_id(main.getIlevelset());
+        dEntrySet.setEntry_id(idV);
+
+        setChildName(dEntrySet, touchedView);
+        showHint(xTouch_new, yTouch_new);
+
+        for (BoardGridEvents hl : listeners) hl.entrySet();
     }
 
 
@@ -223,15 +221,9 @@ public class BoardGrid extends View {
 
             EntryGetsPoint(xTouch_new, yTouch_new);
 
-            copyToMainStore(getPushedNumber(xTouch_new, yTouch_new));
             GetUserTouch(xTouch_new, yTouch_new);
             invalidate();
         }
-    }
-
-    private void copyToMainStore(LinkedList<d_entry_set> nLogList){
-        if (WasEntrySet)
-            for (d_entry_set cl: nLogList) mainLogList.add(cl);
     }
 
     public void setBoard_blocked(Boolean locktheboard){
@@ -258,13 +250,7 @@ public class BoardGrid extends View {
                     yTouch_new = getYCrossed(xTouch, yTouch);
 
                     if (xTouch_new>0 && yTouch_new>0){
-                        int idV;
-                        idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
-
-
                         EntryGetsPoint(xTouch_new, yTouch_new);
-
-                        copyToMainStore(getPushedNumber(xTouch_new, yTouch_new));
                         GetUserTouch(xTouch_new, yTouch_new);
 
                         invalidate();
@@ -275,7 +261,7 @@ public class BoardGrid extends View {
                 case MotionEvent.ACTION_POINTER_DOWN:
 
                     // It secondary pointers, so obtain their ids and check
-                    pointerId = event.getPointerId(actionIndex);
+                    //pointerId = event.getPointerId(actionIndex);
                     xTouch = (int) event.getX(actionIndex);
                     yTouch = (int) event.getY(actionIndex);
                     xTouch_new = getXCrossed(xTouch, yTouch);
@@ -283,9 +269,7 @@ public class BoardGrid extends View {
                     if (xTouch_new>0 && yTouch_new>0){
                         int idV;
                         idV = Integer.parseInt(Integer.toString(xTouch_new) + Integer.toString(yTouch_new));
-                        EntryGetsPoint(xTouch_new,yTouch_new);
-                        copyToMainStore(getPushedNumber(xTouch_new,yTouch_new));
-
+                        EntryGetsPoint(xTouch_new, yTouch_new);
                         invalidate();
                     }
                     handled = true;
@@ -308,7 +292,7 @@ public class BoardGrid extends View {
                 case MotionEvent.ACTION_POINTER_UP:
                     // not general pointer was up
 
-                    pointerId = event.getPointerId(actionIndex);
+                    //pointerId = event.getPointerId(actionIndex);
                     invalidate();
                     handled = true;
                     break;
@@ -434,10 +418,15 @@ public class BoardGrid extends View {
 
 
         mHintOperate.RectArea(xTouch - 30, yTouch - 40, xTouch + 30, yTouch - 20);
+        Main main = (Main)getContext();
         //pushed color
-        mHintOperate.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(ilevel))));
-        db.getGameIdSum
-        mHintOperate.setText("+1300");
+        mHintOperate.setRectColor(this.getResourceByID("color", "e".concat(Integer.toString(main.getIlevelset()))));
+        int idv = Integer.parseInt(xTouch+""+yTouch);
+
+
+        int sum = main.db.getGameIdSum(main.dGame.getId(),idv);
+
+        mHintOperate.setText("+"+sum);
 
         Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.hint_fade_out);
         mHintOperate.setAnimation(rotate_animation);
@@ -560,6 +549,7 @@ public class BoardGrid extends View {
         mRecOperate1.bottom_Y=mRecOperate1.bottom_Y+33;
         mRecOperate1.top_Y=mRecOperate1.top_Y+33;
     }
+
     public int getResourceByID(String ResType,String ResName) {
         Resources resources = getContext().getResources();
         return resources.getIdentifier(ResName, ResType,
@@ -585,16 +575,73 @@ public class BoardGrid extends View {
         return iEntry;
     }
 
-    public LinkedList<d_entry_set> getPushedNumber(int x,int y){
+    public void setChildName(d_entry_set child, View Child){
+        int iReturn = 0;
+        int ch_sum;
+        mc = (MainContainer)this.getParent();
+        TextView v = (TextView)mc.getChild(child.getEntry_id());
+        Main main = (Main)getContext();
+        List<d_entry_set> dl = getPushedNumber(child.getX(),child.getY());
+        if (v!=null) {
+        //Фишка уже стоит на поле мы повышаем ее статус до заданого или на 1
+            ch_sum = main.db.getGameIdSum(main.dGame.getId(), v.getId());
+            ch_sum = ch_sum+getEntryfromLevel(main.getIlevelset());
+            int limit = dl.size() *1000;
+            if (ch_sum  <= limit){
+                if (v.getText().equals("")) v.setText("2");
+                else {
+                      String vText =(String)v.getText();
+                      int ivText=Integer.parseInt(vText);
+                      v.setText(Integer.toString(ivText+ 1));
+                }
+                v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", EntryName(main.getIlevelset()))));
+                v.bringToFront();
+                invalidate(); mc.invalidate();
+                //Сохраняем масив
+                saveEntrySet(dl);
+            }
+            else {
+                Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.nope_rotate);
+                v.setAnimation(rotate_animation);
+            }
+        }
+        else{
+            //Тут мы добавляем новый объект на доску
+            Child.setBackground(ContextCompat.getDrawable(main, getResourceByID("drawable", EntryName(main.getIlevelset()))));
+            Child.bringToFront();
+            mc.addCustomView(Child);
+            invalidate();
+            saveEntrySet(dl);
+
+        }
+    }
+
+    private String EntryName(int level){
+        return "card_entry" + Integer.toString(level);
+    }
+
+    public void saveEntrySet(List<d_entry_set> ll){
+          Main main = (Main)getContext();
+          for (d_entry_set dEntrySet: ll){
+              main.db.createNewEntrySet(dEntrySet);
+          }
+    }
+
+    public List<d_entry_set> getPushedNumber(int x,int y){
         LinkedList<d_entry_set> chLog = new LinkedList<>();
+
         int idV;
         int sum;
-
+        Main main = (Main)getContext();
+        int ilevel = main.getIlevelset();
+        int gid = main.db.getLastGame().getId();
         int entry = getEntryfromLevel (ilevel);
         idV = Integer.parseInt(Integer.toString(x)+Integer.toString(y));
+
+
         //Zero
         if ((y_pushed==5)&&(x_pushed==5)) {
-            chLog.add(new d_entry_set(0,ilevel,idV,1,x,y, entry,36*entry));
+            chLog.add(new d_entry_set(0,ilevel,idV,1,x,y, entry,36*entry,entry));
         }
         //Ячейки
         if ((y_pushed==4)&&(x_pushed==4)){
@@ -602,156 +649,156 @@ public class BoardGrid extends View {
                 case 1:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(3,ilevel,idV,1,x,y,entry,36*entry));
+                            chLog.add(new d_entry_set(3,ilevel,idV,1,x,y,gid,36*entry,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(2,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(2,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(1,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(1,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                     }
                     break;
                 case 2:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(6,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(6,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(5,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(5,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(4,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(4,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                     }
                     break;
                 case 3:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(9,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(9,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(8,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(8,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(7,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(7,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                     }
                     break;
                 case 4:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(12,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(12,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(11,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(11,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(10,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(10,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                     }
                     break;
                 case 5:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(15,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(15,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(14,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(14,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(13,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(13,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                     }
                     break;
                 case 6:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(18,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(18,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(17,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(17,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(16,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(16,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                     }
                     break;
                 case 7:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(21,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(21,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(20,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(20,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(19,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(19,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                     }
                     break;
                 case 8:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(24,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(24,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(23,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(23,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(22,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(22,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                     }
                     break;
                 case 9:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(27,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(27,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(26,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(26,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(25,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(25,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                     }
                     break;
                 case 10:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(30,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(30,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(29,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(29,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(28,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(28,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                     }
                     break;
                 case 11:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(33,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(33,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(32,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(32,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(31,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(31,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                     }
                     break;
                 case 12:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(36,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(36,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(35,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(35,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(34,ilevel,idV,1,x,y, entry,36*entry));
+                            chLog.add(new d_entry_set(34,ilevel,idV,1,x,y, gid,36*entry,entry));
                             break;
                     }
                     break;
@@ -759,46 +806,46 @@ public class BoardGrid extends View {
                     sum = 3*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(3,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(6,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(9,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(12,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(15,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(18,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(21,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(24,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(27,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(30,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(33,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(36,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(3,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(6,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(9,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(12,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(15,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(18,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(21,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(24,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(27,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(30,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(33,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(36,ilevel,idV,12,x,y, gid,sum,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(2,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(5,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(8,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(11,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(14,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(17,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(20,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(23,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(26,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(29,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(32,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(35,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(2,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(5,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(8,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(11,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(14,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(17,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(20,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(23,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(26,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(29,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(32,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(35,ilevel,idV,12,x,y, gid,sum,entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(1,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(4,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(7,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(10,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(13,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(16,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(19,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(22,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(25,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(28,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(31,ilevel,idV,12,x,y, entry,sum));
-                            chLog.add(new d_entry_set(34,ilevel,idV,12,x,y, entry,sum));
+                            chLog.add(new d_entry_set(1,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(4,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(7,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(10,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(13,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(16,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(19,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(22,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(25,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(28,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(31,ilevel,idV,12,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(34,ilevel,idV,12,x,y, gid,sum,entry));
                             break;
                     }
                     break;
@@ -811,14 +858,14 @@ public class BoardGrid extends View {
                     sum = 12*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(0,ilevel,idV,3,x,y, entry,sum));
-                            chLog.add(new d_entry_set(2,ilevel,idV,3,x,y, entry,sum));
-                            chLog.add(new d_entry_set(3,ilevel,idV,3,x,y, entry,sum));
+                            chLog.add(new d_entry_set(0,ilevel,idV,3,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(2,ilevel,idV,3,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(3,ilevel,idV,3,x,y, gid,sum,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(0,ilevel,idV,3,x,y, entry,sum));
-                            chLog.add(new d_entry_set(2,ilevel,idV,3,x,y, entry,sum));
-                            chLog.add(new d_entry_set(1,ilevel,idV,3,x,y, entry,sum));
+                            chLog.add(new d_entry_set(0,ilevel,idV,3,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(2,ilevel,idV,3,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(1,ilevel,idV,3,x,y, gid,sum,entry));
                             break;
                     }
                     break;
@@ -826,16 +873,16 @@ public class BoardGrid extends View {
                     sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(3,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(6,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(2,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(5,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(3,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(6,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(2,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(5,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(2,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(5,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(1,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(4,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(2,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(5,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(1,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(4,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                     }
                     break;
@@ -843,16 +890,16 @@ public class BoardGrid extends View {
                     sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(6,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(9,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(5,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(8,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(6,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(9,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(5,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(8,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(5,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(8,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(4,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(7,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(5,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(8,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(4,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(7,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                     }
                     break;
@@ -860,16 +907,16 @@ public class BoardGrid extends View {
                     sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(9,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(12,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(8,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(11,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(9,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(12,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(8,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(11,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(8,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(11,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(7,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(10,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(8,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(11,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(7,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(10,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                     }
                     break;
@@ -877,16 +924,16 @@ public class BoardGrid extends View {
                     sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(12,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(15,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(11,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(14,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(12,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(15,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(11,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(14,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(11,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(14,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(10,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(13,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(11,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(14,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(10,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(13,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                     }
                     break;
@@ -894,16 +941,16 @@ public class BoardGrid extends View {
                     sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(15,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(18,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(14,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(17,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(15,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(18,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(14,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(17,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(14,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(17,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(13,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(16,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(14,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(17,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(13,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(16,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                     }
                     break;
@@ -911,16 +958,16 @@ public class BoardGrid extends View {
                     sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(18,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(21,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(17,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(20,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(18,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(21,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(17,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(20,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(17,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(20,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(16,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(19,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(17,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(20,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(16,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(19,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                     }
                     break;
@@ -928,16 +975,16 @@ public class BoardGrid extends View {
                     sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(21,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(24,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(20,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(23,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(21,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(24,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(20,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(23,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(20,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(23,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(19,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(22,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(20,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(23,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(19,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(22,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                     }
                     break;
@@ -945,16 +992,16 @@ public class BoardGrid extends View {
                     sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(24,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(27,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(23,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(26,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(24,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(27,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(23,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(26,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(23,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(26,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(22,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(25,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(23,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(26,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(22,ilevel,idV,4,x,y, gid,sum,entry));
+                            chLog.add(new d_entry_set(25,ilevel,idV,4,x,y, gid,sum,entry));
                             break;
                     }
                     break;
@@ -962,16 +1009,16 @@ public class BoardGrid extends View {
                     sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(27,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(30,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(26,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(29,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(27,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(30,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(26,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(29,ilevel,idV,4,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(26,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(29,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(25,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(28,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(26,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(29,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(25,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(28,ilevel,idV,4,x,y, gid,sum, entry));
                             break;
                     }
                     break;
@@ -979,16 +1026,16 @@ public class BoardGrid extends View {
                     sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(30,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(33,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(29,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(32,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(30,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(33,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(29,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(32,ilevel,idV,4,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(29,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(32,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(28,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(31,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(29,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(32,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(28,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(31,ilevel,idV,4,x,y, gid,sum, entry));
                             break;
                     }
                     break;
@@ -996,16 +1043,16 @@ public class BoardGrid extends View {
                     sum = 9*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(33,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(36,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(32,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(35,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(33,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(36,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(32,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(35,ilevel,idV,4,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(32,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(35,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(31,ilevel,idV,4,x,y, entry,sum));
-                            chLog.add(new d_entry_set(34,ilevel,idV,4,x,y, entry,sum));
+                            chLog.add(new d_entry_set(32,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(35,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(31,ilevel,idV,4,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(34,ilevel,idV,4,x,y, gid,sum, entry));
                             break;
                     }
                     break;
@@ -1018,17 +1065,17 @@ public class BoardGrid extends View {
                     sum = 18*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(3,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(2,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(3,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(2,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(2,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(1,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(2,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(1,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(3,ilevel,idV,3,x,y, entry,12*entry));
-                            chLog.add(new d_entry_set(2,ilevel,idV,3,x,y, entry,12*entry));
-                            chLog.add(new d_entry_set(1,ilevel,idV,3,x,y, entry,12*entry));
+                            chLog.add(new d_entry_set(3,ilevel,idV,3,x,y, gid,12*entry,entry));
+                            chLog.add(new d_entry_set(2,ilevel,idV,3,x,y, gid,12*entry,entry));
+                            chLog.add(new d_entry_set(1,ilevel,idV,3,x,y, gid,12*entry,entry));
                             break;
                     }
                     break;
@@ -1036,17 +1083,17 @@ public class BoardGrid extends View {
                     sum = 18*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(6,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(5,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(6,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(5,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(5,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(4,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(5,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(4,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(4,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(5,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(6,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(4,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(5,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(6,ilevel,idV,3,x,y,gid,12*entry,entry));
                             break;
                     }
                     break;
@@ -1054,17 +1101,17 @@ public class BoardGrid extends View {
                     sum = 18*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(9,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(8,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(9,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(8,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(8,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(7,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(8,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(7,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(7,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(8,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(9,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(7,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(8,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(9,ilevel,idV,3,x,y,gid,12*entry,entry));
                             break;
                     }
                     break;
@@ -1072,17 +1119,17 @@ public class BoardGrid extends View {
                     sum = 18*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(12,ilevel,idV,2,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(11,ilevel,idV,2,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(12,ilevel,idV,2,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(11,ilevel,idV,2,x,y,gid,12*entry,entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(11,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(10,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(11,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(10,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(10,ilevel,idV,3,x,y,entry, 12*entry));
-                            chLog.add(new d_entry_set(11,ilevel,idV,3,x,y,entry, 12*entry));
-                            chLog.add(new d_entry_set(12,ilevel,idV,3,x,y,entry, 12*entry));
+                            chLog.add(new d_entry_set(10,ilevel,idV,3,x,y,gid, 12*entry,entry));
+                            chLog.add(new d_entry_set(11,ilevel,idV,3,x,y,gid, 12*entry,entry));
+                            chLog.add(new d_entry_set(12,ilevel,idV,3,x,y,gid, 12*entry,entry));
                             break;
                     }
                     break;
@@ -1090,17 +1137,17 @@ public class BoardGrid extends View {
                     sum = 18*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(15,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(14,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(15,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(14,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(14,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(13,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(14,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(13,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(13,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(14,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(15,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(13,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(14,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(15,ilevel,idV,3,x,y,gid,12*entry,entry));
                             break;
                     }
                     break;
@@ -1108,17 +1155,17 @@ public class BoardGrid extends View {
                     sum = 18*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(18,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(17,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(18,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(17,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(17,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(16,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(17,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(16,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(16,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(17,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(18,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(16,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(17,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(18,ilevel,idV,3,x,y,gid,12*entry,entry));
                             break;
                     }
                     break;
@@ -1126,17 +1173,17 @@ public class BoardGrid extends View {
                     sum = 18*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(21,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(20,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(21,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(20,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(20,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(19,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(20,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(19,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(21,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(19,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(20,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(21,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(19,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(20,ilevel,idV,3,x,y,gid,12*entry,entry));
                             break;
                     }
                     break;
@@ -1144,17 +1191,17 @@ public class BoardGrid extends View {
                     sum = 18*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(24,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(23,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(24,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(23,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(23,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(22,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(23,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(22,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(22,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(23,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(24,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(22,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(23,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(24,ilevel,idV,3,x,y,gid,12*entry,entry));
                             break;
                     }
                     break;
@@ -1162,17 +1209,17 @@ public class BoardGrid extends View {
                     sum = 18*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(27,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(26,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(27,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(26,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(26,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(25,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(26,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(25,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(25,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(26,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(27,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(25,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(26,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(27,ilevel,idV,3,x,y,gid,12*entry,entry));
                             break;
                     }
                     break;
@@ -1180,17 +1227,17 @@ public class BoardGrid extends View {
                     sum = 18*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(30,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(29,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(30,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(29,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(29,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(28,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(29,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(28,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(28,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(29,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(30,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(28,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(29,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(30,ilevel,idV,3,x,y,gid,12*entry,entry));
                             break;
                     }
                     break;
@@ -1198,17 +1245,17 @@ public class BoardGrid extends View {
                     sum = 18*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(33,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(32,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(33,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(32,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(32,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(31,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(32,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(31,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(31,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(33,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(32,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(31,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(33,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(32,ilevel,idV,3,x,y,gid,12*entry,entry));
                             break;
                     }
                     break;
@@ -1216,17 +1263,17 @@ public class BoardGrid extends View {
                     sum = 18*entry;
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(36,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(35,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(36,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(35,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(35,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(34,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(35,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(34,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(34,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(35,ilevel,idV,3,x,y,entry,12*entry));
-                            chLog.add(new d_entry_set(36,ilevel,idV,3,x,y,entry,12*entry));
+                            chLog.add(new d_entry_set(34,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(35,ilevel,idV,3,x,y,gid,12*entry,entry));
+                            chLog.add(new d_entry_set(36,ilevel,idV,3,x,y,gid,12*entry,entry));
                             break;
                     }
                     break;
@@ -1239,192 +1286,192 @@ public class BoardGrid extends View {
                 case 1:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(3,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(0,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(3,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(0,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(2,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(0,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(2,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(0,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(0,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(1,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(0,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(1,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                     }
                     break;
                 case 2:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(6,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(3,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(6,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(3,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(5,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(2,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(5,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(2,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(4,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(1,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(4,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(1,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                     }
                     break;
                 case 3:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(9,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(6,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(9,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(6,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(5,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(8,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(5,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(8,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(7,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(4,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(7,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(4,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                     }
                     break;
                 case 4:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(12,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(9,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(12,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(9,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(11,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(8,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(11,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(8,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(10,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(7,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(10,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(7,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                     }
                     break;
                 case 5:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(15,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(12,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(15,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(12,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(14,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(11,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(14,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(11,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(13,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(10,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(13,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(10,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                     }
                     break;
                 case 6:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(18,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(15,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(18,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(15,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(17,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(14,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(17,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(14,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(16,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(13,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(16,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(13,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                     }
                     break;
                 case 7:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(21,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(18,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(21,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(18,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(20,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(17,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(20,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(17,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(16,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(19,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(16,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(19,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                     }
                     break;
                 case 8:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(24,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(21,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(24,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(21,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(23,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(20,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(23,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(20,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(22,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(19,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(22,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(19,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                     }
                     break;
                 case 9:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(27,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(24,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(27,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(24,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(26,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(23,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(26,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(23,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(25,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(22,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(25,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(22,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                     }
                     break;
                 case 10:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(30,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(27,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(30,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(27,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(29,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(26,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(29,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(26,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(28,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(25,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(28,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(25,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                     }
                     break;
                 case 11:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(33,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(30,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(33,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(30,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(32,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(29,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(32,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(29,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(31,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(28,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(31,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(28,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                     }
                     break;
                 case 12:
                     switch( y_pushed_number){
                         case 1:
-                            chLog.add(new d_entry_set(36,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(33,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(36,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(33,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 2:
-                            chLog.add(new d_entry_set(35,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(32,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(35,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(32,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                         case 3:
-                            chLog.add(new d_entry_set(34,ilevel,idV,2,x,y, entry,sum));
-                            chLog.add(new d_entry_set(31,ilevel,idV,2,x,y, entry,sum));
+                            chLog.add(new d_entry_set(34,ilevel,idV,2,x,y, gid,sum, entry));
+                            chLog.add(new d_entry_set(31,ilevel,idV,2,x,y, gid,sum, entry));
                             break;
                     }
                     break;

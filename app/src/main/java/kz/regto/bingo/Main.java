@@ -17,7 +17,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import kz.regto.database.DatabaseHelper;
@@ -41,6 +40,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     Lock lck;
     FrameLayout frameLayout;
     TimerRelative timerRelative;
+    public int ilevelset=1;
 
 
     // Database Helper
@@ -74,6 +74,10 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             BingoDevice.setDeviceCode(new Utils().getUniquePsuedoID());
             db.createNewDevice(BingoDevice);
         }
+        else {
+            EditText ET1 = (EditText) frameLayout.findViewById(R.id.n_path);
+            ET1.setText(BingoDevice.getNetwork_path());
+        }
 
         //Ставка в 100
         findViewById(R.id.entry100).setSelected(true);
@@ -91,6 +95,15 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
     }
 
+    public void setIlevelset(int ilevelset) {
+        this.ilevelset = ilevelset;
+    }
+
+    public int getIlevelset() {
+        return ilevelset;
+    }
+
+
     public void setButtonsUnclickable(boolean bEnable){
         findViewById(R.id.card_step_back).setEnabled(!bEnable);
         findViewById(R.id.make_crd_null).setEnabled(!bEnable);
@@ -101,15 +114,14 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         findViewById(R.id.x2).setEnabled(!bEnable);
         findViewById(R.id.auto).setEnabled(!bEnable);
         if (bEnable) {
-            findViewById(R.id.card_step_back).setAlpha(.5f);
-            findViewById(R.id.make_crd_null).setAlpha(.5f);
-            findViewById(R.id.entry1000).setAlpha(.5f);
-            findViewById(R.id.entry500).setAlpha(.5f);
-            findViewById(R.id.entry200).setAlpha(.5f);
-            findViewById(R.id.entry100).setAlpha(.5f);
-            findViewById(R.id.x2).setAlpha(.5f);
-            findViewById(R.id.auto).setAlpha(.5f);
-            board.setAlpha(.5f);
+            findViewById(R.id.card_step_back).setAlpha(.7f);
+            findViewById(R.id.make_crd_null).setAlpha(.7f);
+            findViewById(R.id.entry1000).setAlpha(.7f);
+            findViewById(R.id.entry500).setAlpha(.7f);
+            findViewById(R.id.entry200).setAlpha(.7f);
+            findViewById(R.id.entry100).setAlpha(.7f);
+            findViewById(R.id.x2).setAlpha(.7f);
+            findViewById(R.id.auto).setAlpha(.7f);
             board.setBoard_blocked(true);
         }
         else {
@@ -121,7 +133,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             findViewById(R.id.entry100).setAlpha(1f);
             findViewById(R.id.x2).setAlpha(1f);
             findViewById(R.id.auto).setAlpha(1f);
-            board.setAlpha(1f);
             board.setBoard_blocked(false);
         }
     }
@@ -189,7 +200,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                         if (pinCode != null) {
                             if (iPinCode == pinCode.getPinCode()) {
                                 db.updateDevice(BingoDevice);
-
                                 timerRelative.HTTPRunTimer(BingoDevice.getNetwork_path().concat("/timer.php"));
                                 screen_lock(false);
                                 TimerStarted_sub();
@@ -219,7 +229,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         } else {
             screen_lock(false);
             timerRelative.HTTPRunTimer(BingoDevice.getNetwork_path().concat("/timer.php"));
-            TimerStarted();
+            TimerStarted_sub();
         }
     }
 
@@ -287,16 +297,15 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         //ОБновили игру
         db.updateGame(dGame);
 
-        //win.setField(Integer.toString(Integer.parseInt(win.getField()) + GameResultCalculation()));
-        clearBoard();
-        setButtonsUnclickable(false);
-        //Запускаем новую игру c задержкой в 3 секунды
+        //Запускаем новую игру c задержкой в 2 секунды
         Handler temp_handler = new Handler();
         temp_handler.postDelayed(new Runnable() {
             public void run() {
+                clearBoard();
+                setButtonsUnclickable(false);
                 TimerStarted_sub();
             }
-        }, 2000);
+        }, 2500);
     }
 
     private void TimerStarted_sub() {
@@ -378,15 +387,11 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     }
 
     @Override
-    public void TimerStarted(){
-        TimerStarted_sub();
-    }
-    @Override
-    public void entrySet(int entryType){
-        int iEntry = getEntryfromLevel(entryType);
-        TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
-        iEntry = iEntry + Integer.parseInt(t2w.getField());
-        t2w.setField(Integer.toString(iEntry));
+    public void entrySet(){
+//        int iEntry = getEntryfromLevel(entryType);
+//        TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
+//        iEntry = iEntry + Integer.parseInt(t2w.getField());
+//        t2w.setField(Integer.toString(iEntry));
     }
     public void botsEntry(View view){
         board.set_random_entry();
@@ -418,15 +423,16 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
         bPushed.setSelected(true);
         String entryset = bPushed.getText().toString();
-        if (entryset.equals("100"))  mc.setIlevelset(1);
-        if (entryset.equals("200"))  mc.setIlevelset(2);
-        if (entryset.equals("500"))  mc.setIlevelset(3);
-        if (entryset.equals("1000"))  mc.setIlevelset(4);
+        if (entryset.equals("100"))  this.setIlevelset(1);
+        if (entryset.equals("200"))  this.setIlevelset(2);
+        if (entryset.equals("500"))  this.setIlevelset(3);
+        if (entryset.equals("1000"))  this.setIlevelset(4);
     }
 
     public void ClearBoard(View view){
         clearBoard();
     }
+
     public void stepBack(View view){
         mc.stepBack();
     }
@@ -441,7 +447,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         mc.ClearBoard();
         TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
         t2w.setField("0");
-        board.setMainLogList(new LinkedList<ChipLog>());
     }
 
     public void ball_clicked(View v){
@@ -452,6 +457,11 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
     @Override
     protected void onDestroy(){
+        setButtonsUnclickable(true);
+        screen_lock(true);
+        timerRelative.CloseAll();
+        BingoDevice.setStatus(0);
+        db.updateDevice(BingoDevice);
         db.close();
         super.onDestroy();
     }
