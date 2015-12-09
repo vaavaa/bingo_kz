@@ -132,6 +132,7 @@ public class MainContainer extends ViewGroup {
                     doBreak = true;
                 }
             }
+        main.db.deleteEntrySetByGameID(main.dGame.getId());
        this.invalidate();
     }
 
@@ -139,7 +140,7 @@ public class MainContainer extends ViewGroup {
         d_entry_set dEntrySet = main.db.getLastEntrySet();
         TextView tw = (TextView) this.getChild(dEntrySet.getEntry_id());
         if (tw!=null){
-           if (main.db.getGameIdSum(dEntrySet.getGame_id(),dEntrySet.getEntry_id())==dEntrySet.getSum()){
+           if (main.db.getGameIdSum(dEntrySet.getGame_id(),dEntrySet.getEntry_id())==dEntrySet.getEntry_value()){
               Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
               rotate_animation.setStartOffset((int) (Math.random() * ((50) + 1)));
               tw.setAnimation(rotate_animation);
@@ -149,10 +150,9 @@ public class MainContainer extends ViewGroup {
               int sum_chk = Integer.parseInt(tw.getText().toString())-1;
               if (sum_chk==0) tw.setText("");
               else tw.setText(""+sum_chk);
-
            }
            this.invalidate();
-           main.db.deleteEntrySet(dEntrySet.getSys_id());
+           main.db.deleteEntrySet(dEntrySet.getLog_id());
         }
     }
 

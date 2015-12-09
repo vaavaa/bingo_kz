@@ -21,6 +21,7 @@ import java.util.List;
 
 import kz.regto.database.DatabaseHelper;
 import kz.regto.database.Utils;
+import kz.regto.database.d_balance;
 import kz.regto.database.d_device;
 import kz.regto.database.d_entry_set;
 import kz.regto.database.d_game;
@@ -227,9 +228,11 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                 toast.show();
             }
         } else {
-            screen_lock(false);
-            timerRelative.HTTPRunTimer(BingoDevice.getNetwork_path().concat("/timer.php"));
-            TimerStarted_sub();
+            if (BingoDevice.getBalance() >= 100) {
+                screen_lock(false);
+                timerRelative.HTTPRunTimer(BingoDevice.getNetwork_path().concat("/timer.php"));
+                TimerStarted_sub();
+            }
         }
     }
 
@@ -255,6 +258,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             lck.invalidate();
             lck.setVisibility(View.VISIBLE);
         }
+        lck.invalidate();
     }
 
     public void unlocked(View v){
@@ -297,6 +301,38 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         //ОБновили игру
         db.updateGame(dGame);
 
+        WinBallContainer WBC = (WinBallContainer)this.findViewById(R.id.win_ball_container);
+        WBC.UpdateNewOne(Integer.toString(dGame.getWin_ball()));
+
+        //Считаем выйгрыш, если ничего нет, быдет 0
+        int iWin = db.getGameSum(dGame.getId(),dGame.getWin_ball());
+
+        //Текущий баланс увеличили на выйгрыш
+        TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.balance);
+        int cur_balance = Integer.parseInt(t2w.getField());
+        cur_balance = cur_balance+iWin;
+
+        TwoTextViews t2win =  (TwoTextViews)this.findViewById(R.id.win);
+        t2win.setField(Integer.toString(iWin));
+
+        //Обновляем баланс устройства
+        BingoDevice.setBalance(cur_balance);
+        db.updateDevice(BingoDevice);
+
+        TwoTextViews t2E =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
+        int iEntry = Integer.parseInt(t2E.getField());
+
+        //Создаем баланс
+        d_balance dBalance = new d_balance();
+        dBalance.setSum(iWin-iEntry);
+        dBalance.setGame_id(dGame.getId());
+        dBalance.setOperation(0);
+        db.createNewBalance(dBalance);
+
+        //Ни какой ставки в начеле новой игры нет
+        t2E.setField("0");
+
+
         //Запускаем новую игру c задержкой в 2 секунды
         Handler temp_handler = new Handler();
         temp_handler.postDelayed(new Runnable() {
@@ -313,7 +349,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         JSONParser Jprs = new JSONParser();
         Balance balance = Jprs.tBalance(url);
         if (balance != null) {
-            if (balance.getBalance() > 0) {
+            if (balance.getBalance() >= 100) {
                 BingoDevice.setBalance(balance.getBalance());
                 BingoDevice.setStatus(1);
                 //Прописать в баланс текстовое поле
@@ -374,9 +410,11 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                 timerRelative.StartTimer();
             }
             else {
-                Toast toast = Toast.makeText(this,"Balance is 0",Toast.LENGTH_SHORT);
-                toast.show();
-                screen_lock(true);
+                 Toast toast = Toast.makeText(this, "Баланс на устройстве меньше 100, пополните баланс", Toast.LENGTH_SHORT);
+                 toast.show();
+                 BingoDevice.setStatus(0);
+                 db.updateDevice(BingoDevice);
+                 screen_lock(true);
             }
         }
         else {
@@ -387,30 +425,75 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     }
 
     @Override
-    public void entrySet(){
-//        int iEntry = getEntryfromLevel(entryType);
-//        TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
-//        iEntry = iEntry + Integer.parseInt(t2w.getField());
-//        t2w.setField(Integer.toString(iEntry));
+    public void entrySet(boolean isBalanced){
+        if (isBalanced) {
+            int iEntry = getEntryfromLevel(this.getIlevelset());
+            TwoTextViews t2w = (TwoTextViews) this.findViewById(R.id.CurrentEntry);
+            TwoTextViews t2b = (TwoTextViews) this.findViewById(R.id.balance);
+            int it2b = Integer.parseInt(t2b.getField());
+            it2b = it2b - iEntry;
+            t2b.setField("" + it2b);
+            iEntry = iEntry + Integer.parseInt(t2w.getField());
+            t2w.setField(Integer.toString(iEntry));
+        }
     }
+    private int getEntryfromLevel(int lvl){
+        int iEntry=0;
+        switch (lvl) {
+            case 1:
+                iEntry=100;
+                break;
+            case 2:
+                iEntry=200;
+                break;
+            case 3:
+                iEntry=500;
+                break;
+            case 4:
+                iEntry=1000;
+                break;
+        }
+        return iEntry;
+    }
+    private int getLevelfromEntry(int Entry){
+        int iEntry=0;
+        switch (Entry) {
+            case 100:
+                iEntry=1;
+                break;
+            case 200:
+                iEntry=2;
+                break;
+            case 500:
+                iEntry=3;
+                break;
+            case 1000:
+                iEntry=4;
+                break;
+        }
+        return iEntry;
+    }
+
+
     public void botsEntry(View view){
         board.set_random_entry();
     }
 
     public void x2_button(View view){
-        int iEntry;
         int ibalance;
         int gameSum=0;
-        TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
-        TwoTextViews balance =  (TwoTextViews)this.findViewById(R.id.balance);
-        ibalance = Integer.parseInt(balance.getField());
-        gameSum = db.getGameCurrentSum(dGame.getId());
-        if (ibalance > gameSum) {
+        //TwoTextViews balance =  (TwoTextViews)this.findViewById(R.id.balance);
+        //ibalance = Integer.parseInt(balance.getField());
+        //gameSum = db.getGameCurrentSum(dGame.getId());
+        //if (ibalance >= gameSum) {
             List<d_entry_set> cl = db.getAllGameEntrySet(dGame.getId());
+            BoardGrid bG = (BoardGrid)this.findViewById(R.id.board_grid);
             for (d_entry_set clp: cl){
-                db.createNewEntrySet(clp);
+                this.setIlevelset(getLevelfromEntry(clp.getEntry_value()));
+                bG.EntryGetsPoint(clp.getX()-33,clp.getY()-33);
             }
-        }
+        //}
+        mc.invalidate();
     }
 
     public void EntrySet(View view){
@@ -444,9 +527,12 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     }
 
     private void clearBoard(){
-        mc.ClearBoard();
         TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
         t2w.setField("0");
+        TwoTextViews t2b =  (TwoTextViews)this.findViewById(R.id.balance);
+        int balance = Integer.parseInt(t2b.getField()) + db.getGameCurrentSum(dGame.getId());
+        t2b.setField(""+balance);
+        mc.ClearBoard();
     }
 
     public void ball_clicked(View v){
@@ -465,5 +551,4 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         db.close();
         super.onDestroy();
     }
-
 }

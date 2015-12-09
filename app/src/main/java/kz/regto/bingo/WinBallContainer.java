@@ -99,7 +99,7 @@ public class WinBallContainer extends RelativeLayout {
             }
             else {
                 rInt++;
-                h.postDelayed(showInfo, 250);
+                h.postDelayed(showInfo,150);
             }
         }
     };

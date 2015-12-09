@@ -17,7 +17,7 @@
     <EditText
         android:id="@+id/n_path"
         android:inputType="text"
-        android:layout_width="wrap_content"
+        android:layout_width="450dp"
         android:layout_height="wrap_content"
         android:layout_margin = "17dp"
         android:maxLength="250"
@@ -27,7 +27,7 @@
     <EditText
         android:id="@+id/pin"
         android:inputType="numberPassword"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginRight="120dp"
         android:layout_marginTop="17dp"

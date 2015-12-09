@@ -554,8 +554,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int getGameSum(int game_id, int win_nbr ) {
-        int iReturn=-1;
-        String group_sum_sql = "SELECT SUM(sum) as cur_sum  FROM entry_set WHERE game_id=" + game_id+" AND chip_number="+win_nbr+" GROUP BY game_id";
+        int iReturn=0;
+        String group_sum_sql = "SELECT TOTAL(sum) as cur_sum  FROM entry_set WHERE game_id=" + game_id+" AND chip_number="+win_nbr+" GROUP BY chip_number";
         try{
             Cursor c = dbr.rawQuery(group_sum_sql, null);
             if (c!=null && c.moveToFirst()){
@@ -572,11 +572,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int getGameCurrentSum(int game_id) {
         int iReturn=-1;
-        String group_sum_sql = "SELECT SUM(sum) as cur_sum  FROM entry_set WHERE game_id=" + game_id+" GROUP BY game_id";
+        String group_sum_sql = "SELECT TOTAL(cur_sum) as cur_sum1 FROM (SELECT MIN(entry_value) as cur_sum, MIN(entry_id) as EI  FROM entry_set WHERE game_id=" + game_id+ " GROUP BY log_id)";
         try{
             Cursor c = dbr.rawQuery(group_sum_sql, null);
             if (c!=null && c.moveToFirst()){
-                iReturn = c.getInt(c.getColumnIndex("cur_sum"));
+                iReturn = c.getInt(c.getColumnIndex("cur_sum1"));
                 c.close();
             }
 
@@ -588,12 +588,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int getGameIdSum(int game_id, int idV) {
-        int iReturn=-1;
-        String group_sum_sql = "SELECT SUM(entry_value/divided_by) as cur_sum  FROM entry_set WHERE game_id=" + game_id+" AND entry_id="+idV+" GROUP BY entry_id";
+        int iReturn=0;
+        String group_sum_sql = "SELECT TOTAL(F1.cur_sum) as cur_sum1 FROM (SELECT MIN(entry_value) as cur_sum, MIN(entry_id) as EI  FROM entry_set WHERE game_id=" + game_id+" AND entry_id="+idV+" GROUP BY log_id) as F1 GROUP BY EI";
         try{
             Cursor c = dbr.rawQuery(group_sum_sql, null);
             if (c!=null && c.moveToFirst()){
-                iReturn = c.getInt(c.getColumnIndex("cur_sum"));
+                iReturn = c.getInt(c.getColumnIndex("cur_sum1"));
                 c.close();
             }
 
@@ -607,10 +607,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Deleting a EntrySet
      */
-    public boolean deleteEntrySet(int sys_id) {
+    public boolean deleteEntrySet(long log_id) {
         boolean bReturn;
         String delete_sql = "DELETE FROM entry_set \n"+
-                "WHERE sys_id=" + sys_id;
+                "WHERE log_id=" + log_id;
         try {
             db.execSQL(delete_sql);
             bReturn = true;

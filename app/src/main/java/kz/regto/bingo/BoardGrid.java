@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -202,10 +203,8 @@ public class BoardGrid extends View {
         dEntrySet.setLog_id(main.getIlevelset());
         dEntrySet.setEntry_id(idV);
 
-        setChildName(dEntrySet, touchedView);
-        showHint(xTouch_new, yTouch_new);
-
-        for (BoardGridEvents hl : listeners) hl.entrySet();
+        boolean isBalanced = setChildName(dEntrySet, touchedView);
+        for (BoardGridEvents hl : listeners) hl.entrySet(isBalanced);
     }
 
 
@@ -556,7 +555,16 @@ public class BoardGrid extends View {
                 getContext().getPackageName());
     }
 
-    public int getEntryfromLevel(int lvl){
+    private boolean isBalance(int entry_set){
+        Main main = (Main)getContext();
+        boolean risBalance = false;
+        TwoTextViews t2w =  (TwoTextViews)main.findViewById(R.id.balance);
+        int cur_balance = Integer.parseInt(t2w.getField());
+        if (cur_balance>=entry_set) risBalance = true;
+        return risBalance;
+    }
+
+    private int getEntryfromLevel(int lvl){
         int iEntry=0;
         switch (lvl) {
             case 1:
@@ -575,45 +583,57 @@ public class BoardGrid extends View {
         return iEntry;
     }
 
-    public void setChildName(d_entry_set child, View Child){
+    public boolean setChildName(d_entry_set child, View Child){
+        boolean isBalanced =false;
         int iReturn = 0;
         int ch_sum;
-        mc = (MainContainer)this.getParent();
-        TextView v = (TextView)mc.getChild(child.getEntry_id());
         Main main = (Main)getContext();
-        List<d_entry_set> dl = getPushedNumber(child.getX(),child.getY());
-        if (v!=null) {
-        //Фишка уже стоит на поле мы повышаем ее статус до заданого или на 1
-            ch_sum = main.db.getGameIdSum(main.dGame.getId(), v.getId());
-            ch_sum = ch_sum+getEntryfromLevel(main.getIlevelset());
-            int limit = dl.size() *1000;
-            if (ch_sum  <= limit){
-                if (v.getText().equals("")) v.setText("2");
-                else {
-                      String vText =(String)v.getText();
-                      int ivText=Integer.parseInt(vText);
-                      v.setText(Integer.toString(ivText+ 1));
-                }
-                v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", EntryName(main.getIlevelset()))));
-                v.bringToFront();
-                invalidate(); mc.invalidate();
-                //Сохраняем масив
-                saveEntrySet(dl);
-            }
-            else {
-                Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.nope_rotate);
-                v.setAnimation(rotate_animation);
-            }
-        }
-        else{
-            //Тут мы добавляем новый объект на доску
-            Child.setBackground(ContextCompat.getDrawable(main, getResourceByID("drawable", EntryName(main.getIlevelset()))));
-            Child.bringToFront();
-            mc.addCustomView(Child);
-            invalidate();
-            saveEntrySet(dl);
+        if (isBalance(getEntryfromLevel(main.getIlevelset()))){
+            mc = (MainContainer)this.getParent();
+            TextView v = (TextView)mc.getChild(child.getEntry_id());
+            List<d_entry_set> dl = getPushedNumber(child.getX(),child.getY());
+            if (v!=null) {
+            //Фишка уже стоит на поле мы повышаем ее статус до заданого или на 1
+                ch_sum = main.db.getGameIdSum(main.dGame.getId(), v.getId());
+                ch_sum = ch_sum+getEntryfromLevel(main.getIlevelset());
 
+                int limit = (dl.size()) *1000;
+                if (ch_sum  <= limit){
+                    if (v.getText().equals("")) v.setText("2");
+                    else {
+                          String vText =(String)v.getText();
+                          int ivText=Integer.parseInt(vText);
+                          v.setText(Integer.toString(ivText+ 1));
+                    }
+                    v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", EntryName(main.getIlevelset()))));
+                    v.bringToFront();
+                    invalidate(); mc.invalidate();
+                    //Сохраняем масив
+                    saveEntrySet(dl);
+                    showHint(child.getX(), child.getY());
+                    isBalanced = true;
+                }
+                else {
+                    Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.nope_rotate);
+                    v.setAnimation(rotate_animation);
+                }
+            }
+            else{
+                //Тут мы добавляем новый объект на доску
+                Child.setBackground(ContextCompat.getDrawable(main, getResourceByID("drawable", EntryName(main.getIlevelset()))));
+                Child.bringToFront();
+                mc.addCustomView(Child);
+                invalidate();
+                saveEntrySet(dl);
+                showHint(child.getX(), child.getY());
+                isBalanced = true;
+            }
         }
+        else {
+            Toast toast = Toast.makeText(getContext(), "Недостаточно баланса для ставки", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        return isBalanced;
     }
 
     private String EntryName(int level){
@@ -633,9 +653,9 @@ public class BoardGrid extends View {
         int idV;
         int sum;
         Main main = (Main)getContext();
-        int ilevel = main.getIlevelset();
+        long ilevel = System.currentTimeMillis();
         int gid = main.db.getLastGame().getId();
-        int entry = getEntryfromLevel (ilevel);
+        int entry = getEntryfromLevel (main.getIlevelset());
         idV = Integer.parseInt(Integer.toString(x)+Integer.toString(y));
 
 
