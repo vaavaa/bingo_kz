@@ -5,24 +5,10 @@
     <scale
         android:startOffset="50"
         android:duration="500"
-        android:fromXScale="3.0"
-        android:fromYScale="3.0"
+        android:fromXScale="2.0"
+        android:fromYScale="2.0"
         android:pivotX="50%"
         android:pivotY="50%"
         android:toXScale="1"
         android:toYScale="1" />
-
-    <rotate
-        android:startOffset="70"
-        android:duration="70"
-        android:fromDegrees="0"
-        android:pivotX="50%"
-        android:pivotY="50%"
-        android:toDegrees="35" />
-    <rotate
-        android:duration="70"
-        android:fromDegrees="0"
-        android:pivotX="50%"
-        android:pivotY="50%"
-        android:toDegrees="-35" />
 </set>

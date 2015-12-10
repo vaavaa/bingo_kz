@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+
+import java.util.Calendar;
 import java.util.LinkedList;
 
 import kz.regto.database.d_entry_set;
@@ -120,10 +122,7 @@ public class MainContainer extends ViewGroup {
                     View currentChild = this.getChildAt(i);
                     // Change ImageView with your disired type view
                     if (currentChild instanceof EntryAnimated) {
-
-                        Animation rotate_animation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
-                        currentChild.setAnimation(rotate_animation);
-
+                        currentChild.setAnimation(null);
                         this.removeView(currentChild);
                         break;
                     }
@@ -152,7 +151,33 @@ public class MainContainer extends ViewGroup {
               else tw.setText(""+sum_chk);
            }
            this.invalidate();
+            TwoTextViews t2w =  (TwoTextViews)main.findViewById(R.id.CurrentEntry);
+            int curB = Integer.parseInt(t2w.getField());
+            curB = curB - dEntrySet.getEntry_value();
+            t2w.setField(""+curB);
+            TwoTextViews t2b =  (TwoTextViews)main.findViewById(R.id.balance);
+            int balance = Integer.parseInt(t2b.getField()) + dEntrySet.getEntry_value();;
+            t2b.setField("" + balance);
            main.db.deleteEntrySet(dEntrySet.getLog_id());
+        }
+    }
+
+    public void ClearAllAlfa05() {
+        boolean doBreak = false;
+        while (!doBreak) {
+            int childCount = this.getChildCount();
+            int i;
+            int ii=0;
+            for(i=0; i<childCount; i++) {
+                View currentChild = this.getChildAt(i);
+                // Change ImageView with your disired type view
+                if (currentChild instanceof EntryAnimated && currentChild.getAlpha()==0.7F) {
+                    currentChild.setAnimation(null);
+                    this.removeView(currentChild);
+                    ii++;
+                }
+            }
+            if (ii ==0) doBreak = true;
         }
     }
 

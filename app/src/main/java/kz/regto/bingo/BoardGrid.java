@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -214,15 +215,8 @@ public class BoardGrid extends View {
         int xTouch_new = getXCrossed(xTouch, yTouch);
         int yTouch_new = getYCrossed(xTouch, yTouch);
 
-        if (xTouch_new>0 && yTouch_new>0){
-            int idV;
-            idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
-
+        if (xTouch_new>0 && yTouch_new>0)
             EntryGetsPoint(xTouch_new, yTouch_new);
-
-            GetUserTouch(xTouch_new, yTouch_new);
-            invalidate();
-        }
     }
 
     public void setBoard_blocked(Boolean locktheboard){
@@ -647,13 +641,46 @@ public class BoardGrid extends View {
           }
     }
 
+    public void showGame(View v) {
+        List<d_entry_set> dList = (List<d_entry_set>)v.getTag();
+        Main main = (Main)this.getContext();
+        if (v.isSelected()) {
+            for (d_entry_set dEntry: dList) {
+                int xTouch_new =dEntry.getX()-33;
+                int yTouch_new =dEntry.getY()-33;
+                EntryGetsPoint(xTouch_new,yTouch_new);
+            }
+            v.setSelected(false);
+            v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", "round_shape")));
+        }
+        else {
+            mc.ClearAllAlfa05();
+            for (d_entry_set dEntry: dList) {
+                int xTouch_new =dEntry.getX();
+                int yTouch_new =dEntry.getY();
+                EntryAnimated touchedView;
+                touchedView=new EntryAnimated(main);
+                touchedView.RectArea(xTouch_new - (int) (RADIUS_LIMIT / 2), yTouch_new - (int) (RADIUS_LIMIT / 2), xTouch_new + (int) (RADIUS_LIMIT / 2), yTouch_new + (int) (RADIUS_LIMIT / 2));
+                touchedView.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", EntryName(main.getLevelfromEntry(dEntry.getEntry_value())))));
+                touchedView.bringToFront();
+                touchedView.setAlpha(0.7F);
+                mc.addCustomView(touchedView);
+            }
+            WinBallContainer WBC = (WinBallContainer)main.findViewById(R.id.win_ball_container);
+            WBC.setAllSelected_false();
+            v.setSelected(true);
+            v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", "round_shape_gold")));
+        }
+
+    }
     public List<d_entry_set> getPushedNumber(int x,int y){
         LinkedList<d_entry_set> chLog = new LinkedList<>();
 
         int idV;
         int sum;
         Main main = (Main)getContext();
-        long ilevel = System.currentTimeMillis();
+        Calendar c = Calendar.getInstance();
+        int ilevel = c.get(Calendar.MILLISECOND);
         int gid = main.db.getLastGame().getId();
         int entry = getEntryfromLevel (main.getIlevelset());
         idV = Integer.parseInt(Integer.toString(x)+Integer.toString(y));

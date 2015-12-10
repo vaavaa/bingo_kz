@@ -302,7 +302,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         db.updateGame(dGame);
 
         WinBallContainer WBC = (WinBallContainer)this.findViewById(R.id.win_ball_container);
-        WBC.UpdateNewOne(Integer.toString(dGame.getWin_ball()));
+        WBC.UpdateNewOne(Integer.toString(dGame.getWin_ball()),db.getAllGameEntrySet(dGame.getId()));
+        WBC.setAllSelected_false();
 
         //Считаем выйгрыш, если ничего нет, быдет 0
         int iWin = db.getGameSum(dGame.getId(),dGame.getWin_ball());
@@ -455,7 +456,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         }
         return iEntry;
     }
-    private int getLevelfromEntry(int Entry){
+    public int getLevelfromEntry(int Entry){
         int iEntry=0;
         switch (Entry) {
             case 100:
@@ -480,20 +481,14 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     }
 
     public void x2_button(View view){
-        int ibalance;
-        int gameSum=0;
-        //TwoTextViews balance =  (TwoTextViews)this.findViewById(R.id.balance);
-        //ibalance = Integer.parseInt(balance.getField());
-        //gameSum = db.getGameCurrentSum(dGame.getId());
-        //if (ibalance >= gameSum) {
-            List<d_entry_set> cl = db.getAllGameEntrySet(dGame.getId());
-            BoardGrid bG = (BoardGrid)this.findViewById(R.id.board_grid);
-            for (d_entry_set clp: cl){
-                this.setIlevelset(getLevelfromEntry(clp.getEntry_value()));
-                bG.EntryGetsPoint(clp.getX()-33,clp.getY()-33);
-            }
-        //}
-        mc.invalidate();
+        List<d_entry_set> cl = db.getAllGameEntrySet(dGame.getId());
+        BoardGrid bG = (BoardGrid)this.findViewById(R.id.board_grid);
+        int currentLevel = this.getIlevelset();
+        for (d_entry_set clp: cl){
+            this.setIlevelset(getLevelfromEntry(clp.getEntry_value()));
+            bG.EntryGetsPoint(clp.getX()-33,clp.getY()-33);
+        }
+        this.setIlevelset(currentLevel);
     }
 
     public void EntrySet(View view){
@@ -520,12 +515,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         mc.stepBack();
     }
 
-    private int GameResultCalculation(){
-        int total_sum=0;
-        total_sum = db.getGameSum(dGame.getId(), dGame.getWin_ball());
-        return total_sum;
-    }
-
     private void clearBoard(){
         TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
         t2w.setField("0");
@@ -536,9 +525,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     }
 
     public void ball_clicked(View v){
-        Animation rotate_animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-        v.setAnimation(rotate_animation);
-        v.animate();
+        board.showGame(v);
     }
 
     @Override

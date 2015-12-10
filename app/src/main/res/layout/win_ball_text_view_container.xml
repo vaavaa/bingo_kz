@@ -108,4 +108,15 @@
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f8"
         android:onClick="ball_clicked"/>
+    <TextView android:id="@+id/f10"
+        android:layout_width="@dimen/ball_size"
+        android:layout_height="@dimen/ball_size"
+        android:background="@drawable/round_shape"
+        android:gravity="center"
+        android:text="@string/init_figure"
+        android:textSize="@dimen/ball_text_size"
+        android:textColor="@color/ball_numeric_color"
+        android:visibility="invisible"
+        android:layout_toEndOf="@+id/f9"
+        android:onClick="ball_clicked"/>
 </RelativeLayout>

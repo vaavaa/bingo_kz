@@ -501,7 +501,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * */
     public List<d_entry_set> getAllGameEntrySet(int GameId) {
         List<d_entry_set> d_entry_set = new ArrayList<>();
-        String selectQuery = "SELECT  * FROM entry_set WHERE game_id="+GameId;
+        String selectQuery = "SELECT * FROM entry_set WHERE sys_id IN (SELECT MIN(sys_id) FROM entry_set WHERE game_id="+GameId + " group by log_id)";
         Cursor c = dbr.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list

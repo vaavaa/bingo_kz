@@ -1,13 +1,10 @@
 package kz.regto.database;
 
-/**
- * Created by Старцев on 23.11.2015.
- */
 public class d_entry_set {
     //Инкриментный идентификатор
     private int sys_id;
     //Ид ставки
-    private long log_id;
+    private int log_id;
     //Цифра ставки
     private int chip_number;
     //Значение ставки
@@ -26,7 +23,7 @@ public class d_entry_set {
     private int sum;
 
     public d_entry_set(){}
-    public d_entry_set(int i_chip_number,long i_log_id, int idV, int i_divided_by, int iX,int iY, int i_game_id, int i_sum, int ientry_value){
+    public d_entry_set(int i_chip_number,int i_log_id, int idV, int i_divided_by, int iX,int iY, int i_game_id, int i_sum, int ientry_value){
         chip_number = i_chip_number;
         log_id = i_log_id;
         entry_id = idV;
