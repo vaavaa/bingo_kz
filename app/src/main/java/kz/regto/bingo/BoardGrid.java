@@ -94,6 +94,8 @@ public class BoardGrid extends View {
         paint= new Paint();
         bg_paint = new Paint();
 
+        mc = (MainContainer)this.getParent();
+
 
         paint.setColor(Color.rgb(220, 220, 220));
         paint.setStyle(Paint.Style.FILL);
@@ -654,6 +656,7 @@ public class BoardGrid extends View {
             v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", "round_shape")));
         }
         else {
+            if (mc==null) mc = (MainContainer)this.getParent();
             mc.ClearAllAlfa05();
             for (d_entry_set dEntry: dList) {
                 int xTouch_new =dEntry.getX();

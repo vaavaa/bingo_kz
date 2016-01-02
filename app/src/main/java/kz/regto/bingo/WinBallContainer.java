@@ -55,6 +55,7 @@ public class WinBallContainer extends RelativeLayout {
         //Выставили на показ
         addView(view);
         h = new Handler();
+
     }
     public void setAllSelected_false(){
         for (int i=1; i<=10;i++){
@@ -66,7 +67,7 @@ public class WinBallContainer extends RelativeLayout {
         }
     }
 
-    public void UpdateNewOne(String winNumber,List<d_entry_set> dl ){
+    public void UpdateNewOne(String winNumber,List<d_entry_set> dl, Main mn ){
         lastWinNumber = winNumber;
         pdl = dl;
         if  (iVisible<=10){
@@ -79,6 +80,7 @@ public class WinBallContainer extends RelativeLayout {
             iVisible++;
         }
         else{
+            mn.ClearGameCach();
             h.post(showInfo);
         }
         this.invalidate();

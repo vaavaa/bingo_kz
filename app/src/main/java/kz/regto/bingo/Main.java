@@ -302,7 +302,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         db.updateGame(dGame);
 
         WinBallContainer WBC = (WinBallContainer)this.findViewById(R.id.win_ball_container);
-        WBC.UpdateNewOne(Integer.toString(dGame.getWin_ball()),db.getAllGameEntrySet(dGame.getId()));
+        WBC.UpdateNewOne(Integer.toString(dGame.getWin_ball()),db.getAllGameEntrySet(dGame.getId()),this);
         WBC.setAllSelected_false();
 
         //Считаем выйгрыш, если ничего нет, быдет 0
@@ -312,6 +312,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.balance);
         int cur_balance = Integer.parseInt(t2w.getField());
         cur_balance = cur_balance+iWin;
+
+
 
         TwoTextViews t2win =  (TwoTextViews)this.findViewById(R.id.win);
         t2win.setField(Integer.toString(iWin));
@@ -333,24 +335,37 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         //Ни какой ставки в начеле новой игры нет
         t2E.setField("0");
 
-
-        //Запускаем новую игру c задержкой в 2 секунды
-        Handler temp_handler = new Handler();
-        temp_handler.postDelayed(new Runnable() {
-            public void run() {
-                clearBoard();
-                setButtonsUnclickable(false);
-                TimerStarted_sub();
-            }
-        }, 2500);
-    }
-
-    private void TimerStarted_sub() {
-        String url = BingoDevice.getNetwork_path().concat("/balance.php");
+        String url = BingoDevice.getNetwork_path().concat("/balance.php?device_id=")
+                .concat(BingoDevice.getDeviceCode()).concat("&balance="+cur_balance);
         JSONParser Jprs = new JSONParser();
         Balance balance = Jprs.tBalance(url);
         if (balance != null) {
-            if (balance.getBalance() >= 100) {
+            //Запускаем новую игру c задержкой в 2 секунды
+            Handler temp_handler = new Handler();
+            temp_handler.postDelayed(new Runnable() {
+                public void run() {
+                    mc.ClearBoard();
+                    setButtonsUnclickable(false);
+                    TimerStarted_sub();
+                }
+            }, 2500);
+        }
+        else {
+            Toast toast = Toast.makeText(this, "Не удалось сохранить результаты игры.", Toast.LENGTH_SHORT);
+            toast.show();
+            screen_lock(true);
+        }
+
+
+
+    }
+
+    private void TimerStarted_sub() {
+        String url = BingoDevice.getNetwork_path().concat("/balance.php?device_id=").concat(BingoDevice.getDeviceCode());
+        JSONParser Jprs = new JSONParser();
+        Balance balance = Jprs.tBalance(url);
+        if (balance != null) {
+            if (balance.getBalance() >= 100 && balance.getStatus()==0) {
                 BingoDevice.setBalance(balance.getBalance());
                 BingoDevice.setStatus(1);
                 //Прописать в баланс текстовое поле
@@ -411,7 +426,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                 timerRelative.StartTimer();
             }
             else {
-                 Toast toast = Toast.makeText(this, "Баланс на устройстве меньше 100, пополните баланс", Toast.LENGTH_SHORT);
+                 Toast toast = Toast.makeText(this, "Баланс на устройстве меньше 100, пополните баланс и активируйте устройство", Toast.LENGTH_SHORT);
                  toast.show();
                  BingoDevice.setStatus(0);
                  db.updateDevice(BingoDevice);
@@ -535,7 +550,11 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         timerRelative.CloseAll();
         BingoDevice.setStatus(0);
         db.updateDevice(BingoDevice);
+        ClearGameCach();
         db.close();
         super.onDestroy();
+    }
+    public void ClearGameCach(){
+        db.deleteGameCache();
     }
 }

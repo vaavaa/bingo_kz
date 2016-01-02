@@ -637,7 +637,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return bReturn;
     }
-
+    /**
+     * Deleting a EntrySet by game_id
+     */
+    public boolean deleteGameCache() {
+        boolean bReturn;
+        String delete_sql = "DELETE FROM game WHERE id NOT IN (SELECT id FROM game ORDER BY dtime DESC LIMIT 11)";
+        String delete_sql1 = "DELETE FROM balance WHERE game_id NOT IN (SELECT id FROM game)";
+        String delete_sql2 = "DELETE FROM entry_set WHERE game_id NOT IN (SELECT id FROM game)";
+        try {
+            db.execSQL(delete_sql);
+            db.execSQL(delete_sql1);
+            db.execSQL(delete_sql2);
+            bReturn = true;
+        }
+        catch (Exception ex){
+            bReturn=false;
+        }
+        return bReturn;
+    }
 
 
     // ------------------------ end d_entry_set table methods ----------------//

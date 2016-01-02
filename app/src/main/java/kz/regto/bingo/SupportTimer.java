@@ -57,8 +57,9 @@ public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
                tProgress = jpr.getTimer(r_URL_timer);
                    if (tProgress!=null){
                        publishProgress(tProgress);
-                   };
-
+                       try {Thread.sleep(250);}
+                       catch (InterruptedException Ex){}
+                   }
            }while (!this.isCancelled());
         return tProgress;
     }
