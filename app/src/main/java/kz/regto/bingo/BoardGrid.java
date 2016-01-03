@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -195,6 +196,13 @@ public class BoardGrid extends View {
         touchedView.RectArea(xTouch_new - (int) (RADIUS_LIMIT / 2), yTouch_new - (int) (RADIUS_LIMIT / 2), xTouch_new + (int) (RADIUS_LIMIT / 2), yTouch_new + (int) (RADIUS_LIMIT / 2));
 
         Main main = (Main)getContext();
+
+        WinBallContainer WBC = (WinBallContainer)main.findViewById(R.id.win_ball_container);
+        if (WBC.getState() == WinBallContainer.STATE_SELECTED){
+            mc.ClearAllAlfa05();
+            WBC.setAllSelected_false();
+        }
+
         //Object now has name for identification
         int idV;
         idV = Integer.parseInt(Integer.toString(xTouch_new)+Integer.toString(yTouch_new));
@@ -646,12 +654,21 @@ public class BoardGrid extends View {
     public void showGame(View v) {
         List<d_entry_set> dList = (List<d_entry_set>)v.getTag();
         Main main = (Main)this.getContext();
+
+        WinBallContainer WBC = (WinBallContainer)main.findViewById(R.id.win_ball_container);
+        String name_cancel = getResources().getResourceEntryName(v.getId());
+        name_cancel = name_cancel.concat("c");
+        int viewid = getResourceByID("id",name_cancel);
+        View iCancel = WBC.findViewById(viewid);
+
         if (v.isSelected()) {
             for (d_entry_set dEntry: dList) {
                 int xTouch_new =dEntry.getX()-33;
                 int yTouch_new =dEntry.getY()-33;
                 EntryGetsPoint(xTouch_new,yTouch_new);
             }
+            iCancel.setVisibility(View.INVISIBLE);
+            WBC.setState(WinBallContainer.STATE_UNSELECTED);
             v.setSelected(false);
             v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", "round_shape")));
         }
@@ -669,10 +686,13 @@ public class BoardGrid extends View {
                 touchedView.setAlpha(0.7F);
                 mc.addCustomView(touchedView);
             }
-            WinBallContainer WBC = (WinBallContainer)main.findViewById(R.id.win_ball_container);
+
             WBC.setAllSelected_false();
+            iCancel.setVisibility(View.VISIBLE);
+            WBC.setState(WinBallContainer.STATE_SELECTED);
             v.setSelected(true);
             v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", "round_shape_gold")));
+            WBC.invalidate();
         }
 
     }

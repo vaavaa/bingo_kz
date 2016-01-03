@@ -103,7 +103,7 @@ public class TimerRelative extends RelativeLayout {
         String sReturn;
         int wn =wn_number;
         if (wn > -1) {
-            if (wn<9){
+            if (wn<10){
                 sReturn = "0".concat(Integer.toString(wn));
             }
             else sReturn = Integer.toString(wn);

@@ -3,6 +3,7 @@ package kz.regto.bingo;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -292,6 +293,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
     @Override
     public void TimerOver(){
+        final WinBallContainer  WBC = (WinBallContainer)this.findViewById(R.id.win_ball_container);
+        WBC.setAll_lock(true);
         //Когда таймер кончился, ждем выпавшего шарика
         setButtonsUnclickable(true);
     }
@@ -301,11 +304,11 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         //ОБновили игру
         db.updateGame(dGame);
 
-        WinBallContainer WBC = (WinBallContainer)this.findViewById(R.id.win_ball_container);
-        WBC.UpdateNewOne(Integer.toString(dGame.getWin_ball()),db.getAllGameEntrySet(dGame.getId()),this);
+        final WinBallContainer  WBC = (WinBallContainer)this.findViewById(R.id.win_ball_container);
+        WBC.UpdateNewOne(Integer.toString(dGame.getWin_ball()), db.getAllGameEntrySet(dGame.getId()), this);
         WBC.setAllSelected_false();
 
-        //Считаем выйгрыш, если ничего нет, быдет 0
+        //Считаем выйгрыш, если ничего нет, будет 0
         int iWin = db.getGameSum(dGame.getId(),dGame.getWin_ball());
 
         //Текущий баланс увеличили на выйгрыш
@@ -346,7 +349,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                 public void run() {
                     mc.ClearBoard();
                     setButtonsUnclickable(false);
-                    TimerStarted_sub();
+                    WBC.setAll_lock(false);
+                    if (db.getDBState()==DatabaseHelper.STATE_OPENED) TimerStarted_sub();
                 }
             }, 2500);
         }
@@ -541,6 +545,12 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
     public void ball_clicked(View v){
         board.showGame(v);
+    }
+    public void ball_cancel_clicked(View v){
+        v.setVisibility(View.INVISIBLE);
+        WinBallContainer WBC = (WinBallContainer)findViewById(R.id.win_ball_container);
+        mc.ClearAllAlfa05();
+        WBC.setAllSelected_false();
     }
 
     @Override

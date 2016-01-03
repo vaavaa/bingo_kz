@@ -14,6 +14,9 @@ import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+    public static final int STATE_OPENED = 0;
+    public static final int STATE_CLOSED = 1;
+    public static final int STATE_NOTACTIVATED = -1;
     // Logcat tag
     private static final String LOG = DatabaseHelper.class.getName();
 
@@ -25,6 +28,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     
     private SQLiteDatabase db;
     private SQLiteDatabase dbr;
+    private int state;
 
     // Table Create Statements
     private static final String CREATE_TABLE_Game = "CREATE TABLE Game (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
@@ -52,6 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        state = STATE_NOTACTIVATED;
     }
 
     @Override
@@ -84,6 +89,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db = this.getWritableDatabase();
             dbr = this.getReadableDatabase();
             bRet=true;
+            state = STATE_OPENED;
         }
         catch (SQLException  ex){
             bRet=false;
@@ -93,6 +99,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void close() {
         db.close();
+        state = STATE_CLOSED;
+    }
+    public int getDBState() {
+        return state;
     }
 
 
