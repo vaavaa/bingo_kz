@@ -91,7 +91,7 @@ public class d_entry_set {
         return entry_value;
     }
 
-    public long getLog_id() {
+    public int getLog_id() {
         return log_id;
     }
 

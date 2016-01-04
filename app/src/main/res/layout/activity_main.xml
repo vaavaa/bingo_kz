@@ -129,12 +129,11 @@
             cl:layout_top="105"
             android:onClick="botsEntry"/>
         <Button android:id="@+id/x2"
-            android:text="2x"
             android:textSize="@dimen/x2_text_size"
             android:layout_height="@dimen/auto_ball_size"
             android:layout_width="@dimen/auto_ball_size"
             android:gravity="center"
-            android:background="@drawable/auto_button_effect"
+            android:background="@drawable/x2_button_scheme"
             cl:layout_cellsHeight="15"
             cl:layout_cellsWidth="15"
             cl:layout_left="25"

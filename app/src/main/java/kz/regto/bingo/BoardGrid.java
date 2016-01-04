@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -88,7 +89,6 @@ public class BoardGrid extends View {
         super(context, attrs, defStyle);
         init(context);
     }
-
 
     private void init(final Context ct) {
 
@@ -188,7 +188,7 @@ public class BoardGrid extends View {
         MakeTouchedRectangleArea(canvas);
     }
 
-    public void EntryGetsPoint(int xTouch_new, int yTouch_new){
+    public d_entry_set EntryGetsPoint(int xTouch_new, int yTouch_new){
         EntryAnimated touchedView;
         xTouch_new = xTouch_new+33;
         yTouch_new = yTouch_new+33;
@@ -216,18 +216,34 @@ public class BoardGrid extends View {
 
         boolean isBalanced = setChildName(dEntrySet, touchedView);
         for (BoardGridEvents hl : listeners) hl.entrySet(isBalanced);
+        return dEntrySet;
     }
 
+    public List<d_entry_set> set_random_entry(List<d_entry_set> botDEentrySet){
+        int idV;
+        int xTouch;int yTouch_new;
+        int yTouch;int xTouch_new;
+        do {
 
-    public void set_random_entry(){
-        int xTouch = (int) (Math.random() * ((this.getWidth()) + 1));
-        int yTouch = (int) (Math.random() * ((this.getHeight()) + 1));
-        int xTouch_new = getXCrossed(xTouch, yTouch);
-        int yTouch_new = getYCrossed(xTouch, yTouch);
+            xTouch = (int) (Math.random() * (this.getWidth() + 1));
+            yTouch = (int) (Math.random() * (this.getHeight() + 1));
+            xTouch_new = getXCrossed(xTouch, yTouch);
+            yTouch_new = getYCrossed(xTouch, yTouch);
+            idV = Integer.parseInt(Integer.toString(xTouch_new+33) + Integer.toString(yTouch_new+33));
+        } while (CheckBotsEntry(botDEentrySet,idV));
 
         if (xTouch_new>0 && yTouch_new>0)
-            EntryGetsPoint(xTouch_new, yTouch_new);
+            botDEentrySet.add(EntryGetsPoint(xTouch_new, yTouch_new));
+
+       return botDEentrySet;
     }
+    private boolean CheckBotsEntry(List<d_entry_set> le, int id ){
+        for (d_entry_set des:le) {
+            if (des.getEntry_id() == id) return true;
+        }
+        return false;
+    }
+
 
     public void setBoard_blocked(Boolean locktheboard){
         board_blocked = locktheboard;
@@ -589,7 +605,6 @@ public class BoardGrid extends View {
 
     public boolean setChildName(d_entry_set child, View Child){
         boolean isBalanced =false;
-        int iReturn = 0;
         int ch_sum;
         Main main = (Main)getContext();
         if (isBalance(getEntryfromLevel(main.getIlevelset()))){
@@ -601,7 +616,7 @@ public class BoardGrid extends View {
                 ch_sum = main.db.getGameIdSum(main.dGame.getId(), v.getId());
                 ch_sum = ch_sum+getEntryfromLevel(main.getIlevelset());
 
-                int limit = (dl.size()) *1000;
+                int limit = (dl.size())*1000;
                 if (ch_sum  <= limit){
                     if (v.getText().equals("")) v.setText("2");
                     else {
@@ -655,6 +670,8 @@ public class BoardGrid extends View {
         List<d_entry_set> dList = (List<d_entry_set>)v.getTag();
         Main main = (Main)this.getContext();
 
+        int currentLevel =  main.getIlevelset();
+
         WinBallContainer WBC = (WinBallContainer)main.findViewById(R.id.win_ball_container);
         String name_cancel = getResources().getResourceEntryName(v.getId());
         name_cancel = name_cancel.concat("c");
@@ -663,14 +680,16 @@ public class BoardGrid extends View {
 
         if (v.isSelected()) {
             for (d_entry_set dEntry: dList) {
-                int xTouch_new =dEntry.getX()-33;
-                int yTouch_new =dEntry.getY()-33;
-                EntryGetsPoint(xTouch_new,yTouch_new);
+                int xTouch_new=dEntry.getX()-33;
+                int yTouch_new=dEntry.getY()-33;
+                main.setIlevelset(main.getLevelfromEntry(dEntry.getEntry_value()));
+                EntryGetsPoint(xTouch_new, yTouch_new);
             }
             iCancel.setVisibility(View.INVISIBLE);
             WBC.setState(WinBallContainer.STATE_UNSELECTED);
             v.setSelected(false);
             v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", "round_shape")));
+            main.setIlevelset(currentLevel);
         }
         else {
             if (mc==null) mc = (MainContainer)this.getParent();
@@ -711,7 +730,7 @@ public class BoardGrid extends View {
 
         //Zero
         if ((y_pushed==5)&&(x_pushed==5)) {
-            chLog.add(new d_entry_set(0,ilevel,idV,1,x,y, entry,36*entry,entry));
+            chLog.add(new d_entry_set(0,ilevel,idV,1,x,y, gid,36*entry,entry));
         }
         //Ячейки
         if ((y_pushed==4)&&(x_pushed==4)){

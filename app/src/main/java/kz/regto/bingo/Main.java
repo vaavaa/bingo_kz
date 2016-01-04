@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import kz.regto.database.DatabaseHelper;
@@ -36,7 +37,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     View mRootView;
     MainContainer mc;
     TextView GameCode;
-    int gWinNumber;
     BoardGrid board;
     TwoTextViews win;
     Lock lck;
@@ -50,6 +50,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     public d_device BingoDevice;
     public d_game dGame;
     public d_entry_set dEntrySet;
+    public List<d_entry_set> botEntrySet=null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -334,6 +336,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
         //Ни какой ставки в начеле новой игры нет
         t2E.setField("0");
+        botEntrySet=null;
 
         String url = BingoDevice.getNetwork_path().concat("/balance.php?device_id=")
                 .concat(BingoDevice.getDeviceCode()).concat("&balance="+cur_balance);
@@ -489,9 +492,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         return iEntry;
     }
 
-
     public void botsEntry(View view){
-        board.set_random_entry();
+        if (botEntrySet==null) botEntrySet = new ArrayList<>();
+        botEntrySet = board.set_random_entry(botEntrySet);
     }
 
     public void x2_button(View view){

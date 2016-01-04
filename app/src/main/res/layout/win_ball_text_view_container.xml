@@ -12,6 +12,7 @@
         android:textSize="@dimen/ball_text_size"
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
+        android:clickable="true"
         android:onClick="ball_clicked"/>
     <ImageButton
         android:id="@+id/f1c"
@@ -32,6 +33,7 @@
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f1"
+        android:clickable="true"
         android:onClick="ball_clicked"/>
     <ImageButton
         android:id="@+id/f2c"
@@ -52,6 +54,7 @@
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f2"
+        android:clickable="true"
         android:onClick="ball_clicked"/>
     <ImageButton
         android:id="@+id/f3c"
@@ -72,6 +75,7 @@
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f3"
+        android:clickable="true"
         android:onClick="ball_clicked"/>
     <ImageButton
         android:id="@+id/f4c"
@@ -92,6 +96,7 @@
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f4"
+        android:clickable="true"
         android:onClick="ball_clicked"/>
     <ImageButton
         android:id="@+id/f5c"
@@ -112,6 +117,7 @@
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f5"
+        android:clickable="true"
         android:onClick="ball_clicked"/>
     <ImageButton
         android:id="@+id/f6c"
@@ -132,6 +138,7 @@
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f6"
+        android:clickable="true"
         android:onClick="ball_clicked"/>
     <ImageButton
         android:id="@+id/f7c"
@@ -152,6 +159,7 @@
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f7"
+        android:clickable="true"
         android:onClick="ball_clicked"/>
     <ImageButton
         android:id="@+id/f8c"
@@ -171,6 +179,7 @@
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f8"
+        android:clickable="true"
         android:onClick="ball_clicked"/>
     <ImageButton
         android:id="@+id/f9c"
@@ -190,6 +199,7 @@
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f9"
+        android:clickable="true"
         android:onClick="ball_clicked"/>
     <ImageButton
         android:id="@+id/f10c"
