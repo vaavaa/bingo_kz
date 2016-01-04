@@ -4,7 +4,7 @@
     <dimen name="activity_vertical_margin">2dp</dimen>
     <dimen name= "ball_space">15dp</dimen>
     <dimen name= "ball_size">60dp</dimen>
-    <dimen name= "ball_size_cancel">20dp</dimen>
+    <dimen name= "ball_size_cancel">25dp</dimen>
     <dimen name="ball_text_size">30sp</dimen>
     <dimen name="column_width">40dp</dimen>
     <dimen name="row_width">40dp</dimen>

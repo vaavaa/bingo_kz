@@ -140,18 +140,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     }
 
     public void setButtonsVisible(boolean bVisible){
-        if (!bVisible) {
-            findViewById(R.id.card_step_back).setVisibility(View.INVISIBLE);
-            findViewById(R.id.make_crd_null).setVisibility(View.INVISIBLE);
-            findViewById(R.id.entry1000).setVisibility(View.INVISIBLE);
-            findViewById(R.id.entry500).setVisibility(View.INVISIBLE);
-            findViewById(R.id.entry200).setVisibility(View.INVISIBLE);
-            findViewById(R.id.entry100).setVisibility(View.INVISIBLE);
-            findViewById(R.id.x2).setVisibility(View.INVISIBLE);
-            findViewById(R.id.auto).setVisibility(View.INVISIBLE);
-
-        }
-        else {
+        if (bVisible) {
             findViewById(R.id.card_step_back).setVisibility(View.VISIBLE);
             findViewById(R.id.make_crd_null).setVisibility(View.VISIBLE);
             findViewById(R.id.entry1000).setVisibility(View.VISIBLE);
@@ -160,6 +149,17 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             findViewById(R.id.entry100).setVisibility(View.VISIBLE);
             findViewById(R.id.x2).setVisibility(View.VISIBLE);
             findViewById(R.id.auto).setVisibility(View.VISIBLE);
+
+        }
+        else {
+            findViewById(R.id.card_step_back).setVisibility(View.INVISIBLE);
+            findViewById(R.id.make_crd_null).setVisibility(View.INVISIBLE);
+            findViewById(R.id.entry1000).setVisibility(View.INVISIBLE);
+            findViewById(R.id.entry500).setVisibility(View.INVISIBLE);
+            findViewById(R.id.entry200).setVisibility(View.INVISIBLE);
+            findViewById(R.id.entry100).setVisibility(View.INVISIBLE);
+            findViewById(R.id.x2).setVisibility(View.INVISIBLE);
+            findViewById(R.id.auto).setVisibility(View.INVISIBLE);
         }
     }
 
@@ -246,11 +246,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             Animation push_up = AnimationUtils.loadAnimation(this, R.anim.push_up_out);
             lck.startAnimation(push_up);
             lck.setVisibility(View.GONE);
-            mRunnable = new Runnable() {
-                @Override
-                public void run() {setButtonsVisible(true);}
-            };
-            mHandler.postDelayed(mRunnable, 300);
+            setButtonsVisible(true);
         }
         else {
             setButtonsVisible(false);
@@ -258,6 +254,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             lck.startAnimation(push_up_in);
             lck.invalidate();
             lck.setVisibility(View.VISIBLE);
+            lck.bringToFront();
         }
         lck.invalidate();
     }
@@ -318,7 +315,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
 
 
-        TwoTextViews t2win =  (TwoTextViews)this.findViewById(R.id.win);
+        final TwoTextViews t2win = (TwoTextViews)this.findViewById(R.id.win);
         t2win.setField(Integer.toString(iWin));
 
         //Обновляем баланс устройства
@@ -350,6 +347,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                     mc.ClearBoard();
                     setButtonsUnclickable(false);
                     WBC.setAll_lock(false);
+                    t2win.setField("0");
                     if (db.getDBState()==DatabaseHelper.STATE_OPENED) TimerStarted_sub();
                 }
             }, 2500);
@@ -359,9 +357,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             toast.show();
             screen_lock(true);
         }
-
-
-
     }
 
     private void TimerStarted_sub() {

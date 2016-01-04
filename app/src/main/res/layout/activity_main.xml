@@ -26,7 +26,7 @@
             cl:label_text="Баланс:"
             cl:field_text="0"
             cl:layout_cellsHeight="10"
-            cl:layout_cellsWidth="60"
+            cl:layout_cellsWidth="50"
             cl:layout_left="10"
             cl:layout_top="3"/>
         <kz.regto.bingo.TwoTextViews
@@ -38,9 +38,9 @@
             cl:label_text="Выйгрыш:"
             cl:field_text="0"
             cl:layout_cellsHeight="10"
-            cl:layout_cellsWidth="60"
-            cl:layout_left="10"
-            cl:layout_top="11"/>
+            cl:layout_cellsWidth="50"
+            cl:layout_left="50"
+            cl:layout_top="3"/>
         <kz.regto.bingo.TwoTextViews
             android:id="@+id/CurrentEntry"
             android:layout_height="wrap_content"
@@ -50,16 +50,16 @@
             cl:label_text="Ставка:"
             cl:field_text="0"
             cl:layout_cellsHeight="10"
-            cl:layout_cellsWidth="60"
-            cl:layout_left="10"
-            cl:layout_top="19"/>
+            cl:layout_cellsWidth="50"
+            cl:layout_left="50"
+            cl:layout_top="11"/>
 
         <!-- Конец второй строки -->
         <kz.regto.bingo.WinBallContainer
             android:id="@+id/win_ball_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            cl:layout_cellsHeight="10"
+            cl:layout_cellsHeight="15"
             cl:layout_cellsWidth="100"
             cl:layout_left="10"
             cl:layout_top="30"/>
