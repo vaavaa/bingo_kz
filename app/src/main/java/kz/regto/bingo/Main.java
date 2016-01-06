@@ -117,6 +117,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         findViewById(R.id.entry100).setEnabled(!bEnable);
         findViewById(R.id.x2).setEnabled(!bEnable);
         findViewById(R.id.auto).setEnabled(!bEnable);
+        findViewById(R.id.pause).setEnabled(!bEnable);
+        findViewById(R.id.quit).setEnabled(!bEnable);
         if (bEnable) {
             findViewById(R.id.card_step_back).setAlpha(.7f);
             findViewById(R.id.make_crd_null).setAlpha(.7f);
@@ -126,6 +128,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             findViewById(R.id.entry100).setAlpha(.7f);
             findViewById(R.id.x2).setAlpha(.7f);
             findViewById(R.id.auto).setAlpha(.7f);
+            findViewById(R.id.pause).setAlpha(.7f);
+            findViewById(R.id.quit).setAlpha(.7f);
             board.setBoard_blocked(true);
         }
         else {
@@ -137,7 +141,10 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             findViewById(R.id.entry100).setAlpha(1f);
             findViewById(R.id.x2).setAlpha(1f);
             findViewById(R.id.auto).setAlpha(1f);
+            findViewById(R.id.pause).setAlpha(1f);
+            findViewById(R.id.quit).setAlpha(1f);
             board.setBoard_blocked(false);
+            board.MakeTouchedRectangleArea();
         }
     }
 
@@ -151,6 +158,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             findViewById(R.id.entry100).setVisibility(View.VISIBLE);
             findViewById(R.id.x2).setVisibility(View.VISIBLE);
             findViewById(R.id.auto).setVisibility(View.VISIBLE);
+            findViewById(R.id.pause).setVisibility(View.VISIBLE);
+            findViewById(R.id.quit).setVisibility(View.VISIBLE);
 
         }
         else {
@@ -162,6 +171,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             findViewById(R.id.entry100).setVisibility(View.INVISIBLE);
             findViewById(R.id.x2).setVisibility(View.INVISIBLE);
             findViewById(R.id.auto).setVisibility(View.INVISIBLE);
+            findViewById(R.id.pause).setVisibility(View.INVISIBLE);
+            findViewById(R.id.quit).setVisibility(View.INVISIBLE);
         }
     }
 
@@ -240,14 +251,13 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     }
 
     public void screen_lock(boolean bSkrn){
-        Runnable mRunnable;
-        Handler mHandler=new Handler();
 
         //Если команда - разблокировать и состояние утсройсва активно, то разблокировать
         if (!bSkrn ){
             Animation push_up = AnimationUtils.loadAnimation(this, R.anim.push_up_out);
             lck.startAnimation(push_up);
             lck.setVisibility(View.GONE);
+            lck.invalidate();
             setButtonsVisible(true);
         }
         else {
@@ -258,7 +268,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             lck.setVisibility(View.VISIBLE);
             lck.bringToFront();
         }
-        lck.invalidate();
+
     }
 
     public void unlocked(View v){
@@ -347,7 +357,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             Handler temp_handler = new Handler();
             temp_handler.postDelayed(new Runnable() {
                 public void run() {
-                    mc.ClearBoard();
+                    mc.ClearBoard(MainContainer.CLEAR_BOARD_ONLY);
                     setButtonsUnclickable(false);
                     WBC.setAll_lock(false);
                     t2win.setField("0");
@@ -363,83 +373,83 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     }
 
     private void TimerStarted_sub() {
-        String url = BingoDevice.getNetwork_path().concat("/balance.php?device_id=").concat(BingoDevice.getDeviceCode());
-        JSONParser Jprs = new JSONParser();
-        Balance balance = Jprs.tBalance(url);
-        if (balance != null) {
-            if (balance.getBalance() >= 100 && balance.getStatus()==0) {
-                BingoDevice.setBalance(balance.getBalance());
-                BingoDevice.setStatus(1);
-                //Прописать в баланс текстовое поле
-                db.updateDevice(BingoDevice);
-                TwoTextViews Balance = (TwoTextViews) findViewById(R.id.balance);
-                Balance.setField(Integer.toString(balance.getBalance()));
+            String url = BingoDevice.getNetwork_path().concat("/balance.php?device_id=").concat(BingoDevice.getDeviceCode());
+            JSONParser Jprs = new JSONParser();
+            Balance balance = Jprs.tBalance(url);
+            if (balance != null) {
+                if (balance.getBalance() >= 100 && balance.getStatus()==0) {
+                    BingoDevice.setBalance(balance.getBalance());
+                    BingoDevice.setStatus(1);
+                    //Прописать в баланс текстовое поле
+                    db.updateDevice(BingoDevice);
+                    TwoTextViews Balance = (TwoTextViews) findViewById(R.id.balance);
+                    Balance.setField(Integer.toString(balance.getBalance()));
 
-                //Получаем код игры на устройсте.
-                String nCode = "";
-                d_game l_gameCode = db.getLastGame();
-                if (l_gameCode == null) nCode = "AA-0000";
-                else nCode = l_gameCode.getGameCode();
-                //Создаем новую игру
-                nCode = timerRelative.GenerateNewGameCode(nCode);
-                dGame = new d_game();
-                dGame.setGameCode(nCode);
-                dGame.setServer_game_id(timerRelative.getServerGameCode());
-                if (dGame.getServer_game_id() == 0) {
-                    //Если ошибка создания, то бдлокируем экран
-                    Toast toast = Toast.makeText(this, "Ошибка создания игры. Не найден номер игры на сервере.", Toast.LENGTH_SHORT);
-                    toast.show();
-                    screen_lock(true);
-                    return;
+                    //Получаем код игры на устройсте.
+                    String nCode = "";
+                    d_game l_gameCode = db.getLastGame();
+                    if (l_gameCode == null) nCode = "AA-0000";
+                    else nCode = l_gameCode.getGameCode();
+                    //Создаем новую игру
+                    nCode = timerRelative.GenerateNewGameCode(nCode, String deviceCode);
+
+                    dGame = new d_game();
+                    dGame.setGameCode(nCode);
+                    dGame.setServer_game_id(timerRelative.getServerGameCode());
+                    if (dGame.getServer_game_id() == 0) {
+                        //Если ошибка создания, то бдлокируем экран
+                        Toast toast = Toast.makeText(this, "Ошибка создания игры. Не найден номер игры на сервере.", Toast.LENGTH_SHORT);
+                        toast.show();
+                        screen_lock(true);
+                        return;
+                    }
+                    dGame.setWin_ball(-1);
+                    dGame.setDevice_id(db.getDevice().getDevice_id());
+                    dGame.setState(0);
+
+                    if (!db.createNewGame(dGame)) {
+                        //Если ошибка создания, то бдлокируем экран
+                        Toast toast = Toast.makeText(this, "Ошибка создания игры.", Toast.LENGTH_SHORT);
+                        toast.show();
+                        screen_lock(true);
+                        return;
+                    }
+                    GameCode.setText(nCode);
+                    Animation rotate_animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+                    rotate_animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            GameCode.setAlpha(1f);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            GameCode.setAlpha(0.4f);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+
+                    GameCode.setAnimation(rotate_animation);
+                    GameCode.animate();
+                    //Запустили таймер
+                    timerRelative.StartTimer();
                 }
-                dGame.setWin_ball(-1);
-                dGame.setDevice_id(db.getDevice().getDevice_id());
-                dGame.setState(0);
-
-                if (!db.createNewGame(dGame)) {
-                    //Если ошибка создания, то бдлокируем экран
-                    Toast toast = Toast.makeText(this, "Ошибка создания игры.", Toast.LENGTH_SHORT);
-                    toast.show();
-                    screen_lock(true);
-                    return;
+                else {
+                     Toast toast = Toast.makeText(this, "Баланс на устройстве меньше 100, пополните баланс и активируйте устройство", Toast.LENGTH_SHORT);
+                     toast.show();
+                     BingoDevice.setStatus(0);
+                     db.updateDevice(BingoDevice);
+                     screen_lock(true);
                 }
-                GameCode.setText(nCode);
-                Animation rotate_animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-                rotate_animation.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-                        GameCode.setAlpha(1f);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        GameCode.setAlpha(0.4f);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-
-                GameCode.setAnimation(rotate_animation);
-                GameCode.animate();
-                //Запустили таймер
-                timerRelative.StartTimer();
+            } else {
+                Toast toast = Toast.makeText(this, "Balance is not correct", Toast.LENGTH_SHORT);
+                toast.show();
+                screen_lock(true);
             }
-            else {
-                 Toast toast = Toast.makeText(this, "Баланс на устройстве меньше 100, пополните баланс и активируйте устройство", Toast.LENGTH_SHORT);
-                 toast.show();
-                 BingoDevice.setStatus(0);
-                 db.updateDevice(BingoDevice);
-                 screen_lock(true);
-            }
-        }
-        else {
-            Toast toast = Toast.makeText(this, "Balance is not correct", Toast.LENGTH_SHORT);
-            toast.show();
-            screen_lock(true);
-        }
     }
 
     @Override
@@ -499,13 +509,23 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
     public void x2_button(View view){
         List<d_entry_set> cl = db.getAllGameEntrySet(dGame.getId());
-        BoardGrid bG = (BoardGrid)this.findViewById(R.id.board_grid);
-        int currentLevel = this.getIlevelset();
-        for (d_entry_set clp: cl){
-            this.setIlevelset(getLevelfromEntry(clp.getEntry_value()));
-            bG.EntryGetsPoint(clp.getX()-33,clp.getY()-33);
+        int balance = db.getGameCurrentSum(dGame.getId());
+        TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.balance);
+        String myBalance = t2w.getField();
+        int i_myBalance = Integer.parseInt(myBalance);
+        if (balance > 0 && i_myBalance>=balance) {
+            BoardGrid bG = (BoardGrid) this.findViewById(R.id.board_grid);
+            int currentLevel = this.getIlevelset();
+            for (d_entry_set clp : cl) {
+                this.setIlevelset(getLevelfromEntry(clp.getEntry_value()));
+                bG.EntryGetsPoint(clp.getX() - 33, clp.getY() - 33);
+            }
+            this.setIlevelset(currentLevel);
         }
-        this.setIlevelset(currentLevel);
+        else {
+            Toast toast = Toast.makeText(this, "Баланс на устройстве не достатрочен для удвоения, пополните баланс.", Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 
     public void EntrySet(View view){
@@ -538,11 +558,28 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         TwoTextViews t2b =  (TwoTextViews)this.findViewById(R.id.balance);
         int balance = Integer.parseInt(t2b.getField()) + db.getGameCurrentSum(dGame.getId());
         t2b.setField(""+balance);
-        mc.ClearBoard();
+        mc.ClearBoard(MainContainer.CLEAR_ALL);
     }
 
     public void ball_clicked(View v){
         board.showGame(v);
+    }
+
+    public void pause(View v){
+        //Остановили таймер
+        timerRelative.StopTimer();
+        screen_lock(true);
+    }
+    public void quit(View v){
+        //Остановили таймер
+        BingoDevice.setStatus(1);
+        clearBoard();
+        timerRelative.StopTimer();
+        screen_lock(true);
+        Toast toast = Toast.makeText(this, "Игра остановлена", Toast.LENGTH_SHORT);
+        toast.show();
+        final EditText ET = (EditText) frameLayout.findViewById(R.id.pin);
+        ET.setText("");
     }
     public void ball_cancel_clicked(View v){
         v.setVisibility(View.INVISIBLE);

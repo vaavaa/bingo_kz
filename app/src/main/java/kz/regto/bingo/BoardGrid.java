@@ -38,6 +38,9 @@ public class BoardGrid extends View {
     //Ни чего не нажато по Y;
     int y_pushed = 0;
 
+    int intHeight =0;
+    int intWidth = 0;
+
     //Определеяем какое число нажато
     int x_pushed_number=-1;
     int y_pushed_number=-1;
@@ -119,15 +122,15 @@ public class BoardGrid extends View {
     }
 
 
-    private void MakeTouchedRectangleArea(Canvas canvas){
+    public void MakeTouchedRectangleArea(){
 
         ii=1; iiw=1; iic=0; iicw=0;
-        int correlate = (int)(14)/LINE_WIDTH;
+        int correlate = (int)(24)/LINE_WIDTH;
         int columns;
         int rows;
-        if (canvas.getHeight()<canvas.getWidth()) {
-            columns = (int) canvas.getWidth() / 14;
-            rows = (int) canvas.getHeight() / 3;
+        if (intHeight<intWidth) {
+            columns = (int) intWidth / 13;
+            rows = (int) intHeight / 3;
             column_light=columns;
             row_light=rows;
             correlation_light=correlate;
@@ -135,11 +138,11 @@ public class BoardGrid extends View {
             //Рисуем вертикальные границы с некоторыми ограничениями всего столбцов 12,
             // последний 13ый столбец не нужен.
             for (int i = 1; i <= 12; i++) {
-                if (i<4) mRect[ii].left = i * columns - GRID_STEP+correlate;
-                else mRect[ii].left = i * columns - GRID_STEP;
+                if (i<8) mRect[ii].left = i * columns - GRID_STEP+correlate;
+                else mRect[ii].left = i * columns - GRID_STEP+correlate/2;
                 mRect[ii].top = GRID_STEP;
-                if (i<4) mRect[ii].right = i * columns + GRID_STEP+correlate;
-                else mRect[ii].right = i * columns + GRID_STEP;
+                if (i<8) mRect[ii].right = i * columns + GRID_STEP+correlate;
+                else mRect[ii].right = i * columns + GRID_STEP+correlate/2;
                 mRect[ii].bottom = 3 * rows - GRID_STEP;
                 //canvas.drawRect(mRect[ii], paint);
                 ii++;
@@ -161,9 +164,9 @@ public class BoardGrid extends View {
             for (int i = 1; i <= 3; i++) {
                 if (i==3) mRectw[iiw].left = columns + GRID_STEP;
                 else mRectw[iiw].left = columns-correlate;
-                mRectw[iiw].top = i * rows - GRID_STEP;
+                mRectw[iiw].top = i * rows - GRID_STEP+correlate/2;
                 mRectw[iiw].right = 13*columns - GRID_STEP;
-                mRectw[iiw].bottom = rows * i + GRID_STEP;
+                mRectw[iiw].bottom = rows * i + GRID_STEP+correlate/2;
                 //canvas.drawRect(mRectw[iiw], paint);
                 iiw++;
             }
@@ -185,7 +188,8 @@ public class BoardGrid extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         //Создаем прямоугольники что бы знать куда и как было нажатие
-        MakeTouchedRectangleArea(canvas);
+        intHeight = canvas.getHeight();
+        intWidth = canvas.getWidth();
     }
 
     public d_entry_set EntryGetsPoint(int xTouch_new, int yTouch_new){

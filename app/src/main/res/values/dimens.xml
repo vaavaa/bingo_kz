@@ -16,5 +16,6 @@
     <dimen name="auto_text_size">25sp</dimen>
     <dimen name="x2_text_size">55sp</dimen>
     <dimen name="auto_ball_size">100dp</dimen>
+    <dimen name="pause_ball_size">75dp</dimen>
     <dimen name="entry_ball_size">65dp</dimen>
 </resources>

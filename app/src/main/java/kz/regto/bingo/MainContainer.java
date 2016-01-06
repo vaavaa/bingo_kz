@@ -19,6 +19,9 @@ import kz.regto.database.d_entry_set;
 
 public class MainContainer extends ViewGroup {
 
+    public final static int CLEAR_ALL = 0;
+    public final static int CLEAR_BOARD_ONLY = 1;
+
 
     private LinkedList<ChipLogLimit> limitLogList=new LinkedList<ChipLogLimit>();
     private Main main;
@@ -113,7 +116,7 @@ public class MainContainer extends ViewGroup {
     }
 
     //Удаляем все элементы с доски
-    public void ClearBoard(){
+    public void ClearBoard(int clear_type){
             boolean doBreak = false;
             while (!doBreak) {
                 int childCount = this.getChildCount();
@@ -126,12 +129,15 @@ public class MainContainer extends ViewGroup {
                         this.removeView(currentChild);
                         break;
                     }
+                    if (currentChild instanceof RectView) {
+                        currentChild.setVisibility(View.INVISIBLE);
+                    }
                 }
                 if (i == childCount) {
                     doBreak = true;
                 }
             }
-        main.db.deleteEntrySetByGameID(main.dGame.getId());
+        if (clear_type== 0) main.db.deleteEntrySetByGameID(main.dGame.getId());
        this.invalidate();
     }
 

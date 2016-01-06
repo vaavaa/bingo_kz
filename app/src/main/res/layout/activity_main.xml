@@ -27,7 +27,7 @@
             cl:field_text="0"
             cl:layout_cellsHeight="10"
             cl:layout_cellsWidth="50"
-            cl:layout_left="10"
+            cl:layout_left="40"
             cl:layout_top="3"/>
         <kz.regto.bingo.TwoTextViews
             android:id="@+id/win"
@@ -39,8 +39,8 @@
             cl:field_text="0"
             cl:layout_cellsHeight="10"
             cl:layout_cellsWidth="50"
-            cl:layout_left="50"
-            cl:layout_top="3"/>
+            cl:layout_left="40"
+            cl:layout_top="10"/>
         <kz.regto.bingo.TwoTextViews
             android:id="@+id/CurrentEntry"
             android:layout_height="wrap_content"
@@ -51,8 +51,31 @@
             cl:field_text="0"
             cl:layout_cellsHeight="10"
             cl:layout_cellsWidth="50"
-            cl:layout_left="50"
-            cl:layout_top="11"/>
+            cl:layout_left="40"
+            cl:layout_top="17"/>
+
+        <Button android:id="@+id/quit"
+            android:text=""
+            android:layout_width="@dimen/pause_ball_size"
+            android:layout_height="@dimen/pause_ball_size"
+            android:background="@drawable/quit_button_scheme"
+            android:gravity="center"
+            cl:layout_cellsHeight="12"
+            cl:layout_cellsWidth="12"
+            cl:layout_left="10"
+            cl:layout_top="3"
+            android:onClick="quit"/>
+        <Button android:id="@+id/pause"
+            android:layout_height="@dimen/pause_ball_size"
+            android:layout_width="@dimen/pause_ball_size"
+            android:gravity="center"
+            android:background="@drawable/pause_button_scheme"
+            cl:layout_cellsHeight="12"
+            cl:layout_cellsWidth="12"
+            cl:layout_left="23"
+            cl:layout_top="3"
+            android:onClick="pause"/>
+
 
         <!-- Конец второй строки -->
         <kz.regto.bingo.WinBallContainer
