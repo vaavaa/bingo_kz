@@ -31,6 +31,7 @@ import kz.regto.json.Balance;
 import kz.regto.json.Network;
 import kz.regto.json.JSONParser;
 import kz.regto.json.PinCode;
+import kz.regto.json.WebService;
 
 public class Main extends AppCompatActivity implements TimerEvent, BoardGridEvents {
 
@@ -81,6 +82,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         else {
             EditText ET1 = (EditText) frameLayout.findViewById(R.id.n_path);
             ET1.setText(BingoDevice.getNetwork_path());
+            BingoDevice = db.getDeviceFromServer(BingoDevice);
         }
 
         //Ставка в 100
@@ -197,7 +199,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
-        if (BingoDevice.getStatus() != 1) {
+        if (BingoDevice.getStatus() != 1 && ) {
             Network ntw = new Network();
             JSONParser Jprs = new JSONParser();
             if (ntw.isNetworkAvailable(this)) {
@@ -391,7 +393,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
                     if (l_gameCode == null) nCode = "AA-0000";
                     else nCode = l_gameCode.getGameCode();
                     //Создаем новую игру
-                    nCode = timerRelative.GenerateNewGameCode(nCode, String deviceCode);
+                    url = BingoDevice.getNetwork_path().concat("/web_service.php?par=").concat(BingoDevice.getDeviceCode()).concat("&comm=device_id");
+                    WebService deviceCode = Jprs.getServerValue(url);
+                    nCode = timerRelative.GenerateNewGameCode(nCode, Integer.toString(deviceCode.getIntvalue()));
 
                     dGame = new d_game();
                     dGame.setGameCode(nCode);

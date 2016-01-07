@@ -9,6 +9,24 @@ public class d_device {
     private int status;
     private int balance;
     private String network_path="";
+    private int ServerDeviceId;
+    private int TypeId;
+
+    public int getTypeId() {
+        return TypeId;
+    }
+
+    public void setTypeId(int typeId) {
+        TypeId = typeId;
+    }
+
+    public int getServerDeviceId() {
+        return ServerDeviceId;
+    }
+
+    public void setServerDeviceId(int serverDeviceId) {
+        ServerDeviceId = serverDeviceId;
+    }
 
     public String getNetwork_path() {
         return network_path;

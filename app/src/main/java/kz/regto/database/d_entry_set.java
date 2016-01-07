@@ -21,9 +21,11 @@ public class d_entry_set {
     private int game_id;
     //Сумма ставки
     private int sum;
+    //Пакет ставки, т.е. как ставилась ставка, одиночно, или в ставку входил сет, умножение на 2, возвращение с предыдущей ставки
+    private int EntryPackId;
 
     public d_entry_set(){}
-    public d_entry_set(int i_chip_number,int i_log_id, int idV, int i_divided_by, int iX,int iY, int i_game_id, int i_sum, int ientry_value){
+    public d_entry_set(int i_chip_number,int i_log_id, int idV, int i_divided_by, int iX,int iY, int i_game_id, int i_sum, int ientry_value, int iEntryPackId){
         chip_number = i_chip_number;
         log_id = i_log_id;
         entry_id = idV;
@@ -33,6 +35,15 @@ public class d_entry_set {
         game_id = i_game_id;
         sum = i_sum;
         entry_value = ientry_value;
+        EntryPackId = iEntryPackId;
+    }
+
+    public int getEntryPackId() {
+        return EntryPackId;
+    }
+
+    public void setEntryPackId(int entryPackId) {
+        EntryPackId = entryPackId;
     }
 
     public int getSys_id() {

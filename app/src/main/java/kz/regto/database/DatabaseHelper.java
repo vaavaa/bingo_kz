@@ -42,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "(game_id INTEGER NOT NULL, operation_type INTEGER NOT NULL DEFAULT '0'," +
             " sum INTEGER NOT NULL)";
     private static final String CREATE_TABLE_device = "CREATE TABLE device (device_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-            " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', balance INTEGER NOT NULL DEFAULT '0', network_path TEXT DEFAULT '')";
+            " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', balance INTEGER NOT NULL DEFAULT '0', network_path TEXT DEFAULT '', server_device_id INTEGER NOT NULL DEFAULT '-1')";
     private static final String CREATE_TABLE_entry_set = "    CREATE TABLE entry_set (\n" +
             "                    sys_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
             "                    log_id INTEGER NOT NULL, "+
@@ -51,7 +51,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "                    entry_id INTEGER NOT NULL,\n" +
             "                    divided_by INTEGER NOT NULL, x INTEGER NOT NULL, y INTEGER NOT NULL," +
             "                    game_id INTEGER NOT NULL,"+
-            "                    sum INTEGER NOT NULL)";
+            "                    sum INTEGER NOT NULL," +
+            "                    entry_pack_id INTEGER NOT NULL)";
+
+    private static final String CREATE_TABLE_settings = "CREATE TABLE settings " +
+            "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, settings_name VARCHAR(255) NOT NULL," +
+            " settings_value VARCHAR(255) NOT NULL)";
 
 
     public DatabaseHelper(Context context) {
@@ -67,6 +72,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_balance);
         db.execSQL(CREATE_TABLE_device);
         db.execSQL(CREATE_TABLE_entry_set);
+        db.execSQL(CREATE_TABLE_settings);
     }
 
     @Override
@@ -76,6 +82,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_balance);
         db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_device);
         db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_entry_set);
+        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_settings);
 
         // create new tables
         onCreate(db);
@@ -104,6 +111,123 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public int getDBState() {
         return state;
     }
+
+
+    // ------------------------ "settings" table methods ----------------//
+
+    public boolean createNewSettings(d_settings dSettings) {
+        boolean bReturn;
+        String insert_sql = "insert into settings ( settings_name, settings_value) " +
+                "VALUES ('"+dSettings.getSettingsName()+"','"+dSettings.getSettingsValue()+"')";
+        try {
+            //Еcли там уже есть устройство, нам добавлять не нужно
+            if (this.getSQLQueryCount("SELECT * FROM settings WHERE settings_name='"+dSettings.getSettingsName()+"'")==0) {
+                db.execSQL(insert_sql);
+                String sql = "SELECT last_insert_rowid() as lastid";
+                Cursor c = this.runResultedSQL(sql);
+                if (c!=null && c.moveToFirst()){
+                    dSettings.setId(c.getInt(c.getColumnIndex("lastid")));
+                    c.close();
+                }
+            }
+            bReturn = true;}
+        catch (Exception ex){
+            bReturn = false;
+        }
+        return bReturn;
+    }
+
+    /**
+     * get single settings by name
+     * */
+    public d_settings getSettings(String settings_name) {
+        String selectQuery = "SELECT * FROM settings WHERE settings_name = '"+settings_name+"' limit 1";
+        Cursor c = dbr.rawQuery(selectQuery, null);
+        d_settings td = null;
+
+        if( c != null && c.moveToFirst() ){
+            td = new d_settings();
+            td.setSettingsName("settings_name");
+            td.setSettingsValue(c.getString(c.getColumnIndex("settings_value")));
+            td.setId(c.getInt(c.getColumnIndex("id")));
+            c.close();
+        }
+        return td;
+    }
+
+    /**
+     * get single settings by id
+     * */
+    public d_settings getSettings(int id) {
+        String selectQuery = "SELECT * FROM settings WHERE int = "+id+" limit 1";
+        Cursor c = dbr.rawQuery(selectQuery, null);
+        d_settings td = null;
+
+        if( c != null && c.moveToFirst() ){
+            td = new d_settings();
+            td.setSettingsName(c.getString(c.getColumnIndex("settings_name")));
+            td.setSettingsValue(c.getString(c.getColumnIndex("settings_value")));
+            td.setId(c.getInt(c.getColumnIndex("id")));
+            c.close();
+        }
+        return td;
+    }
+
+    /**
+     * Updating a settings
+     */
+    public boolean updateSettings(d_settings dSettings) {
+        boolean bReturn;
+        String update_sql = "Update settings " +
+                "SET settings_name ='"+dSettings.getSettingsName()+"', " +
+                "settings_value = '"+dSettings.getSettingsValue() +"' "+
+                "WHERE id = " +dSettings.getId();
+        try {
+            db.execSQL(update_sql);
+            bReturn = true;
+        }
+        catch (Exception ex){
+            bReturn = false;
+        }
+        return bReturn;
+    }
+
+    /**
+     * Deleting a settings
+     */
+    public boolean deleteSettings(int id) {
+        boolean bReturn;
+        String delete_sql = "DELETE FROM settings \n"+
+                "WHERE id=" + id;
+        try {
+            //SQLiteDatabase db = this.getWritableDatabase();
+            db.execSQL(delete_sql);
+            bReturn = true;
+        }
+        catch (Exception ex) {
+            bReturn = false;
+        }
+        return bReturn;
+    }
+    /**
+     * Deleting a settings by name
+     */
+    public boolean deleteSettings(String settings_name) {
+        boolean bReturn;
+        String delete_sql = "DELETE FROM settings \n"+
+                "WHERE settings_name='" + settings_name+"'";
+        try {
+            db.execSQL(delete_sql);
+            bReturn = true;
+        }
+        catch (Exception ex) {
+            bReturn = false;
+        }
+        return bReturn;
+    }
+
+    // ------------------------ close "settings" table methods _---------//
+
 
 
 
@@ -189,8 +313,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public boolean createNewDevice(d_device dDevice) {
         boolean bReturn;
-        String insert_sql = "insert into device (device_code, status, balance, network_path) " +
-                "VALUES ('"+dDevice.getDeviceCode()+"',"+dDevice.getStatus()+","+dDevice.getBalance()+",'"+dDevice.getNetwork_path()+"')";
+        String insert_sql = "insert into device (device_code, status, balance, network_path, server_device_id, type_id) " +
+                "VALUES ('"+dDevice.getDeviceCode()+"',"+dDevice.getStatus()+","+dDevice.getBalance()+",'"+dDevice.getNetwork_path()+"', "
+                +dDevice.getServerDeviceId()+", "+dDevice.getTypeId()+")";
         try {
             //Еcли там уже есть устройство, нам добавлять не нужно
             if (this.getSQLQueryCount("SELECT * FROM device")==0) {
@@ -209,11 +334,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return bReturn;
     }
 
+    public  d_device getDeviceFromServer(d_device dDevice){
+
+        return dDevice;
+    }
+
     /**
      * get single device
      */
     public d_device getDevice() {
-        String selectQuery = "SELECT * FROM device";
+        String selectQuery = "SELECT * FROM device limit 1";
         Cursor c = dbr.rawQuery(selectQuery, null);
         d_device td = null;
 
@@ -224,6 +354,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             td.setDevice_id(c.getInt(c.getColumnIndex("device_id")));
             td.setNetwork_path(c.getString(c.getColumnIndex("network_path")));
             td.setBalance(c.getInt(c.getColumnIndex("balance")));
+            td.setServerDeviceId(c.getInt(c.getColumnIndex("server_device_id")));
+            td.setTypeId(c.getInt(c.getColumnIndex("type_id")));
             c.close();
         }
         return td;
@@ -238,7 +370,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "SET device_code ='"+dDevice.getDeviceCode()+"', " +
                 "status = "+dDevice.getStatus() +", "+
                 "balance = "+ dDevice.getBalance() +", "+
-                "network_path = '"+dDevice.getNetwork_path() +"' "+
+                "network_path = '"+dDevice.getNetwork_path() +"', "+
+                "server_device_id = "+ dDevice.getServerDeviceId() +", "+
+                "type_id = "+ dDevice.getTypeId() +" "+
                 "WHERE device_id = " +dDevice.getDevice_id();
         try {
             db.execSQL(update_sql);

@@ -102,4 +102,14 @@ public class JSONParser {
         return rMsg;
     }
 
+    public WebService getServerValue(String url) {
+        String data=null;
+        WebService rMsg=null;
+        do {
+            data = getJSON(url, 1000);
+        }while (data == null);
+        rMsg = new Gson().fromJson(data, WebService.class);
+        return rMsg;
+    }
+
 }

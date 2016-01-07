@@ -116,8 +116,9 @@ public class TimerRelative extends RelativeLayout {
     }
 
     public String GenerateNewGameCode(String serial, String deviceCode) {
-        final String SER_CODE_LETTER="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String SER_CODE_LETTER="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         int SER_CODE_INT=1;
+        if (serial.indexOf("/") > 0) serial = serial.substring(0,serial.indexOf("/"));
         String ser = serial.substring(0, serial.indexOf("-"));
         String serCode = serial.substring(serial.indexOf("-") + 1, serial.length());
         String ReturnValue = "";
@@ -145,7 +146,7 @@ public class TimerRelative extends RelativeLayout {
         //Создали цифры
         for (int i = size_of_number; i > 0; i--) ReturnValue = ReturnValue.concat("0");
         ReturnValue = ReturnValue.concat(serCode);
-        ReturnValue = deviceCode.concat("-") + ser.concat("-").concat(ReturnValue);
+        ReturnValue = ser.concat("-").concat(ReturnValue).concat("/").concat(deviceCode);
         return ReturnValue;
     }
 
