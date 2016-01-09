@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kz.regto.json.CurrentTime;
-import kz.regto.json.JSONParser;
+import kz.regto.json.Network;
 
 public class TimerRelative extends RelativeLayout {
 
@@ -200,8 +200,8 @@ public class TimerRelative extends RelativeLayout {
         @Override
         public void run() {
 
-           JSONParser jpr = new JSONParser();
-            CurrentTime tProgress = jpr.getGameResult(prnt.BingoDevice.getNetwork_path().concat("/timer.php?game_id="+prnt.dGame.getServer_game_id()));
+           Network ntw = new Network();
+            CurrentTime tProgress = ntw.getGameResult(ntw.getNetworkPath().concat("/timer.php?game_id="+prnt.dGame.getServer_game_id()));
             if(tProgress!=null)
                 if (tProgress.getWinnumber() !=-1) {
                     wn_number =tProgress.getWinnumber();

@@ -116,11 +116,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // ------------------------ "settings" table methods ----------------//
 
     public boolean createNewSettings(d_settings dSettings) {
-        boolean bReturn;
         String insert_sql = "insert into settings ( settings_name, settings_value) " +
                 "VALUES ('"+dSettings.getSettingsName()+"','"+dSettings.getSettingsValue()+"')";
         try {
-            //Еcли там уже есть устройство, нам добавлять не нужно
+            //Еcли там уже есть настрока, то обновим
             if (this.getSQLQueryCount("SELECT * FROM settings WHERE settings_name='"+dSettings.getSettingsName()+"'")==0) {
                 db.execSQL(insert_sql);
                 String sql = "SELECT last_insert_rowid() as lastid";
@@ -129,12 +128,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     dSettings.setId(c.getInt(c.getColumnIndex("lastid")));
                     c.close();
                 }
+                return true;
             }
-            bReturn = true;}
-        catch (Exception ex){
-            bReturn = false;
+            else {
+                if (!this.updateSettings(dSettings)) return false;
+                else  return true;
+            }
+
         }
-        return bReturn;
+        catch (Exception ex){
+            return false;
+        }
     }
 
     /**
@@ -332,11 +336,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             bReturn = false;
         }
         return bReturn;
-    }
-
-    public  d_device getDeviceFromServer(d_device dDevice){
-
-        return dDevice;
     }
 
     /**
@@ -563,7 +562,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public boolean createNewEntrySet(d_entry_set dEntrySet) {
         boolean bReturn;
-        String insert_sql = "INSERT INTO entry_set (log_id, chip_number,entry_value,entry_id,divided_by,x,y,game_id, sum)\n" +
+        String insert_sql = "INSERT INTO entry_set (log_id, chip_number,entry_value,entry_id,divided_by,x,y,game_id, sum, entry_pack_id)\n" +
                 "VALUES ("+
                 + dEntrySet.getLog_id()+","
                 + dEntrySet.getChip_number() + ","
@@ -573,7 +572,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + dEntrySet.getX() + ","+
                 + dEntrySet.getY() + ","+
                 + dEntrySet.getGame_id()+","+
-                + dEntrySet.getSum()+ ")";
+                + dEntrySet.getSum()+ ","
+                + dEntrySet.getEntryPackId()+")";
         try {
 
             db.execSQL(insert_sql);
@@ -589,6 +589,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             bReturn = false;
         }
         return bReturn;
+    }
+
+    public List<d_entry_set> getLastEntrySetPack() {
+        String selectQuery = "SELECT entry_pack_id FROM entry_set ORDER BY entry_pack_id DESK LIMIT 1";
+        Cursor c = dbr.rawQuery(selectQuery, null);
+        List<d_entry_set> list_td = new ArrayList<>();
+        int last_entry_pack_id;
+
+        if (c != null && c.moveToFirst()){
+            last_entry_pack_id = c.getInt(c.getColumnIndex("entry_pack_id"));
+            selectQuery = "SELECT * FROM entry_set WHERE entry_pack_id = "+last_entry_pack_id;
+            c.close();
+            c = dbr.rawQuery(selectQuery, null);
+            do {
+                d_entry_set td = new d_entry_set();
+                td.setSys_id(c.getInt(c.getColumnIndex("sys_id")));
+                td.setLog_id(c.getInt(c.getColumnIndex("log_id")));
+                td.setChip_number((c.getInt(c.getColumnIndex("chip_number"))));
+                td.setEntry_value(c.getInt(c.getColumnIndex("entry_value")));
+                td.setEntry_id(c.getInt(c.getColumnIndex("entry_id")));
+                td.setDivided_by(c.getInt(c.getColumnIndex("divided_by")));
+                td.setX(c.getInt(c.getColumnIndex("x")));
+                td.setY(c.getInt(c.getColumnIndex("y")));
+                td.setGame_id(c.getInt(c.getColumnIndex("game_id")));
+                td.setSum(c.getInt(c.getColumnIndex("sum")));
+                td.setEntryPackId(c.getInt(c.getColumnIndex("entry_pack_id")));
+                list_td.add(td);
+            } while (c.moveToNext());
+            c.close();
+        }
+        return list_td;
     }
 
     /**
@@ -611,6 +642,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             td.setY(c.getInt(c.getColumnIndex("y")));
             td.setGame_id(c.getInt(c.getColumnIndex("game_id")));
             td.setSum(c.getInt(c.getColumnIndex("sum")));
+            td.setEntryPackId(c.getInt(c.getColumnIndex("entry_pack_id")));
             c.close();
         }
         return td;
@@ -635,6 +667,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             td.setY(c.getInt(c.getColumnIndex("y")));
             td.setGame_id(c.getInt(c.getColumnIndex("game_id")));
             td.setSum(c.getInt(c.getColumnIndex("sum")));
+            td.setEntryPackId(c.getInt(c.getColumnIndex("entry_pack_id")));
             c.close();
         }
         return td;
@@ -662,7 +695,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 td.setY(c.getInt(c.getColumnIndex("y")));
                 td.setGame_id(c.getInt(c.getColumnIndex("game_id")));
                 td.setSum(c.getInt(c.getColumnIndex("sum")));
-
+                td.setEntryPackId(c.getInt(c.getColumnIndex("entry_pack_id")));
                 d_entry_set.add(td);
             } while (c.moveToNext());
             c.close();
@@ -684,8 +717,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "divided_by ="+dEntrySet.getDivided_by()+"\n"+
                 "x ="+dEntrySet.getX()+"\n"+
                 "y="+dEntrySet.getY()+"\n"+
-                "game_id="+dEntrySet.getGame_id()+"\n"+
-                "sum="+dEntrySet.getSum()+"\n"+
+                "game_id="+dEntrySet.getGame_id()+ "\n"+
+                "sum="+dEntrySet.getSum()+", "+
+                "entry_pack_id="+dEntrySet.getEntryPackId()+" "+
                 "WHERE sys_id=" +dEntrySet.getSys_id();
         try{
             db.execSQL(update_sql);

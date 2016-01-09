@@ -2,4 +2,10 @@
     <string name="app_name">Bingo</string>
     <string name="init_figure"></string>
     <string name="timerVal">00:00</string>
+    <string name="NetworkIsDown">"Network is down, pls. check internet connection"</string>
+    <string name="ServerIsNotReachable">Server is not reachable or path is wrong"</string>
+    <string name="PinIsEmpty">"PIN is empty"</string>
+    <string name="PinIsNotCorrect">"PIN is not correct"</string>
+    <string name="StatusIsNotCorrect">"Статус устройства не установлен в режим игры. Обратитесь к администратору."</string>
+    <string name="BalanceIsCorrect">"Баланса недостаточно для запуска\продолжения игры."</string>
 </resources>

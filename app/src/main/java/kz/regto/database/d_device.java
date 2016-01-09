@@ -8,7 +8,6 @@ public class d_device {
     private String DeviceCode;
     private int status;
     private int balance;
-    private String network_path="";
     private int ServerDeviceId;
     private int TypeId;
 
@@ -26,14 +25,6 @@ public class d_device {
 
     public void setServerDeviceId(int serverDeviceId) {
         ServerDeviceId = serverDeviceId;
-    }
-
-    public String getNetwork_path() {
-        return network_path;
-    }
-
-    public void setNetwork_path(String network_path) {
-        this.network_path = network_path;
     }
 
     public void setBalance(int balance) {

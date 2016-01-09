@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import kz.regto.json.CurrentTime;
-import kz.regto.json.JSONParser;
 
 /**
  * Created by Старцев on 25.11.2015.

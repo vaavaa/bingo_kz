@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.os.SystemClock;
 
 import kz.regto.json.CurrentTime;
-import kz.regto.json.JSONParser;
+import kz.regto.json.Network;
 
 /**
  * Created by Старцев on 25.11.2015.
@@ -17,7 +17,7 @@ public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
     private long FinalTime=0L;
     private int server_game_id = 0;
     private String game_code ="";
-    JSONParser jpr = new JSONParser();
+    Network ntw = new Network();
 
     @Override
     protected void onPreExecute() {
@@ -54,7 +54,7 @@ public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
         int iProgress=-1;
 
            do {
-               tProgress = jpr.getTimer(r_URL_timer);
+               tProgress = ntw.getTimer(r_URL_timer);
                    if (tProgress!=null){
                        publishProgress(tProgress);
                        try {Thread.sleep(250);}

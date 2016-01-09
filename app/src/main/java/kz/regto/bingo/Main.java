@@ -3,7 +3,6 @@ package kz.regto.bingo;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,7 +28,6 @@ import kz.regto.database.d_entry_set;
 import kz.regto.database.d_game;
 import kz.regto.json.Balance;
 import kz.regto.json.Network;
-import kz.regto.json.JSONParser;
 import kz.regto.json.PinCode;
 import kz.regto.json.WebService;
 
@@ -45,6 +43,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     TimerRelative timerRelative;
     public int ilevelset=1;
 
+    //Network Helper
+    public Network ntw;
 
     // Database Helper
     public DatabaseHelper db;
@@ -65,12 +65,21 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         //setOnSystemUiVisibilityChangeListener();
         showSystemUi();
 
+        //Network initialisation
+        ntw = new Network();
+        String NetworkPath = db.getSettings("network_path").getSettingsValue();
+        if (NetworkPath!=null && NetworkPath.length()> 0) {
+            ntw.setNetworkPath(NetworkPath);
+            EditText ET1 = (EditText) frameLayout.findViewById(R.id.n_path);
+            ET1.setText(NetworkPath);
+        }
 
         //database initialisation
         //Создали подключение
         db = new DatabaseHelper(getApplicationContext());
         //Открыли одну переменую для всех иснтрукций
         db.openDB();
+
 
         BingoDevice = db.getDevice();
         if (BingoDevice==null){
@@ -79,10 +88,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             BingoDevice.setDeviceCode(new Utils().getUniquePsuedoID());
             db.createNewDevice(BingoDevice);
         }
-        else {
-            EditText ET1 = (EditText) frameLayout.findViewById(R.id.n_path);
-            ET1.setText(BingoDevice.getNetwork_path());
-            BingoDevice = db.getDeviceFromServer(BingoDevice);
+        if (ntw.ConnectionExist()){
+            BingoDevice = ntw.getDeviceFromServer(BingoDevice);
         }
 
         //Ставка в 100
@@ -185,7 +192,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         timerRelative = tr;
     }
 
-    //0) Проверяем статус устройства, если активировано, то просто разблокируем, если нет
+    //0) Проверяем включена ли связь устройства, если активировано, то просто разблокируем, если нет
     //1) Просим линк из объекта устройства
     //2) Если линк есть, стучимся для проверки пин кода
     //3) Линк не работает, просим ввести линк, не работает сеть, просим дать нам сеть
@@ -199,57 +206,54 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
-        if (BingoDevice.getStatus() != 1 && ) {
-            Network ntw = new Network();
-            JSONParser Jprs = new JSONParser();
-            if (ntw.isNetworkAvailable(this)) {
-                EditText ET1 = (EditText) frameLayout.findViewById(R.id.n_path);
-                if (ET1.getText().toString().length() > 0)
-                        BingoDevice.setNetwork_path(ET1.getText().toString());
-
-                if (BingoDevice.getNetwork_path().length()!= 0){
-                    ET1.setText(BingoDevice.getNetwork_path());
-                    final EditText ET = (EditText) frameLayout.findViewById(R.id.pin);
-                    if (ET.getText().toString().length()>0) {
-                        int iPinCode = Integer.parseInt(ET.getText().toString());
-                        String url = BingoDevice.getNetwork_path().concat("/pincode.php");
-                        PinCode pinCode = Jprs.tPinCode(url);
-                        if (pinCode != null) {
-                            if (iPinCode == pinCode.getPinCode()) {
-                                db.updateDevice(BingoDevice);
-                                timerRelative.HTTPRunTimer(BingoDevice.getNetwork_path().concat("/timer.php"));
-                                screen_lock(false);
-                                TimerStarted_sub();
-                            } else {
-                                Toast toast = Toast.makeText(this, "PIN is not correct", Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-                        } else {
-                            Toast toast = Toast.makeText(this, "Server is not reachable, path could be wrong", Toast.LENGTH_SHORT);
-                            toast.show();
-                        }
-                    }
-                    else {
-                        Toast toast = Toast.makeText(this, "PIN is not correct", Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-                }
-                else {
-                    Toast toast = Toast.makeText(this, "Server is not reachable, path could be wrong", Toast.LENGTH_SHORT);
-                    toast.show();
-                    ET1.setFocusable(true);
-                }
-            } else {
-                Toast toast = Toast.makeText(this, "Network is down, pls. check internet connection", Toast.LENGTH_SHORT);
-                toast.show();
-            }
-        } else {
-            if (BingoDevice.getBalance() >= 100) {
-                screen_lock(false);
-                timerRelative.HTTPRunTimer(BingoDevice.getNetwork_path().concat("/timer.php"));
-                TimerStarted_sub();
-            }
+        //Если связи нет, сообщение и выйти
+        if (!ntw.isNetworkAvailable(this)) {
+            Toast toast = Toast.makeText(this, R.string.NetworkIsDown, Toast.LENGTH_SHORT);
+            toast.show();
+            return;
         }
+        //Забираем линк на сервер
+        EditText ET1 = (EditText) frameLayout.findViewById(R.id.n_path);
+        if (ET1.getText().toString().length() > 0) ntw.setNetworkPath(ET1.getText().toString());
+        else {
+            Toast toast = Toast.makeText(this,  R.string.ServerIsNotReachable, Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        //проверяем путь
+        if (ntw.getNetworkPath().length()== 0
+                && !ntw.ConnectionExist()){
+            Toast toast = Toast.makeText(this,  R.string.ServerIsNotReachable, Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        final EditText ET = (EditText) frameLayout.findViewById(R.id.pin);
+        if (ET.getText().toString().length()==0) {
+            Toast toast = Toast.makeText(this, R.string.PinIsEmpty, Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        int iPinCode = Integer.parseInt(ET.getText().toString());
+        int pinCode = ntw.getServerValue("web_service.php?comm=pincode&par=0",4000).getIntvalue();
+        if (iPinCode != pinCode) {
+            Toast toast = Toast.makeText(this,  R.string.PinIsNotCorrect, Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        if (BingoDevice.getStatus() != 0) {
+            Toast toast = Toast.makeText(this, R.string.StatusIsNotCorrect , Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        if (BingoDevice.getBalance() < 100) {
+            Toast toast = Toast.makeText(this,  R.string.BalanceIsCorrect , Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        db.updateDevice(BingoDevice);
+        timerRelative.HTTPRunTimer(ntw.getNetworkPath().concat("/timer.php"));
+        screen_lock(false);
+        TimerStarted_sub();
     }
 
     public void screen_lock(boolean bSkrn){
@@ -600,7 +604,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         BingoDevice.setStatus(0);
         db.updateDevice(BingoDevice);
         ClearGameCach();
-        db.close();
+        db.closeDB();
         super.onDestroy();
     }
     public void ClearGameCach(){
