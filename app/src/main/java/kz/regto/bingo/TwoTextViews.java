@@ -7,9 +7,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/**
- * Created by spt on 03.11.2015.
- */
 public class TwoTextViews extends LinearLayout {
     private String label;
     private String field;

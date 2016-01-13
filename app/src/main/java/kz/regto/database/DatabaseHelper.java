@@ -40,9 +40,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "server_game_id INTEGER NOT NULL)";
     private static final String CREATE_TABLE_balance = "CREATE TABLE balance " +
             "(game_id INTEGER NOT NULL, operation_type INTEGER NOT NULL DEFAULT '0'," +
-            " sum INTEGER NOT NULL)";
+            " sum INTEGER NOT NULL, dtime DATETIME NOT NULL DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME')) )";
     private static final String CREATE_TABLE_device = "CREATE TABLE device (device_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-            " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', balance INTEGER NOT NULL DEFAULT '0', network_path TEXT DEFAULT '', server_device_id INTEGER NOT NULL DEFAULT '-1')";
+            " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', balance INTEGER NOT NULL DEFAULT '0', server_device_id INTEGER NOT NULL DEFAULT '-1', type_id INTEGER NOT NULL DEFAULT '0')";
     private static final String CREATE_TABLE_entry_set = "    CREATE TABLE entry_set (\n" +
             "                    sys_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
             "                    log_id INTEGER NOT NULL, "+
@@ -87,8 +87,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // create new tables
         onCreate(db);
     }
-    // ------------------------ "balance" table methods ----------------//
-
 
     public boolean openDB() {
         boolean bRet;
@@ -263,12 +261,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 td.setGame_id(c.getInt(c.getColumnIndex("game_id")));
                 td.setOperation((c.getInt(c.getColumnIndex("operation_type"))));
                 td.setSum(c.getInt(c.getColumnIndex("sum")));
+                td.setDatetime(c.getInt(c.getColumnIndex("dtime")));
 
                 dBalance.add(td);
             } while (c.moveToNext());
             c.close();
         }
         return dBalance;
+    }
+
+    public int getCurrentBalance(int game_id) {
+        String selectQuery = "SELECT sum FROM balance " +
+                " WHERE game_id="+Integer.toString(game_id)+" ORDER BY dtime DESC ";
+        int rValue=0;
+        Cursor c = dbr.rawQuery(selectQuery, null);
+        if( c != null && c.moveToFirst() ){
+            rValue = c.getInt(c.getColumnIndex("sum"));
+            c.close();
+        }
+        return rValue;
     }
 
     /**
@@ -317,8 +328,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public boolean createNewDevice(d_device dDevice) {
         boolean bReturn;
-        String insert_sql = "insert into device (device_code, status, balance, network_path, server_device_id, type_id) " +
-                "VALUES ('"+dDevice.getDeviceCode()+"',"+dDevice.getStatus()+","+dDevice.getBalance()+",'"+dDevice.getNetwork_path()+"', "
+        String insert_sql = "insert into device (device_code, status, balance, server_device_id, type_id) " +
+                "VALUES ('"+dDevice.getDeviceCode()+"',"+dDevice.getStatus()+","+dDevice.getBalance()+", "
                 +dDevice.getServerDeviceId()+", "+dDevice.getTypeId()+")";
         try {
             //Еcли там уже есть устройство, нам добавлять не нужно
@@ -351,7 +362,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             td.setDeviceCode(c.getString(c.getColumnIndex("device_code")));
             td.setStatus(c.getInt(c.getColumnIndex("status")));
             td.setDevice_id(c.getInt(c.getColumnIndex("device_id")));
-            td.setNetwork_path(c.getString(c.getColumnIndex("network_path")));
             td.setBalance(c.getInt(c.getColumnIndex("balance")));
             td.setServerDeviceId(c.getInt(c.getColumnIndex("server_device_id")));
             td.setTypeId(c.getInt(c.getColumnIndex("type_id")));
@@ -369,7 +379,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "SET device_code ='"+dDevice.getDeviceCode()+"', " +
                 "status = "+dDevice.getStatus() +", "+
                 "balance = "+ dDevice.getBalance() +", "+
-                "network_path = '"+dDevice.getNetwork_path() +"', "+
                 "server_device_id = "+ dDevice.getServerDeviceId() +", "+
                 "type_id = "+ dDevice.getTypeId() +" "+
                 "WHERE device_id = " +dDevice.getDevice_id();
@@ -391,7 +400,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String delete_sql = "DELETE FROM device \n"+
                 "WHERE device_id=" + device_id;
         try {
-            //SQLiteDatabase db = this.getWritableDatabase();
             db.execSQL(delete_sql);
             bReturn = true;
         }
@@ -590,6 +598,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return bReturn;
     }
+
+    public int getLastSetPack() {
+        String selectQuery = "SELECT entry_pack_id FROM entry_set ORDER BY entry_pack_id DESK LIMIT 1";
+        Cursor c = dbr.rawQuery(selectQuery, null);
+        if (c != null && c.moveToFirst()) return c.getInt(c.getColumnIndex("entry_pack_id"));
+        else return -1;
+    }
+
 
     public List<d_entry_set> getLastEntrySetPack() {
         String selectQuery = "SELECT entry_pack_id FROM entry_set ORDER BY entry_pack_id DESK LIMIT 1";

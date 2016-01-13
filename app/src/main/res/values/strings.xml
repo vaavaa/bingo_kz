@@ -8,4 +8,12 @@
     <string name="PinIsNotCorrect">"PIN is not correct"</string>
     <string name="StatusIsNotCorrect">"Статус устройства не установлен в режим игры. Обратитесь к администратору."</string>
     <string name="BalanceIsCorrect">"Баланса недостаточно для запуска\продолжения игры."</string>
+    <string name="NtwBalanceIsCorrect">"Network issue, balance is not correct"</string>
+    <string name="BalanceIsLow">"Баланс на устройстве меньше 100, пополните баланс."</string>
+    <string name="DeviceIsNotActive">"Устройство не активировано. Обратитесь к администратору."</string>
+    <string name="balance_label">Баланс:</string>
+    <string name="bonus_label">Выйгрыш:</string>
+    <string name="ServerAnswer">Касса не приняла результат игры. Обратитесь к администратру!</string>
+
+
 </resources>

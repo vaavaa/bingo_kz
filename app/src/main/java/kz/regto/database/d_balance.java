@@ -8,6 +8,15 @@ public class d_balance {
     //0 это плюс, 1 это минус
     private int operation;
     private int sum;
+    private long datetime;
+
+    public long getDatetime() {
+        return datetime;
+    }
+
+    public void setDatetime(long datetime) {
+        this.datetime = datetime;
+    }
 
     public void setGame_id(int game_id) {
         this.game_id = game_id;

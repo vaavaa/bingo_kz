@@ -17,6 +17,12 @@
         <attr name="size_text" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="BalanceEngine">
+        <attr name="field_win" format="string" />
+        <attr name="field_currentEntry" format="string" />
+        <attr name="field_balance" format="string" />
+    </declare-styleable>
+
     <declare-styleable name="TimerRelative">
     </declare-styleable>
 </resources>

@@ -1,4 +1,4 @@
-package kz.regto.bingo;
+package kz.regto.json;
 
 import android.os.AsyncTask;
 import android.os.SystemClock;
@@ -8,7 +8,7 @@ import kz.regto.json.Network;
 
 /**
  * Created by Старцев on 25.11.2015.
- * Class helps to get time from server, in case of any network issues it generates by oneself;
+ * Class helps to get time from server, in case of any network issues it generates time by oneself;
  */
 public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
 
@@ -49,7 +49,6 @@ public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
     //Если сервер не откликается возвращаем текущее время системы
     protected CurrentTime doInBackground(String... parameter) {
         String r_URL_timer = parameter[0];
-        String r_URL_number = parameter[1];
         CurrentTime tProgress=new CurrentTime();
         int iProgress=-1;
 

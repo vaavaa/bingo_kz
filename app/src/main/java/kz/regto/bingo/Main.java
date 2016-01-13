@@ -31,16 +31,16 @@ import kz.regto.json.Network;
 import kz.regto.json.PinCode;
 import kz.regto.json.WebService;
 
-public class Main extends AppCompatActivity implements TimerEvent, BoardGridEvents {
+public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent, BoardGridEvents {
 
     View mRootView;
     MainContainer mc;
     TextView GameCode;
     BoardGrid board;
-    TwoTextViews win;
     Lock lck;
     FrameLayout frameLayout;
     TimerRelative timerRelative;
+    BalanceEngine BalanceRelative;
     public int ilevelset=1;
 
     //Network Helper
@@ -65,21 +65,11 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         //setOnSystemUiVisibilityChangeListener();
         showSystemUi();
 
-        //Network initialisation
-        ntw = new Network();
-        String NetworkPath = db.getSettings("network_path").getSettingsValue();
-        if (NetworkPath!=null && NetworkPath.length()> 0) {
-            ntw.setNetworkPath(NetworkPath);
-            EditText ET1 = (EditText) frameLayout.findViewById(R.id.n_path);
-            ET1.setText(NetworkPath);
-        }
-
         //database initialisation
         //Создали подключение
-        db = new DatabaseHelper(getApplicationContext());
+        db = new DatabaseHelper(this);
         //Открыли одну переменую для всех иснтрукций
         db.openDB();
-
 
         BingoDevice = db.getDevice();
         if (BingoDevice==null){
@@ -88,23 +78,34 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             BingoDevice.setDeviceCode(new Utils().getUniquePsuedoID());
             db.createNewDevice(BingoDevice);
         }
-        if (ntw.ConnectionExist()){
-            BingoDevice = ntw.getDeviceFromServer(BingoDevice);
+        //Network initialisation
+        ntw = new Network(this);
+        String NetworkPath="";
+        if (db.getSettings("network_path")!=null) NetworkPath = db.getSettings("network_path").getSettingsValue();
+        if (NetworkPath.length()> 0) {
+            ntw.setNetworkPath(NetworkPath);
+            EditText ET1 = (EditText) frameLayout.findViewById(R.id.n_path);
+            ET1.setText(NetworkPath);
         }
+        if (ntw.isNetworkAvailable(this))
+            if (ntw.ConnectionExist()){
+                BingoDevice = ntw.getDeviceFromServer(BingoDevice);
+                db.updateDevice(BingoDevice);
+            }
 
-        //Ставка в 100
-        findViewById(R.id.entry100).setSelected(true);
+
         mc=(MainContainer)findViewById(R.id.main_board);
 
         board=(BoardGrid)findViewById(R.id.board_grid);
-
-        win =(TwoTextViews)findViewById(R.id.win);
-
         GameCode = (TextView)findViewById(R.id.GameCode);
+
+        //Ставка в 100
+        this.findViewById(R.id.entry100).setSelected(true);
 
         lck = (Lock)findViewById(R.id.r_lock);
         lck.bringToFront();
         setButtonsVisible(false);
+
 
     }
 
@@ -191,6 +192,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     public void setTimerElement(TimerRelative tr){
         timerRelative = tr;
     }
+    public void setBalanceElement (BalanceEngine balanceElement){
+        BalanceRelative = balanceElement;
+    }
 
     //0) Проверяем включена ли связь устройства, если активировано, то просто разблокируем, если нет
     //1) Просим линк из объекта устройства
@@ -222,7 +226,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         }
         //проверяем путь
         if (ntw.getNetworkPath().length()== 0
-                && !ntw.ConnectionExist()){
+                || !ntw.ConnectionExist()){
             Toast toast = Toast.makeText(this,  R.string.ServerIsNotReachable, Toast.LENGTH_SHORT);
             toast.show();
             return;
@@ -345,7 +349,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
         //Создаем баланс
         d_balance dBalance = new d_balance();
-        dBalance.setSum(iWin-iEntry);
+        dBalance.setSum(iWin - iEntry);
         dBalance.setGame_id(dGame.getId());
         dBalance.setOperation(0);
         db.createNewBalance(dBalance);
@@ -354,10 +358,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         t2E.setField("0");
         botEntrySet=null;
 
-        String url = BingoDevice.getNetwork_path().concat("/balance.php?device_id=")
+        String url = ntw.getNetworkPath().concat("/balance.php?device_id=")
                 .concat(BingoDevice.getDeviceCode()).concat("&balance="+cur_balance);
-        JSONParser Jprs = new JSONParser();
-        Balance balance = Jprs.tBalance(url);
+        Balance balance = ntw.getBalance();
         if (balance != null) {
             //Запускаем новую игру c задержкой в 2 секунды
             Handler temp_handler = new Handler();
@@ -379,86 +382,90 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     }
 
     private void TimerStarted_sub() {
-            String url = BingoDevice.getNetwork_path().concat("/balance.php?device_id=").concat(BingoDevice.getDeviceCode());
-            JSONParser Jprs = new JSONParser();
-            Balance balance = Jprs.tBalance(url);
-            if (balance != null) {
-                if (balance.getBalance() >= 100 && balance.getStatus()==0) {
-                    BingoDevice.setBalance(balance.getBalance());
-                    BingoDevice.setStatus(1);
-                    //Прописать в баланс текстовое поле
-                    db.updateDevice(BingoDevice);
-                    TwoTextViews Balance = (TwoTextViews) findViewById(R.id.balance);
-                    Balance.setField(Integer.toString(balance.getBalance()));
+            String url ="/balance.php?device_id=".concat(BingoDevice.getDeviceCode());
+            Balance balance = ntw.getBalance();
 
-                    //Получаем код игры на устройсте.
-                    String nCode = "";
-                    d_game l_gameCode = db.getLastGame();
-                    if (l_gameCode == null) nCode = "AA-0000";
-                    else nCode = l_gameCode.getGameCode();
-                    //Создаем новую игру
-                    url = BingoDevice.getNetwork_path().concat("/web_service.php?par=").concat(BingoDevice.getDeviceCode()).concat("&comm=device_id");
-                    WebService deviceCode = Jprs.getServerValue(url);
-                    nCode = timerRelative.GenerateNewGameCode(nCode, Integer.toString(deviceCode.getIntvalue()));
-
-                    dGame = new d_game();
-                    dGame.setGameCode(nCode);
-                    dGame.setServer_game_id(timerRelative.getServerGameCode());
-                    if (dGame.getServer_game_id() == 0) {
-                        //Если ошибка создания, то бдлокируем экран
-                        Toast toast = Toast.makeText(this, "Ошибка создания игры. Не найден номер игры на сервере.", Toast.LENGTH_SHORT);
-                        toast.show();
-                        screen_lock(true);
-                        return;
-                    }
-                    dGame.setWin_ball(-1);
-                    dGame.setDevice_id(db.getDevice().getDevice_id());
-                    dGame.setState(0);
-
-                    if (!db.createNewGame(dGame)) {
-                        //Если ошибка создания, то бдлокируем экран
-                        Toast toast = Toast.makeText(this, "Ошибка создания игры.", Toast.LENGTH_SHORT);
-                        toast.show();
-                        screen_lock(true);
-                        return;
-                    }
-                    GameCode.setText(nCode);
-                    Animation rotate_animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-                    rotate_animation.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                            GameCode.setAlpha(1f);
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            GameCode.setAlpha(0.4f);
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-
-                        }
-                    });
-
-                    GameCode.setAnimation(rotate_animation);
-                    GameCode.animate();
-                    //Запустили таймер
-                    timerRelative.StartTimer();
-                }
-                else {
-                     Toast toast = Toast.makeText(this, "Баланс на устройстве меньше 100, пополните баланс и активируйте устройство", Toast.LENGTH_SHORT);
-                     toast.show();
-                     BingoDevice.setStatus(0);
-                     db.updateDevice(BingoDevice);
-                     screen_lock(true);
-                }
-            } else {
-                Toast toast = Toast.makeText(this, "Balance is not correct", Toast.LENGTH_SHORT);
+            if (BingoDevice.getStatus()!=0){
+                Toast toast = Toast.makeText(this, R.string.DeviceIsNotActive, Toast.LENGTH_SHORT);
                 toast.show();
                 screen_lock(true);
+                return;
             }
+            if (balance == null) {
+                Toast toast = Toast.makeText(this, R.string.NtwBalanceIsCorrect, Toast.LENGTH_SHORT);
+                toast.show();
+                screen_lock(true);
+                return;
+            }
+            if (balance.getBalance() < 100)  {
+                Toast toast = Toast.makeText(this, R.string.BalanceIsLow, Toast.LENGTH_SHORT);
+                toast.show();
+                screen_lock(true);
+                return;
+            }
+            BingoDevice.setBalance(balance.getBalance());
+            //Прописать в баланс текстовое поле
+            db.updateDevice(BingoDevice);
+            TwoTextViews Balance = (TwoTextViews) findViewById(R.id.balance);
+            Balance.setField(Integer.toString(balance.getBalance()));
+
+            //Получаем код игры на устройсте.
+            String nCode = "";
+            d_game l_gameCode = db.getLastGame();
+            if (l_gameCode == null) nCode = "AA-0000";
+            else nCode = l_gameCode.getGameCode();
+            //Создаем новую игру
+            url = ntw.getNetworkPath().concat("/web_service.php?par=").concat(BingoDevice.getDeviceCode()).concat("&comm=device_id");
+            WebService deviceCode = ntw.getServerValue("device_id",BingoDevice.getServerDeviceId());
+            nCode = timerRelative.GenerateNewGameCode(nCode, Integer.toString(deviceCode.getIntvalue()));
+
+            dGame = new d_game();
+            dGame.setGameCode(nCode);
+            dGame.setServer_game_id(timerRelative.getServerGameCode());
+            if (dGame.getServer_game_id() == 0) {
+               //Если ошибка создания, то бдлокируем экран
+               Toast toast = Toast.makeText(this, "Ошибка создания игры. Не найден номер игры на сервере.", Toast.LENGTH_SHORT);
+               toast.show();
+               screen_lock(true);
+               return;
+            }
+            dGame.setWin_ball(-1);
+            dGame.setDevice_id(db.getDevice().getDevice_id());
+            dGame.setState(0);
+
+            if (!db.createNewGame(dGame)) {
+                //Если ошибка создания, то бдлокируем экран
+                Toast toast = Toast.makeText(this, "Ошибка создания игры.", Toast.LENGTH_SHORT);
+                toast.show();
+                screen_lock(true);
+                return;
+            }
+            GameCode.setText(nCode);
+            Animation rotate_animation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+            rotate_animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override public void onAnimationStart(Animation animation) {
+                            GameCode.setAlpha(1f);
+                        }
+                @Override public void onAnimationEnd(Animation animation) {
+                            GameCode.setAlpha(0.4f);
+                        }
+                @Override public void onAnimationRepeat(Animation animation) {}
+            });
+
+            GameCode.setAnimation(rotate_animation);
+            GameCode.animate();
+            //Запустили таймер
+            timerRelative.StartTimer();
+            //Запустили баланс
+
     }
+
+    @Override
+    public void   BalanceUpdated(){}
+    @Override
+    public void BonusUpdated() {}
+    @Override
+    public void EntryUpdated(){}
 
     @Override
     public void entrySet(boolean isBalanced){
@@ -567,6 +574,10 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         int balance = Integer.parseInt(t2b.getField()) + db.getGameCurrentSum(dGame.getId());
         t2b.setField(""+balance);
         mc.ClearBoard(MainContainer.CLEAR_ALL);
+        final WinBallContainer  WBC = (WinBallContainer)this.findViewById(R.id.win_ball_container);
+        WBC.setAll_lock(true);
+        //Возвращем выбранные(если есть) в положение не выбран
+        WBC.setAllSelected_false();
     }
 
     public void ball_clicked(View v){

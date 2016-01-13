@@ -12,6 +12,7 @@ import java.util.List;
 
 import kz.regto.json.CurrentTime;
 import kz.regto.json.Network;
+import kz.regto.json.SupportTimer;
 
 public class TimerRelative extends RelativeLayout {
 
@@ -150,7 +151,7 @@ public class TimerRelative extends RelativeLayout {
         return ReturnValue;
     }
 
-    public String getNewGameCode(){
+    public String getServerGameSerial(){
         String game_code;
         game_code = sp.getGameCode();
         return game_code;
@@ -200,15 +201,11 @@ public class TimerRelative extends RelativeLayout {
         @Override
         public void run() {
 
-           Network ntw = new Network();
-            CurrentTime tProgress = ntw.getGameResult(ntw.getNetworkPath().concat("/timer.php?game_id="+prnt.dGame.getServer_game_id()));
-            if(tProgress!=null)
-                if (tProgress.getWinnumber() !=-1) {
-                    wn_number =tProgress.getWinnumber();
+                if (sp.GetWinBall() !=-1) {
+                    wn_number =sp.GetWinBall();
                     GameOver();
                 }
                 else {GameResultHandler.postDelayed(this,0);}
-            else{GameResultHandler.postDelayed(this,0);}
 
         }
     };

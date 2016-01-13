@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.StrictMode;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -23,12 +24,15 @@ import kz.regto.database.d_settings;
 
 public class Network {
 
-    private String networkPath;
+    protected volatile String networkPath;
     Main main;
 
-    public void Network (Main context){
+    public Network (Main context){
         main = context;
     }
+    public Network (){
+    }
+
 
     public String getNetworkPath() {
         return networkPath;
@@ -47,7 +51,7 @@ public class Network {
     }
 
     public boolean ConnectionExist(){
-        if (this.getServerValue("web_service.php?comm=ping&par=0",1000)!=null) return false;
+        if (this.getServerValue("web_service.php?comm=ping&par=0",1000)==null) return false;
         else return true;
     }
 
@@ -78,7 +82,7 @@ public class Network {
                         StringBuilder sb = new StringBuilder();
                         String line;
                         while ((line = br.readLine()) != null) {
-                            sb.append(line+"\n");
+                            sb.append(line);
                         }
                         br.close();
                         return sb.toString();
@@ -109,7 +113,20 @@ public class Network {
         return rMsg;
     }
 
-    public Balance tBalance(String url) {
+    public ServerResult setBalance(){
+        String url = networkPath+"/balance_income.php?device_server_id="+main.db.getDevice().getServerDeviceId()+
+                "&balance="+main.db.getCurrentBalance(main.dGame.getId());
+        ServerResult rMsg=null;
+        String data = null;
+        do {
+            data = getJSON(url, 1000);
+        }while(data==null);
+
+        rMsg = new Gson().fromJson(data, ServerResult.class);
+        return rMsg;
+    }
+    public Balance getBalance() {
+        String url = networkPath+"/balnce.php?device_server_id="+main.db.getDevice().getServerDeviceId();
         Balance rMsg=null;
         String data = null;
         do {
@@ -131,15 +148,21 @@ public class Network {
     }
 
     public WebService getServerValue(String url, int Milliseconds) {
+        url = networkPath+url;
         String data=null;
         WebService rMsg=null;
+        boolean exitflag = true;
         long curtime = SystemClock.uptimeMillis();
         long exittime =curtime+Milliseconds;
         do {
-            data = getJSON(url, 1000);
+            data = getJSON(url,Milliseconds/2);
+            try {Thread.sleep(100);}
+            catch (InterruptedException Ex){}
             curtime = SystemClock.uptimeMillis();
-        }while (data == null || curtime>exittime);
-        rMsg = new Gson().fromJson(data, WebService.class);
+            if (data!=null) exitflag = false;
+            if (curtime > exittime) exitflag = false;
+        }while (exitflag);
+        if (data!=null) rMsg = new Gson().fromJson(data, WebService.class);
         return rMsg;
     }
 

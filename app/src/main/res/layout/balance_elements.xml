@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cl="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <!-- Начало второй строки -->
+    <kz.regto.bingo.TwoTextViews
+        android:id="@+id/balance"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        cl:color_text="@color/second_line_label"
+        cl:size_text="@dimen/s2nd_row"
+        cl:label_text=""
+        cl:field_text="0"
+        cl:layout_cellsHeight="10"
+        cl:layout_cellsWidth="50"
+        cl:layout_left="40"
+        cl:layout_top="3"/>
+    <kz.regto.bingo.TwoTextViews
+        android:id="@+id/win"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        cl:color_text="@color/second_line_label"
+        cl:size_text="@dimen/s2nd_row"
+        cl:label_text="Выйгрыш:"
+        cl:field_text="0"
+        cl:layout_cellsHeight="10"
+        cl:layout_cellsWidth="50"
+        cl:layout_left="40"
+        cl:layout_top="10"/>
+    <kz.regto.bingo.TwoTextViews
+        android:id="@+id/CurrentEntry"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        cl:color_text="@color/second_line_label"
+        cl:size_text="@dimen/s2nd_row"
+        cl:label_text="Ставка:"
+        cl:field_text="0"
+        cl:layout_cellsHeight="10"
+        cl:layout_cellsWidth="50"
+        cl:layout_left="40"
+        cl:layout_top="17"/>
+</RelativeLayout>
