@@ -13,6 +13,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import kz.regto.database.d_balance;
 import kz.regto.json.ServerResult;
 import kz.regto.json.SupportBalance;
 
@@ -21,15 +22,19 @@ public class BalanceEngine extends RelativeLayout {
     private Main prnt;
     private SupportBalance sb =new SupportBalance();
     private Handler balanceHandlerIncome = new Handler();
-    private Handler balanceHandlerOutcome = new Handler();
     private List<BalanceEvent> listeners = new ArrayList<>();
     private String field_balance="";
     private String field_currentEntry="";
     private String field_win="";
 
-    private TextView tfield_balance;
-    private TextView tfield_currentEntry;
-    private TextView tfield_win;
+    private int currBalance;
+    private int currId;
+
+    private d_balance dBalance = new d_balance();
+
+    private TwoTextViews tfield_balance;
+    private TwoTextViews tfield_currentEntry;
+    private TwoTextViews tfield_win;
 
 
     public BalanceEngine(Context context, AttributeSet attrs, int defStyle) {
@@ -61,12 +66,12 @@ public class BalanceEngine extends RelativeLayout {
 
     private void initView(Context context) {
         View view = inflate(getContext(), R.layout.balance_elements, null);
-        tfield_balance = (TextView) view.findViewById(R.id.balance);
-        tfield_currentEntry = (TextView) view.findViewById(R.id.CurrentEntry);
-        tfield_win = (TextView) view.findViewById(R.id.win);
-        if (field_balance.length()>0) tfield_balance.setText(field_balance);
-        if (field_currentEntry.length()>0) tfield_currentEntry.setText(field_currentEntry);
-        if (field_win.length()>0) tfield_win.setText(field_win);
+        tfield_balance = (TwoTextViews) view.findViewById(R.id.balance);
+        tfield_currentEntry = (TwoTextViews) view.findViewById(R.id.CurrentEntry);
+        tfield_win = (TwoTextViews) view.findViewById(R.id.win);
+        if (field_balance.length()>0) tfield_balance.setField(field_balance);
+        if (field_currentEntry.length()>0) tfield_currentEntry.setField(field_currentEntry);
+        if (field_win.length()>0) tfield_win.setField(field_win);
         this.addListener((Main) context);
         prnt = (Main)context;
         prnt.setBalanceElement(this);
@@ -92,7 +97,7 @@ public class BalanceEngine extends RelativeLayout {
         //Инициируем отправку окончательного Баланса
         ServerResult sr = prnt.ntw.setBalance();
         int answer = sr.getAnswer();
-        //здесь у нас олжна быть более сложная логика, но пока оставляем
+        //здесь у нас должна быть более сложная логика, но пока оставляем
         if ((answer)!=0) {
             Toast toast = Toast.makeText(prnt, R.string.ServerAnswer, Toast.LENGTH_SHORT);
             toast.show();
@@ -104,13 +109,32 @@ public class BalanceEngine extends RelativeLayout {
         public void run() {
 
             if (sb.getCurrentBalance()!=-1){
-                field_balance = Integer.toString(sb.getCurrentBalance());
-                tfield_balance.setText(field_balance);
+
+                currId = sb.getCurrentID();
+                currBalance = sb.getCurrentBalance();
+
+                d_balance dBalance = new d_balance();
+                dBalance.setGame_id(prnt.dGame.getId());
+                dBalance.setStatus(0);
+                dBalance.setOperation(currId);
+                dBalance.setSum(currBalance);
+                dBalance = prnt.db.UpdateBalanceSmart(dBalance);
+
+                field_balance = Integer.toString(dBalance.getSum());
+                tfield_balance.setField(field_balance);
             }
             balanceHandlerIncome.postDelayed(this,0);
 
         }
     };
+
+    public void setBalance(){
+        dBalance.setGame_id(prnt.dGame.getId());
+        prnt.db.createNewBalance(dBalance);
+    }
+    public int getBalance(){
+        return currBalance;
+    }
 
     //Принимаем подписчиков на события баланса
     public void addListener(BalanceEvent toAdd) { listeners.add(toAdd);}

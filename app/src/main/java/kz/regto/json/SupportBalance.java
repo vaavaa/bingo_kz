@@ -5,14 +5,11 @@ import android.os.SystemClock;
 
 import kz.regto.database.d_balance;
 
-/**
- * Created by Старцев on 25.11.2015.
- * Class helps to get time from server, in case of any network issues it generates time by oneself;
- */
 public class SupportBalance extends AsyncTask<String, Balance, Balance> {
 
     Network ntw = new Network();
     int currentBalance=0;
+    int currentID = 0;
 
     @Override
     protected void onPreExecute() {
@@ -22,6 +19,7 @@ public class SupportBalance extends AsyncTask<String, Balance, Balance> {
 
     protected void onProgressUpdate(Balance... progress) {
         currentBalance = progress[0].getBalance();
+        currentID = progress[0].getId_balance();
     }
 
     protected void onPostExecute(Balance... result) {
@@ -29,11 +27,12 @@ public class SupportBalance extends AsyncTask<String, Balance, Balance> {
 
     //Выполняем бесконечный цикл опроса сервера о текущем балансе
     protected Balance doInBackground(String... parameter) {
+        String url = parameter[0];
         Balance tProgress;
         int iProgress=-1;
 
            do {
-               tProgress = ntw.getBalance();
+               tProgress = ntw.getBalance(url);
                    if (tProgress!=null){
                        publishProgress(tProgress);
                        try {Thread.sleep(250);}
@@ -45,5 +44,9 @@ public class SupportBalance extends AsyncTask<String, Balance, Balance> {
 
     public int getCurrentBalance() {
         return currentBalance;
+    }
+
+    public int getCurrentID() {
+        return currentID;
     }
 }

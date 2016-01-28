@@ -14,6 +14,8 @@
     <string name="balance_label">Баланс:</string>
     <string name="bonus_label">Выйгрыш:</string>
     <string name="ServerAnswer">Касса не приняла результат игры. Обратитесь к администратру!</string>
+    <string name="GameErrServerAnswer">"Ошибка создания игры. Не найден номер игры на сервере."</string>
+    <string name="GameErrDataBase">"Ошибка создания игры."</string>
 
 
 </resources>

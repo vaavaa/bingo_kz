@@ -39,6 +39,17 @@
             cl:layout_top="3"
             android:onClick="pause"/>
 
+        <kz.regto.bingo.BalanceEngine
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/balance_elements"
+            cl:layout_cellsHeight="10"
+            cl:layout_cellsWidth="50"
+            cl:layout_left="40"
+            cl:layout_top="3"
+            cl:field_balance="0"
+            cl:field_currentEntry="0"
+            cl:field_win="0"/>
 
         <!-- Конец второй строки -->
         <kz.regto.bingo.WinBallContainer

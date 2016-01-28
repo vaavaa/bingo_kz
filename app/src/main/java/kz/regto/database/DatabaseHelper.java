@@ -39,10 +39,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "game_code VARCHAR(10),"+
             "server_game_id INTEGER NOT NULL)";
     private static final String CREATE_TABLE_balance = "CREATE TABLE balance " +
-            "(game_id INTEGER NOT NULL, operation_type INTEGER NOT NULL DEFAULT '0'," +
-            " sum INTEGER NOT NULL, dtime DATETIME NOT NULL DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME')) )";
+            "(id_balance INTEGER NOT NULL DEFAULT '0'," +
+            " sum INTEGER NOT NULL, " +
+            "dtime DATETIME NOT NULL DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME')), " +
+            " status INTEGER NOT NULL DEFAULT '0')";
     private static final String CREATE_TABLE_device = "CREATE TABLE device (device_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-            " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', balance INTEGER NOT NULL DEFAULT '0', server_device_id INTEGER NOT NULL DEFAULT '-1', type_id INTEGER NOT NULL DEFAULT '0')";
+            " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', server_device_id INTEGER NOT NULL DEFAULT '-1', " +
+            "type_id INTEGER NOT NULL DEFAULT '0', Comment VARCHAR(200) NOT NULL DEFAULT '', type_name VARCHAR(200) NOT NULL DEFAULT ''," +
+            " game_limit INTEGER NOT NULL DEFAULT '0', game_mask VARCHAR(200) NOT NULL DEFAULT '')";
     private static final String CREATE_TABLE_entry_set = "    CREATE TABLE entry_set (\n" +
             "                    sys_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
             "                    log_id INTEGER NOT NULL, "+
@@ -233,23 +237,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-    public boolean createNewBalance(d_balance dBalance) {
+    public d_balance createNewBalance(d_balance dBalance) {
         boolean bReturn;
-        String insert_sql = "insert into balance (game_id,operation_type,sum)\n" +
-                "VALUES ("+dBalance.getGame_id()+","+dBalance.getOperation()+","+dBalance.getSum()+")";
+        //Складываем текущий баланс с новым балансом
+        int curBalance = getCurrentBalance();
+        dBalance.setSum(curBalance+dBalance.getSum());
+        DisableBalance();
+        String insert_sql = " insert into balance (id_balance,sum, status) " +
+                "VALUES ("+dBalance.getOperation()+","+dBalance.getSum()+",0)";
         try {
             db.execSQL(insert_sql);
-            bReturn = true;}
+            return dBalance;}
         catch (Exception ex){
-            bReturn = false;
+            return null;
         }
-        return bReturn;
+
     }
 
-    public List<d_balance> getBalance(int game_id) {
+    public d_balance UpdateBalanceSmart(d_balance dBalance) {
+        //Складываем текущий баланс с новым балансом
+        String selectQuery = "SELECT sum FROM balance " +
+                " WHERE status = 0 and " +
+                " id_balance="+dBalance.getOperation();
+        Cursor c = dbr.rawQuery(selectQuery, null);
+
+        if (!c.moveToNext()) {
+            dBalance =  createNewBalance(dBalance);
+        }
+        return dBalance;
+    }
+
+    public List<d_balance> getBalance(int status) {
 
         String selectQuery = "SELECT * FROM balance " +
-                " WHERE game_id="+Integer.toString(game_id);
+                " WHERE status = "+status;
         List<d_balance> dBalance = new ArrayList<>();
 
         Cursor c = dbr.rawQuery(selectQuery, null);
@@ -258,11 +279,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 d_balance td = new d_balance();
-                td.setGame_id(c.getInt(c.getColumnIndex("game_id")));
-                td.setOperation((c.getInt(c.getColumnIndex("operation_type"))));
+                td.setOperation((c.getInt(c.getColumnIndex("id_balance"))));
                 td.setSum(c.getInt(c.getColumnIndex("sum")));
                 td.setDatetime(c.getInt(c.getColumnIndex("dtime")));
-
+                td.setStatus(c.getInt(c.getColumnIndex("status")));
                 dBalance.add(td);
             } while (c.moveToNext());
             c.close();
@@ -270,9 +290,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return dBalance;
     }
 
-    public int getCurrentBalance(int game_id) {
+    public int getCurrentBalance() {
         String selectQuery = "SELECT sum FROM balance " +
-                " WHERE game_id="+Integer.toString(game_id)+" ORDER BY dtime DESC ";
+                " WHERE status = 0 ORDER BY dtime DESC ";
         int rValue=0;
         Cursor c = dbr.rawQuery(selectQuery, null);
         if( c != null && c.moveToFirst() ){
@@ -285,10 +305,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Deleting a balance
      */
-    public boolean deleteBalance(int gameId) {
+    public boolean DisableBalance() {
         boolean bReturn;
-        String delete_sql = "DELETE FROM balance \n"+
-                "WHERE game_id=" + gameId;
+        String delete_sql = "Update balance SET status = 1";
         try {
             db.execSQL(delete_sql);
             bReturn = true;
@@ -301,10 +320,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean updateBalance(d_balance dBalance) {
         boolean bReturn;
-        String update_sql = "Update balance\n" +
-                "SET sum ="+dBalance.getSum()+",\n" +
-                "operation_type ="+dBalance.getOperation() +",\n" +
-                "WHERE id=" +dBalance.getGame_id();
+        String update_sql = "Update balance " +
+                "SET sum ="+dBalance.getSum()+", " +
+                "id_balance ="+dBalance.getOperation() +", " +
+                " WHERE status=" +dBalance.getStatus();
         try {
             db.execSQL(update_sql);
             bReturn = true;
@@ -328,9 +347,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public boolean createNewDevice(d_device dDevice) {
         boolean bReturn;
-        String insert_sql = "insert into device (device_code, status, balance, server_device_id, type_id) " +
-                "VALUES ('"+dDevice.getDeviceCode()+"',"+dDevice.getStatus()+","+dDevice.getBalance()+", "
-                +dDevice.getServerDeviceId()+", "+dDevice.getTypeId()+")";
+//        device_code VARCHAR(200)
+//        status INTEGER
+//        server_device_id INTEGER
+//        type_id INTEGER ,
+//        Comment VARCHAR(200)
+//        type_name VARCHAR(200)
+//        game_limit int
+//        game_mask VARCHAR(200)
+
+        String insert_sql = "insert into device (device_code, status, server_device_id, type_id,Comment, type_name, game_limit, game_mask) " +
+                "VALUES ('"+dDevice.getDeviceCode()+"',"+dDevice.getStatus()+", "
+                +dDevice.getServerDeviceId()+", "+dDevice.getTypeId()+", '"+dDevice.getComment()+"', '"+dDevice.getType_name()+"'," +
+                dDevice.getGame_limit()+", '"+dDevice.getGame_mask()+"')";
         try {
             //Еcли там уже есть устройство, нам добавлять не нужно
             if (this.getSQLQueryCount("SELECT * FROM device")==0) {
@@ -356,15 +385,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String selectQuery = "SELECT * FROM device limit 1";
         Cursor c = dbr.rawQuery(selectQuery, null);
         d_device td = null;
-
+//        device_code VARCHAR(200)
+//        status INTEGER
+//        server_device_id INTEGER
+//        type_id INTEGER ,
+//        Comment VARCHAR(200)
+//        type_name VARCHAR(200)
+//        game_limit int
+//        game_mask VARCHAR(200)
         if( c != null && c.moveToFirst() ){
             td = new d_device();
             td.setDeviceCode(c.getString(c.getColumnIndex("device_code")));
             td.setStatus(c.getInt(c.getColumnIndex("status")));
             td.setDevice_id(c.getInt(c.getColumnIndex("device_id")));
-            td.setBalance(c.getInt(c.getColumnIndex("balance")));
             td.setServerDeviceId(c.getInt(c.getColumnIndex("server_device_id")));
             td.setTypeId(c.getInt(c.getColumnIndex("type_id")));
+            td.setComment(c.getString(c.getColumnIndex("Comment")));
+            td.setType_name(c.getString(c.getColumnIndex("type_name")));
+            td.setGame_limit(c.getInt(c.getColumnIndex("game_limit")));
+            td.setGame_mask(c.getString(c.getColumnIndex("game_mask")));
             c.close();
         }
         return td;
@@ -375,12 +414,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public boolean updateDevice(d_device dDevice) {
         boolean bReturn;
+//        device_code VARCHAR(200)
+//        status INTEGER
+//        server_device_id INTEGER
+//        type_id INTEGER ,
+//        Comment VARCHAR(200)
+//        type_name VARCHAR(200)
+//        game_limit int
+//        game_mask VARCHAR(200)
         String update_sql = "Update device " +
                 "SET device_code ='"+dDevice.getDeviceCode()+"', " +
                 "status = "+dDevice.getStatus() +", "+
-                "balance = "+ dDevice.getBalance() +", "+
                 "server_device_id = "+ dDevice.getServerDeviceId() +", "+
                 "type_id = "+ dDevice.getTypeId() +" "+
+                "Comment = '"+ dDevice.getComment() +"' "+
+                "type_name = '"+ dDevice.getType_name() +"' "+
+                "game_limit = "+ dDevice.getGame_limit() +" "+
+                "game_mask = '"+ dDevice.getGame_mask() +"' "+
                 "WHERE device_id = " +dDevice.getDevice_id();
         try {
             db.execSQL(update_sql);

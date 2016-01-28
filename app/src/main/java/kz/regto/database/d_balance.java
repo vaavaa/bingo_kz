@@ -1,14 +1,19 @@
 package kz.regto.database;
 
-/**
- * Created by Старцев on 24.11.2015.
- */
 public class d_balance {
-    private int game_id;
-    //0 это плюс, 1 это минус
+    //operation - это ид баланса на сервере
     private int operation;
     private int sum;
     private long datetime;
+    private int status;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
     public long getDatetime() {
         return datetime;
@@ -17,15 +22,6 @@ public class d_balance {
     public void setDatetime(long datetime) {
         this.datetime = datetime;
     }
-
-    public void setGame_id(int game_id) {
-        this.game_id = game_id;
-    }
-
-    public int getGame_id() {
-        return game_id;
-    }
-
     public int getOperation() {
         return operation;
     }

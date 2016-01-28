@@ -28,7 +28,6 @@ import kz.regto.database.d_entry_set;
 import kz.regto.database.d_game;
 import kz.regto.json.Balance;
 import kz.regto.json.Network;
-import kz.regto.json.PinCode;
 import kz.regto.json.WebService;
 
 public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent, BoardGridEvents {
@@ -91,6 +90,8 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             if (ntw.ConnectionExist()){
                 BingoDevice = ntw.getDeviceFromServer(BingoDevice);
                 db.updateDevice(BingoDevice);
+                BalanceRelative.RunBalanсeListening(
+                        ntw.getNetworkPath().concat("balance_outcome.php?device_server_id="+BingoDevice.getServerDeviceId()));
             }
 
 
@@ -105,8 +106,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         lck = (Lock)findViewById(R.id.r_lock);
         lck.bringToFront();
         setButtonsVisible(false);
-
-
     }
 
     public void setIlevelset(int ilevelset) {
@@ -244,17 +243,17 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             toast.show();
             return;
         }
+        BingoDevice = ntw.getDeviceFromServer(BingoDevice);
+        db.updateDevice(BingoDevice);
+
+        db.updateDevice(BingoDevice);
         if (BingoDevice.getStatus() != 0) {
             Toast toast = Toast.makeText(this, R.string.StatusIsNotCorrect , Toast.LENGTH_SHORT);
             toast.show();
             return;
         }
-        if (BingoDevice.getBalance() < 100) {
-            Toast toast = Toast.makeText(this,  R.string.BalanceIsCorrect , Toast.LENGTH_SHORT);
-            toast.show();
-            return;
-        }
-        db.updateDevice(BingoDevice);
+
+        BalanceRelative.RunBalanсeListening(ntw.getNetworkPath().concat("/balance_outcome.php?device_server_id="+BingoDevice.getServerDeviceId()));
         timerRelative.HTTPRunTimer(ntw.getNetworkPath().concat("/timer.php"));
         screen_lock(false);
         TimerStarted_sub();
@@ -341,7 +340,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         t2win.setField(Integer.toString(iWin));
 
         //Обновляем баланс устройства
-        BingoDevice.setBalance(cur_balance);
+        //BingoDevice.setBalance(cur_balance);
         db.updateDevice(BingoDevice);
 
         TwoTextViews t2E =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
@@ -382,8 +381,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
     }
 
     private void TimerStarted_sub() {
-            String url ="/balance.php?device_id=".concat(BingoDevice.getDeviceCode());
-            Balance balance = ntw.getBalance();
+            int balance = BalanceRelative.getBalance();
 
             if (BingoDevice.getStatus()!=0){
                 Toast toast = Toast.makeText(this, R.string.DeviceIsNotActive, Toast.LENGTH_SHORT);
@@ -391,31 +389,19 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
                 screen_lock(true);
                 return;
             }
-            if (balance == null) {
-                Toast toast = Toast.makeText(this, R.string.NtwBalanceIsCorrect, Toast.LENGTH_SHORT);
-                toast.show();
-                screen_lock(true);
-                return;
-            }
-            if (balance.getBalance() < 100)  {
+            if (balance < 100)  {
                 Toast toast = Toast.makeText(this, R.string.BalanceIsLow, Toast.LENGTH_SHORT);
                 toast.show();
                 screen_lock(true);
                 return;
             }
-            BingoDevice.setBalance(balance.getBalance());
-            //Прописать в баланс текстовое поле
-            db.updateDevice(BingoDevice);
-            TwoTextViews Balance = (TwoTextViews) findViewById(R.id.balance);
-            Balance.setField(Integer.toString(balance.getBalance()));
-
             //Получаем код игры на устройсте.
             String nCode = "";
             d_game l_gameCode = db.getLastGame();
             if (l_gameCode == null) nCode = "AA-0000";
             else nCode = l_gameCode.getGameCode();
             //Создаем новую игру
-            url = ntw.getNetworkPath().concat("/web_service.php?par=").concat(BingoDevice.getDeviceCode()).concat("&comm=device_id");
+            String url = ntw.getNetworkPath().concat("/web_service.php?par=").concat(BingoDevice.getDeviceCode()).concat("&comm=device_id");
             WebService deviceCode = ntw.getServerValue("device_id",BingoDevice.getServerDeviceId());
             nCode = timerRelative.GenerateNewGameCode(nCode, Integer.toString(deviceCode.getIntvalue()));
 
@@ -424,7 +410,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             dGame.setServer_game_id(timerRelative.getServerGameCode());
             if (dGame.getServer_game_id() == 0) {
                //Если ошибка создания, то бдлокируем экран
-               Toast toast = Toast.makeText(this, "Ошибка создания игры. Не найден номер игры на сервере.", Toast.LENGTH_SHORT);
+               Toast toast = Toast.makeText(this, R.string.GameErrServerAnswer, Toast.LENGTH_SHORT);
                toast.show();
                screen_lock(true);
                return;
@@ -435,7 +421,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
 
             if (!db.createNewGame(dGame)) {
                 //Если ошибка создания, то бдлокируем экран
-                Toast toast = Toast.makeText(this, "Ошибка создания игры.", Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(this, R.string.GameErrDataBase, Toast.LENGTH_SHORT);
                 toast.show();
                 screen_lock(true);
                 return;
@@ -611,6 +597,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
     protected void onDestroy(){
         setButtonsUnclickable(true);
         screen_lock(true);
+        BalanceRelative.CloseAll();
         timerRelative.CloseAll();
         BingoDevice.setStatus(0);
         db.updateDevice(BingoDevice);

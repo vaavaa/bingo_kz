@@ -11,11 +11,7 @@
         cl:color_text="@color/second_line_label"
         cl:size_text="@dimen/s2nd_row"
         cl:label_text=""
-        cl:field_text="0"
-        cl:layout_cellsHeight="10"
-        cl:layout_cellsWidth="50"
-        cl:layout_left="40"
-        cl:layout_top="3"/>
+        cl:field_text="0" />
     <kz.regto.bingo.TwoTextViews
         android:id="@+id/win"
         android:layout_height="wrap_content"
@@ -23,11 +19,7 @@
         cl:color_text="@color/second_line_label"
         cl:size_text="@dimen/s2nd_row"
         cl:label_text="Выйгрыш:"
-        cl:field_text="0"
-        cl:layout_cellsHeight="10"
-        cl:layout_cellsWidth="50"
-        cl:layout_left="40"
-        cl:layout_top="10"/>
+        cl:field_text="0" />
     <kz.regto.bingo.TwoTextViews
         android:id="@+id/CurrentEntry"
         android:layout_height="wrap_content"
@@ -35,9 +27,5 @@
         cl:color_text="@color/second_line_label"
         cl:size_text="@dimen/s2nd_row"
         cl:label_text="Ставка:"
-        cl:field_text="0"
-        cl:layout_cellsHeight="10"
-        cl:layout_cellsWidth="50"
-        cl:layout_left="40"
-        cl:layout_top="17"/>
+        cl:field_text="0" />
 </RelativeLayout>

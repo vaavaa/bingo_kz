@@ -125,8 +125,17 @@ public class Network {
         rMsg = new Gson().fromJson(data, ServerResult.class);
         return rMsg;
     }
+    public Balance getBalance(String url) {
+        Balance rMsg=null;
+        String data = null;
+        do {
+            data = getJSON(url, 1000);
+        }while(data==null);
+        rMsg = new Gson().fromJson(data, Balance.class);
+        return rMsg;
+    }
     public Balance getBalance() {
-        String url = networkPath+"/balnce.php?device_server_id="+main.db.getDevice().getServerDeviceId();
+        String url = networkPath+"/balance_outcome.php?device_server_id="+main.BingoDevice.getServerDeviceId();
         Balance rMsg=null;
         String data = null;
         do {
@@ -171,7 +180,22 @@ public class Network {
      * Get single device from Server
      */
     public d_device getDeviceFromServer(d_device dDevice){
-
-        return dDevice;
+        String url = "device_service.php?comm=get_device_from_code&par="+dDevice.getDeviceCode();
+        url = networkPath+url;
+        String data=null;
+        d_device rMsg=null;
+        boolean exitflag = true;
+        long curtime = SystemClock.uptimeMillis();
+        long exittime =curtime+2000;
+        do {
+            data = getJSON(url,1000);
+            try {Thread.sleep(100);}
+            catch (InterruptedException Ex){}
+            curtime = SystemClock.uptimeMillis();
+            if (data!=null) exitflag = false;
+            if (curtime > exittime) exitflag = false;
+        }while (exitflag);
+        if (data!=null) rMsg = new Gson().fromJson(data, d_device.class);
+        return rMsg;
     }
 }
