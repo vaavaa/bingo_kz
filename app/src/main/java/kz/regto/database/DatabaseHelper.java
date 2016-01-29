@@ -45,7 +45,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             " status INTEGER NOT NULL DEFAULT '0')";
     private static final String CREATE_TABLE_device = "CREATE TABLE device (device_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
             " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', server_device_id INTEGER NOT NULL DEFAULT '-1', " +
-            "type_id INTEGER NOT NULL DEFAULT '0', Comment VARCHAR(200) NOT NULL DEFAULT '', type_name VARCHAR(200) NOT NULL DEFAULT ''," +
+            " type_id INTEGER NOT NULL DEFAULT '0', Comment VARCHAR(200) NOT NULL DEFAULT '', type_name VARCHAR(200) NOT NULL DEFAULT ''," +
             " game_limit INTEGER NOT NULL DEFAULT '0', game_mask VARCHAR(200) NOT NULL DEFAULT '')";
     private static final String CREATE_TABLE_entry_set = "    CREATE TABLE entry_set (\n" +
             "                    sys_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
@@ -259,11 +259,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String selectQuery = "SELECT sum FROM balance " +
                 " WHERE status = 0 and " +
                 " id_balance="+dBalance.getOperation();
-        Cursor c = dbr.rawQuery(selectQuery, null);
+        Cursor cz = db.rawQuery(selectQuery, null);
 
-        if (!c.moveToNext()) {
+        if (!cz.moveToNext()) {
+            DisableBalance();
             dBalance =  createNewBalance(dBalance);
         }
+        cz.close();
         return dBalance;
     }
 
@@ -356,7 +358,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        game_limit int
 //        game_mask VARCHAR(200)
 
-        String insert_sql = "insert into device (device_code, status, server_device_id, type_id,Comment, type_name, game_limit, game_mask) " +
+        String insert_sql = "insert into device (device_code, status, server_device_id, type_id, Comment, type_name, game_limit, game_mask) " +
                 "VALUES ('"+dDevice.getDeviceCode()+"',"+dDevice.getStatus()+", "
                 +dDevice.getServerDeviceId()+", "+dDevice.getTypeId()+", '"+dDevice.getComment()+"', '"+dDevice.getType_name()+"'," +
                 dDevice.getGame_limit()+", '"+dDevice.getGame_mask()+"')";
@@ -426,10 +428,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "SET device_code ='"+dDevice.getDeviceCode()+"', " +
                 "status = "+dDevice.getStatus() +", "+
                 "server_device_id = "+ dDevice.getServerDeviceId() +", "+
-                "type_id = "+ dDevice.getTypeId() +" "+
-                "Comment = '"+ dDevice.getComment() +"' "+
-                "type_name = '"+ dDevice.getType_name() +"' "+
-                "game_limit = "+ dDevice.getGame_limit() +" "+
+                "type_id = "+ dDevice.getTypeId() +", "+
+                "Comment = '"+ dDevice.getComment() +"', "+
+                "type_name = '"+ dDevice.getType_name() +"', "+
+                "game_limit = "+ dDevice.getGame_limit() +", "+
                 "game_mask = '"+ dDevice.getGame_mask() +"' "+
                 "WHERE device_id = " +dDevice.getDevice_id();
         try {
@@ -474,7 +476,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "VALUES ("+Integer.toString(dGame.getWin_ball())+","+dGame.getState()+","+dGame.getDevice_id()+",'"+getDateTime()+"','"+dGame.getGameCode()+"',"+dGame.getServer_game_id()+")";
 
         //Если устройство активно мы начинаем новую игру
-        if (this.getDevice().getStatus()==1) {
+        if (this.getDevice().getStatus()==0) {
             try {
                if (this.getSQLQueryCount("SELECT game_code FROM game WHERE game_code='"+dGame.getGameCode()+"'")==0)  db.execSQL(insert_sql);
                 String sql = "SELECT last_insert_rowid() as lastid";

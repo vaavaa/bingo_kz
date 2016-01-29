@@ -2,6 +2,7 @@ package kz.regto.bingo;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
@@ -62,7 +63,12 @@ public class TimerRelative extends RelativeLayout {
     }
     public void HTTPRunTimer(String URL_timer){
         //Инициируем получение времени
-        if (sp.getStatus()!= AsyncTask.Status.RUNNING) sp.execute(URL_timer, "");
+        if (sp.getStatus()!= AsyncTask.Status.RUNNING) {
+            if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.HONEYCOMB)
+                sp.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,URL_timer,"");
+            else
+                sp.execute(URL_timer,"");
+        }
     }
 
     public void StartTimer(){

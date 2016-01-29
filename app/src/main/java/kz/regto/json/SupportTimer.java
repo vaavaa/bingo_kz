@@ -2,6 +2,7 @@ package kz.regto.json;
 
 import android.os.AsyncTask;
 import android.os.SystemClock;
+import android.util.Log;
 
 import kz.regto.json.CurrentTime;
 import kz.regto.json.Network;
@@ -49,16 +50,14 @@ public class SupportTimer extends AsyncTask<String, CurrentTime, CurrentTime> {
     //Если сервер не откликается возвращаем текущее время системы
     protected CurrentTime doInBackground(String... parameter) {
         String r_URL_timer = parameter[0];
-        CurrentTime tProgress=new CurrentTime();
-        int iProgress=-1;
-
+        CurrentTime tProgress;
            do {
                tProgress = ntw.getTimer(r_URL_timer);
-                   if (tProgress!=null){
-                       publishProgress(tProgress);
-                       try {Thread.sleep(250);}
-                       catch (InterruptedException Ex){}
-                   }
+               if (tProgress!=null){
+                   publishProgress(tProgress);
+                   try {Thread.sleep(250);}
+                   catch (InterruptedException Ex){}
+               }
            }while (!this.isCancelled());
         return tProgress;
     }

@@ -28,24 +28,14 @@
             cl:layout_left="10"
             cl:layout_top="3"
             android:onClick="quit"/>
-        <Button android:id="@+id/pause"
-            android:layout_height="@dimen/pause_ball_size"
-            android:layout_width="@dimen/pause_ball_size"
-            android:gravity="center"
-            android:background="@drawable/pause_button_scheme"
-            cl:layout_cellsHeight="12"
-            cl:layout_cellsWidth="12"
-            cl:layout_left="23"
-            cl:layout_top="3"
-            android:onClick="pause"/>
 
         <kz.regto.bingo.BalanceEngine
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:id="@+id/balance_elements"
-            cl:layout_cellsHeight="10"
+            cl:layout_cellsHeight="33"
             cl:layout_cellsWidth="50"
-            cl:layout_left="40"
+            cl:layout_left="25"
             cl:layout_top="3"
             cl:field_balance="0"
             cl:field_currentEntry="0"
@@ -67,7 +57,7 @@
             cl:layout_cellsHeight="30"
             cl:layout_cellsWidth="80"
             cl:layout_left="110"
-            cl:layout_top="10"/>
+            cl:layout_top="7"/>
         <!-- Начало поля -->
 
         <kz.regto.bingo.MainContainer

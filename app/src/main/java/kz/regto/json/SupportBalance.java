@@ -29,13 +29,11 @@ public class SupportBalance extends AsyncTask<String, Balance, Balance> {
     protected Balance doInBackground(String... parameter) {
         String url = parameter[0];
         Balance tProgress;
-        int iProgress=-1;
-
            do {
                tProgress = ntw.getBalance(url);
                    if (tProgress!=null){
                        publishProgress(tProgress);
-                       try {Thread.sleep(250);}
+                       try {Thread.sleep(1550);}
                        catch (InterruptedException Ex){}
                    }
            }while (!this.isCancelled());

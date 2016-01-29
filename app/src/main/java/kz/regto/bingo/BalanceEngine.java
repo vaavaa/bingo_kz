@@ -3,6 +3,7 @@ package kz.regto.bingo;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
@@ -29,8 +30,6 @@ public class BalanceEngine extends RelativeLayout {
 
     private int currBalance;
     private int currId;
-
-    private d_balance dBalance = new d_balance();
 
     private TwoTextViews tfield_balance;
     private TwoTextViews tfield_currentEntry;
@@ -85,7 +84,11 @@ public class BalanceEngine extends RelativeLayout {
 
     public void RunBalanсeListening(String URL_Balance){
         //Инициируем получение баланса
-        if (sb.getStatus()!= AsyncTask.Status.RUNNING) sb.execute(URL_Balance, "");
+        if (sb.getStatus()!= AsyncTask.Status.RUNNING)
+            if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.HONEYCOMB)
+                sb.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,URL_Balance,"");
+            else
+                sb.execute(URL_Balance,"");
         balanceHandlerIncome.postDelayed(updateGameBalanceIncome, 0);
     }
 
@@ -114,14 +117,13 @@ public class BalanceEngine extends RelativeLayout {
                 currBalance = sb.getCurrentBalance();
 
                 d_balance dBalance = new d_balance();
-                dBalance.setGame_id(prnt.dGame.getId());
                 dBalance.setStatus(0);
                 dBalance.setOperation(currId);
                 dBalance.setSum(currBalance);
                 dBalance = prnt.db.UpdateBalanceSmart(dBalance);
 
-                field_balance = Integer.toString(dBalance.getSum());
-                tfield_balance.setField(field_balance);
+//                field_balance = Integer.toString(dBalance.getSum());
+//                tfield_balance.setField(field_balance);
             }
             balanceHandlerIncome.postDelayed(this,0);
 
@@ -129,8 +131,8 @@ public class BalanceEngine extends RelativeLayout {
     };
 
     public void setBalance(){
-        dBalance.setGame_id(prnt.dGame.getId());
-        prnt.db.createNewBalance(dBalance);
+
+
     }
     public int getBalance(){
         return currBalance;

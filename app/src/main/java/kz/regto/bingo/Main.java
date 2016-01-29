@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -126,7 +127,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         findViewById(R.id.entry100).setEnabled(!bEnable);
         findViewById(R.id.x2).setEnabled(!bEnable);
         findViewById(R.id.auto).setEnabled(!bEnable);
-        findViewById(R.id.pause).setEnabled(!bEnable);
         findViewById(R.id.quit).setEnabled(!bEnable);
         if (bEnable) {
             findViewById(R.id.card_step_back).setAlpha(.7f);
@@ -137,7 +137,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             findViewById(R.id.entry100).setAlpha(.7f);
             findViewById(R.id.x2).setAlpha(.7f);
             findViewById(R.id.auto).setAlpha(.7f);
-            findViewById(R.id.pause).setAlpha(.7f);
             findViewById(R.id.quit).setAlpha(.7f);
             board.setBoard_blocked(true);
         }
@@ -150,7 +149,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             findViewById(R.id.entry100).setAlpha(1f);
             findViewById(R.id.x2).setAlpha(1f);
             findViewById(R.id.auto).setAlpha(1f);
-            findViewById(R.id.pause).setAlpha(1f);
             findViewById(R.id.quit).setAlpha(1f);
             board.setBoard_blocked(false);
             board.MakeTouchedRectangleArea();
@@ -167,7 +165,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             findViewById(R.id.entry100).setVisibility(View.VISIBLE);
             findViewById(R.id.x2).setVisibility(View.VISIBLE);
             findViewById(R.id.auto).setVisibility(View.VISIBLE);
-            findViewById(R.id.pause).setVisibility(View.VISIBLE);
             findViewById(R.id.quit).setVisibility(View.VISIBLE);
 
         }
@@ -180,7 +177,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             findViewById(R.id.entry100).setVisibility(View.INVISIBLE);
             findViewById(R.id.x2).setVisibility(View.INVISIBLE);
             findViewById(R.id.auto).setVisibility(View.INVISIBLE);
-            findViewById(R.id.pause).setVisibility(View.INVISIBLE);
             findViewById(R.id.quit).setVisibility(View.INVISIBLE);
         }
     }
@@ -253,8 +249,9 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             return;
         }
 
-        BalanceRelative.RunBalanсeListening(ntw.getNetworkPath().concat("/balance_outcome.php?device_server_id="+BingoDevice.getServerDeviceId()));
+        BalanceRelative.RunBalanсeListening(ntw.getNetworkPath().concat("/balance_outcome.php?device_server_id=" + BingoDevice.getServerDeviceId()));
         timerRelative.HTTPRunTimer(ntw.getNetworkPath().concat("/timer.php"));
+
         screen_lock(false);
         TimerStarted_sub();
     }
@@ -349,7 +346,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         //Создаем баланс
         d_balance dBalance = new d_balance();
         dBalance.setSum(iWin - iEntry);
-        dBalance.setGame_id(dGame.getId());
         dBalance.setOperation(0);
         db.createNewBalance(dBalance);
 
@@ -401,13 +397,12 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             if (l_gameCode == null) nCode = "AA-0000";
             else nCode = l_gameCode.getGameCode();
             //Создаем новую игру
-            String url = ntw.getNetworkPath().concat("/web_service.php?par=").concat(BingoDevice.getDeviceCode()).concat("&comm=device_id");
-            WebService deviceCode = ntw.getServerValue("device_id",BingoDevice.getServerDeviceId());
-            nCode = timerRelative.GenerateNewGameCode(nCode, Integer.toString(deviceCode.getIntvalue()));
+            nCode = timerRelative.GenerateNewGameCode(nCode, Integer.toString(BingoDevice.getServerDeviceId()));
 
             dGame = new d_game();
             dGame.setGameCode(nCode);
-            dGame.setServer_game_id(timerRelative.getServerGameCode());
+            if (timerRelative.getServerGameCode() == 0) dGame.setServer_game_id(ntw.getTimer(ntw.getNetworkPath().concat("/timer.php")).getGame_id());
+            else dGame.setServer_game_id(timerRelative.getServerGameCode());
             if (dGame.getServer_game_id() == 0) {
                //Если ошибка создания, то бдлокируем экран
                Toast toast = Toast.makeText(this, R.string.GameErrServerAnswer, Toast.LENGTH_SHORT);
@@ -568,12 +563,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
 
     public void ball_clicked(View v){
         board.showGame(v);
-    }
-
-    public void pause(View v){
-        //Остановили таймер
-        timerRelative.StopTimer();
-        screen_lock(true);
     }
     public void quit(View v){
         //Остановили таймер

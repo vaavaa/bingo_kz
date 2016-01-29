@@ -24,7 +24,7 @@ import kz.regto.database.d_settings;
 
 public class Network {
 
-    protected volatile String networkPath;
+    protected String networkPath;
     Main main;
 
     public Network (Main context){
@@ -115,7 +115,7 @@ public class Network {
 
     public ServerResult setBalance(){
         String url = networkPath+"/balance_income.php?device_server_id="+main.db.getDevice().getServerDeviceId()+
-                "&balance="+main.db.getCurrentBalance(main.dGame.getId());
+                "&balance="+main.db.getCurrentBalance();
         ServerResult rMsg=null;
         String data = null;
         do {
