@@ -114,8 +114,8 @@ public class Network {
     }
 
     public ServerResult setBalance(){
-        String url = networkPath+"/balance_income.php?device_server_id="+main.db.getDevice().getServerDeviceId()+
-                "&balance="+main.db.getCurrentBalance();
+        String url = networkPath+"/balance_income.php?device_server_id="+main.BingoDevice.getServerDeviceId()+
+                "&balance="+main.db.getSettings("device_balance").getSettingsValue();
         ServerResult rMsg=null;
         String data = null;
         do {

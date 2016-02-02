@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kz.regto.database.d_balance;
+import kz.regto.database.d_settings;
 import kz.regto.json.ServerResult;
 import kz.regto.json.SupportBalance;
 
@@ -23,10 +24,13 @@ public class BalanceEngine extends RelativeLayout {
     private Main prnt;
     private SupportBalance sb =new SupportBalance();
     private Handler balanceHandlerIncome = new Handler();
+    private Handler balanceHandlerDevice = new Handler();
     private List<BalanceEvent> listeners = new ArrayList<>();
     private String field_balance="";
     private String field_currentEntry="";
     private String field_win="";
+
+    public d_settings BalanceSet = new d_settings();
 
     private int currBalance;
     private int currId;
@@ -80,88 +84,119 @@ public class BalanceEngine extends RelativeLayout {
     public void CloseAll() {
         sb.cancel(true);
         balanceHandlerIncome.removeCallbacks(updateGameBalanceIncome);
+        balanceHandlerDevice.removeCallbacks(updateDeviceBalance);
     }
 
     public void RunBalanсeListening(String URL_Balance){
         //Инициируем получение баланса
-        if (sb.getStatus()!= AsyncTask.Status.RUNNING)
-            if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.HONEYCOMB)
-                sb.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,URL_Balance,"");
+        if (sb.getStatus()!= AsyncTask.Status.RUNNING) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                sb.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, URL_Balance, "");
             else
-                sb.execute(URL_Balance,"");
+                sb.execute(URL_Balance, "");
+
+            BalanceSet = prnt.db.getSettings("device_balance");
+            if (BalanceSet !=null) {BalanceSet.setSettingsValue("0");}
+            else {
+                BalanceSet = new d_settings();
+                BalanceSet.setSettingsValue("device_balance");
+                BalanceSet.setSettingsValue("0");
+            }
+            prnt.db.DeleteServerBalance();
+        }
+
+
+        //Устанавливаем баланс устройства - единая строка, которая и ведется
+        prnt.db.createNewSettings(BalanceSet);
+
         balanceHandlerIncome.postDelayed(updateGameBalanceIncome, 0);
+        balanceHandlerDevice.postDelayed(updateDeviceBalance, 500);
+
+
     }
 
     public void StopBalanсeListening(){
         if (!sb.isCancelled()) sb.cancel(true);
     }
 
-    public void RunBalanceSender(String URL_timer){
+    public boolean RunBalanceSender(){
         //Инициируем отправку окончательного Баланса
         ServerResult sr = prnt.ntw.setBalance();
+        if (sr == null) return false;
         int answer = sr.getAnswer();
         //здесь у нас должна быть более сложная логика, но пока оставляем
-        if ((answer)!=0) {
-            Toast toast = Toast.makeText(prnt, R.string.ServerAnswer, Toast.LENGTH_SHORT);
-            toast.show();
-        }
+        if ((answer)!=0) return false;
+        else return true;
     }
 
     private Runnable updateGameBalanceIncome = new Runnable() {
         @Override
         public void run() {
 
-            if (sb.getCurrentBalance()!=-1){
+            currId = sb.getCurrentID();
+            currBalance = sb.getCurrentBalance();
 
-                currId = sb.getCurrentID();
-                currBalance = sb.getCurrentBalance();
-
+            if ((currBalance!=-1) && (currId >0)){
                 d_balance dBalance = new d_balance();
                 dBalance.setStatus(0);
                 dBalance.setOperation(currId);
                 dBalance.setSum(currBalance);
-                dBalance = prnt.db.UpdateBalanceSmart(dBalance);
-
+                prnt.db.UpdateBalanceFROMServer(dBalance);
 //                field_balance = Integer.toString(dBalance.getSum());
 //                tfield_balance.setField(field_balance);
             }
-            balanceHandlerIncome.postDelayed(this,0);
+            balanceHandlerIncome.postDelayed(this,500);
 
         }
     };
+    private Runnable updateDeviceBalance = new Runnable() {
+        @Override
+        public void run() {
+            int cbal = prnt.db.getCurrentServerBalance();
+            if (cbal > 0 ) {
+                BalanceSet = prnt.db.getSettings("device_balance");
+                int CurUpdate = Integer.parseInt(BalanceSet.getSettingsValue()) + cbal;
+                prnt.db.setCurrentServerBalanceFlag();
+                setBalance(CurUpdate);
+            }
+            balanceHandlerDevice.postDelayed(this, 300);
+        }
+    };
 
-    public void setBalance(){
-
-
+    public void setBalance(int balanceUpdate ){
+        BalanceSet = prnt.db.getSettings("device_balance");
+        int newSum = balanceUpdate;
+        BalanceSet.setSettingsValue("" + newSum);
+        if (prnt.db.updateSettings(BalanceSet)) tfield_balance.setField(""+ newSum);
     }
     public int getBalance(){
-        return currBalance;
+        BalanceSet = prnt.db.getSettings("device_balance");
+        return Integer.parseInt(BalanceSet.getSettingsValue());
     }
+    public void setBalancePlus(int balanceUpdate){
+        BalanceSet = prnt.db.getSettings("device_balance");
+        int newSum = Integer.parseInt(BalanceSet.getSettingsValue()) + balanceUpdate;
+        setBalance(newSum);
+    }
+    public void setEntry(int newEntry){
+        int fEntr =  Integer.parseInt(tfield_currentEntry.getField()) + newEntry;
+        tfield_currentEntry.setField(""+fEntr);
+
+        BalanceSet = prnt.db.getSettings("device_balance");
+        int newSum = Integer.parseInt(BalanceSet.getSettingsValue()) - newEntry;
+        setBalance(newSum);
+    }
+
+    public void setWinSum(int newSum){
+        setBalancePlus(newSum);
+        tfield_win.setField("" + newSum);
+        tfield_currentEntry.setField("0");
+    }
+    public void setWinZero(){
+        tfield_win.setField("0");
+    }
+
 
     //Принимаем подписчиков на события баланса
     public void addListener(BalanceEvent toAdd) { listeners.add(toAdd);}
-
-    public String getField_balance() {
-        return field_balance;
-    }
-
-    public String getField_currentEntry() {
-        return field_currentEntry;
-    }
-
-    public void setField_win(String field_win) {
-        this.field_win = field_win;
-    }
-
-    public String getField_win() {
-        return field_win;
-    }
-
-    public void setField_balance(String field_balance) {
-        this.field_balance = field_balance;
-    }
-
-    public void setField_currentEntry(String field_currentEntry) {
-        this.field_currentEntry = field_currentEntry;
-    }
 }

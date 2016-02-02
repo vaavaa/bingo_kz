@@ -27,9 +27,9 @@ import kz.regto.database.d_balance;
 import kz.regto.database.d_device;
 import kz.regto.database.d_entry_set;
 import kz.regto.database.d_game;
+import kz.regto.database.d_settings;
 import kz.regto.json.Balance;
 import kz.regto.json.Network;
-import kz.regto.json.WebService;
 
 public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent, BoardGridEvents {
 
@@ -91,15 +91,13 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             if (ntw.ConnectionExist()){
                 BingoDevice = ntw.getDeviceFromServer(BingoDevice);
                 db.updateDevice(BingoDevice);
-                BalanceRelative.RunBalanсeListening(
-                        ntw.getNetworkPath().concat("balance_outcome.php?device_server_id="+BingoDevice.getServerDeviceId()));
             }
-
 
         mc=(MainContainer)findViewById(R.id.main_board);
 
         board=(BoardGrid)findViewById(R.id.board_grid);
         GameCode = (TextView)findViewById(R.id.GameCode);
+
 
         //Ставка в 100
         this.findViewById(R.id.entry100).setSelected(true);
@@ -242,7 +240,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         BingoDevice = ntw.getDeviceFromServer(BingoDevice);
         db.updateDevice(BingoDevice);
 
-        db.updateDevice(BingoDevice);
         if (BingoDevice.getStatus() != 0) {
             Toast toast = Toast.makeText(this, R.string.StatusIsNotCorrect , Toast.LENGTH_SHORT);
             toast.show();
@@ -326,37 +323,17 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         //Считаем выйгрыш, если ничего нет, будет 0
         int iWin = db.getGameSum(dGame.getId(),dGame.getWin_ball());
 
-        //Текущий баланс увеличили на выйгрыш
-        TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.balance);
-        int cur_balance = Integer.parseInt(t2w.getField());
-        cur_balance = cur_balance+iWin;
+        //Текущий баланс увеличили на выйгрыш/ установли поля
+        BalanceRelative.setWinSum(iWin);
 
 
-
-        final TwoTextViews t2win = (TwoTextViews)this.findViewById(R.id.win);
-        t2win.setField(Integer.toString(iWin));
-
-        //Обновляем баланс устройства
-        //BingoDevice.setBalance(cur_balance);
+        //Обновляем баланс устройства и ни какой ставки в начеле новой игры нет
         db.updateDevice(BingoDevice);
 
-        TwoTextViews t2E =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
-        int iEntry = Integer.parseInt(t2E.getField());
-
-        //Создаем баланс
-        d_balance dBalance = new d_balance();
-        dBalance.setSum(iWin - iEntry);
-        dBalance.setOperation(0);
-        db.createNewBalance(dBalance);
-
-        //Ни какой ставки в начеле новой игры нет
-        t2E.setField("0");
+        //Обнулили ставки робота
         botEntrySet=null;
 
-        String url = ntw.getNetworkPath().concat("/balance.php?device_id=")
-                .concat(BingoDevice.getDeviceCode()).concat("&balance="+cur_balance);
-        Balance balance = ntw.getBalance();
-        if (balance != null) {
+        if (BalanceRelative.RunBalanceSender()) {
             //Запускаем новую игру c задержкой в 2 секунды
             Handler temp_handler = new Handler();
             temp_handler.postDelayed(new Runnable() {
@@ -364,7 +341,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
                     mc.ClearBoard(MainContainer.CLEAR_BOARD_ONLY);
                     setButtonsUnclickable(false);
                     WBC.setAll_lock(false);
-                    t2win.setField("0");
+                    BalanceRelative.setWinZero();
                     if (db.getDBState()==DatabaseHelper.STATE_OPENED) TimerStarted_sub();
                 }
             }, 2500);
@@ -452,13 +429,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
     public void entrySet(boolean isBalanced){
         if (isBalanced) {
             int iEntry = getEntryfromLevel(this.getIlevelset());
-            TwoTextViews t2w = (TwoTextViews) this.findViewById(R.id.CurrentEntry);
-            TwoTextViews t2b = (TwoTextViews) this.findViewById(R.id.balance);
-            int it2b = Integer.parseInt(t2b.getField());
-            it2b = it2b - iEntry;
-            t2b.setField("" + it2b);
-            iEntry = iEntry + Integer.parseInt(t2w.getField());
-            t2w.setField(Integer.toString(iEntry));
+            BalanceRelative.setEntry(iEntry);
         }
     }
     private int getEntryfromLevel(int lvl){
@@ -506,9 +477,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
     public void x2_button(View view){
         List<d_entry_set> cl = db.getAllGameEntrySet(dGame.getId());
         int balance = db.getGameCurrentSum(dGame.getId());
-        TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.balance);
-        String myBalance = t2w.getField();
-        int i_myBalance = Integer.parseInt(myBalance);
+        int i_myBalance = BalanceRelative.getBalance();
         if (balance > 0 && i_myBalance>=balance) {
             BoardGrid bG = (BoardGrid) this.findViewById(R.id.board_grid);
             int currentLevel = this.getIlevelset();
@@ -519,7 +488,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             this.setIlevelset(currentLevel);
         }
         else {
-            Toast toast = Toast.makeText(this, "Баланс на устройстве не достатрочен для удвоения, пополните баланс.", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, R.string.x2Balance, Toast.LENGTH_SHORT);
             toast.show();
         }
     }
@@ -549,16 +518,14 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
     }
 
     private void clearBoard(){
-        TwoTextViews t2w =  (TwoTextViews)this.findViewById(R.id.CurrentEntry);
-        t2w.setField("0");
-        TwoTextViews t2b =  (TwoTextViews)this.findViewById(R.id.balance);
-        int balance = Integer.parseInt(t2b.getField()) + db.getGameCurrentSum(dGame.getId());
-        t2b.setField(""+balance);
+        BalanceRelative.setEntry(0);
+        BalanceRelative.setBalancePlus(db.getGameCurrentSum(dGame.getId()));
         mc.ClearBoard(MainContainer.CLEAR_ALL);
         final WinBallContainer  WBC = (WinBallContainer)this.findViewById(R.id.win_ball_container);
         WBC.setAll_lock(true);
         //Возвращем выбранные(если есть) в положение не выбран
         WBC.setAllSelected_false();
+        WBC.setAll_lock(false);
     }
 
     public void ball_clicked(View v){

@@ -33,7 +33,7 @@ public class SupportBalance extends AsyncTask<String, Balance, Balance> {
                tProgress = ntw.getBalance(url);
                    if (tProgress!=null){
                        publishProgress(tProgress);
-                       try {Thread.sleep(1550);}
+                       try {Thread.sleep(500);}
                        catch (InterruptedException Ex){}
                    }
            }while (!this.isCancelled());

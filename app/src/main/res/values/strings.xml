@@ -19,5 +19,6 @@
     <string name="balance">Баланс:</string>
     <string name="win">Выйгрыш:</string>
     <string name="entry">Ставка:</string>
+    <string name="x2Balance">"Баланс на устройстве не достатрочен для удвоения, пополните баланс."</string>
 
 </resources>

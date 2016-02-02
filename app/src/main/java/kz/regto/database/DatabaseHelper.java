@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -153,7 +154,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if( c != null && c.moveToFirst() ){
             td = new d_settings();
-            td.setSettingsName("settings_name");
+            td.setSettingsName(c.getString(c.getColumnIndex("settings_name")));
             td.setSettingsValue(c.getString(c.getColumnIndex("settings_value")));
             td.setId(c.getInt(c.getColumnIndex("id")));
             c.close();
@@ -238,11 +239,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public d_balance createNewBalance(d_balance dBalance) {
-        boolean bReturn;
         //Складываем текущий баланс с новым балансом
-        int curBalance = getCurrentBalance();
-        dBalance.setSum(curBalance+dBalance.getSum());
-        DisableBalance();
         String insert_sql = " insert into balance (id_balance,sum, status) " +
                 "VALUES ("+dBalance.getOperation()+","+dBalance.getSum()+",0)";
         try {
@@ -254,18 +251,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public d_balance UpdateBalanceSmart(d_balance dBalance) {
+    public d_balance UpdateBalanceFROMServer(d_balance dBalance) {
         //Складываем текущий баланс с новым балансом
-        String selectQuery = "SELECT sum FROM balance " +
-                " WHERE status = 0 and " +
-                " id_balance="+dBalance.getOperation();
+        String selectQuery = "SELECT id_balance, sum FROM balance " +
+                " WHERE id_balance="+dBalance.getOperation();
         Cursor cz = db.rawQuery(selectQuery, null);
-
-        if (!cz.moveToNext()) {
-            DisableBalance();
+        if (cz !=null && !cz.moveToNext()) {
             dBalance =  createNewBalance(dBalance);
+            cz.close();
         }
-        cz.close();
         return dBalance;
     }
 
@@ -292,24 +286,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return dBalance;
     }
 
-    public int getCurrentBalance() {
-        String selectQuery = "SELECT sum FROM balance " +
-                " WHERE status = 0 ORDER BY dtime DESC ";
+    public int getCurrentServerBalance() {
+        String selectQuery = "SELECT TOTAL(balance.sum) as sum FROM balance " +
+                " WHERE status = 0 GROUP BY dtime";
         int rValue=0;
         Cursor c = dbr.rawQuery(selectQuery, null);
         if( c != null && c.moveToFirst() ){
             rValue = c.getInt(c.getColumnIndex("sum"));
             c.close();
         }
+
         return rValue;
+    }
+    public boolean setCurrentServerBalanceFlag() {
+        String UpdateQuery = "Update balance SET status = 1 " +
+                " WHERE status = 0";
+        try {
+            db.execSQL(UpdateQuery);
+            return true;
+        }
+        catch (Exception ex){
+            return false;
+        }
     }
 
     /**
      * Deleting a balance
      */
-    public boolean DisableBalance() {
+    public boolean DeleteServerBalance() {
         boolean bReturn;
-        String delete_sql = "Update balance SET status = 1";
+        String delete_sql = "DELETE FROM balance";
         try {
             db.execSQL(delete_sql);
             bReturn = true;
@@ -324,8 +330,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         boolean bReturn;
         String update_sql = "Update balance " +
                 "SET sum ="+dBalance.getSum()+", " +
-                "id_balance ="+dBalance.getOperation() +", " +
-                " WHERE status=" +dBalance.getStatus();
+                "id_balance ="+dBalance.getOperation() +
+                " WHERE id_balance=" +dBalance.getOperation();
         try {
             db.execSQL(update_sql);
             bReturn = true;
@@ -652,7 +658,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int getLastSetPack() {
-        String selectQuery = "SELECT entry_pack_id FROM entry_set ORDER BY entry_pack_id DESK LIMIT 1";
+        String selectQuery = "SELECT entry_pack_id FROM entry_set ORDER BY entry_pack_id DESC LIMIT 1";
         Cursor c = dbr.rawQuery(selectQuery, null);
         if (c != null && c.moveToFirst()) return c.getInt(c.getColumnIndex("entry_pack_id"));
         else return -1;
@@ -660,7 +666,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public List<d_entry_set> getLastEntrySetPack() {
-        String selectQuery = "SELECT entry_pack_id FROM entry_set ORDER BY entry_pack_id DESK LIMIT 1";
+        String selectQuery = "SELECT entry_pack_id FROM entry_set ORDER BY entry_pack_id DESC LIMIT 1";
         Cursor c = dbr.rawQuery(selectQuery, null);
         List<d_entry_set> list_td = new ArrayList<>();
         int last_entry_pack_id;
