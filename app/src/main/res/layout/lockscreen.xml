@@ -37,11 +37,20 @@
         android:imeOptions="actionDone"/>
     <TextView
         android:id="@+id/WinLabel"
-        android:layout_width="350dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:textSize="@dimen/s2nd_row"
         android:layout_gravity="bottom"
-        android:text="sdssddsdsdsdsdsds"
+        android:text="К выплате:"
+        android:layout_margin = "17dp"
+        android:maxLength="150" />
+    <TextView
+        android:id="@+id/WinFigure"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/s2nd_row"
+        android:layout_marginLeft="150dp"
+        android:text="130000"
         android:layout_margin = "17dp"
         android:maxLength="150" />
 </FrameLayout>
