@@ -157,13 +157,14 @@ public class MainContainer extends ViewGroup {
               else tw.setText(""+sum_chk);
            }
            this.invalidate();
-            TwoTextViews t2w =  (TwoTextViews)main.findViewById(R.id.CurrentEntry);
-            int curB = Integer.parseInt(t2w.getField());
-            curB = curB - dEntrySet.getEntry_value();
-            t2w.setField(""+curB);
-            TwoTextViews t2b =  (TwoTextViews)main.findViewById(R.id.balance);
-            int balance = Integer.parseInt(t2b.getField()) + dEntrySet.getEntry_value();;
-            t2b.setField("" + balance);
+            main.BalanceRelative.setEntry((-1)*dEntrySet.getEntry_value());
+//            TwoTextViews t2w =  (TwoTextViews)main.findViewById(R.id.CurrentEntry);
+//            int curB = Integer.parseInt(t2w.getField());
+//            curB = curB - dEntrySet.getEntry_value();
+//            t2w.setField(""+curB);
+//            TwoTextViews t2b =  (TwoTextViews)main.findViewById(R.id.balance);
+//            int balance = Integer.parseInt(t2b.getField()) + dEntrySet.getEntry_value();;
+//            t2b.setField("" + balance);
            main.db.deleteEntrySet(dEntrySet.getLog_id());
         }
     }

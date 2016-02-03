@@ -113,16 +113,16 @@ public class Network {
         return rMsg;
     }
 
-    public ServerResult setBalance(){
+    public Balance setBalance(){
         String url = networkPath+"/balance_income.php?device_server_id="+main.BingoDevice.getServerDeviceId()+
                 "&balance="+main.db.getSettings("device_balance").getSettingsValue();
-        ServerResult rMsg=null;
+        Balance rMsg=null;
         String data = null;
         do {
             data = getJSON(url, 1000);
-        }while(data==null);
+            rMsg = new Gson().fromJson(data, Balance.class);
+        }while(rMsg==null);
 
-        rMsg = new Gson().fromJson(data, ServerResult.class);
         return rMsg;
     }
     public Balance getBalance(String url) {

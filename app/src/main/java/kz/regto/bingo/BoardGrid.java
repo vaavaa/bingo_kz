@@ -306,8 +306,8 @@ public class BoardGrid extends View {
                     if (mRecOperateIsActive){
                         mRecOperateIsActive=false;
                     }
-                    mRecOperate.setVisibility(View.GONE);
-                    mRecOperate1.setVisibility(View.GONE);
+                    if (mRecOperate!=null) mRecOperate.setVisibility(View.GONE);
+                    if ( mRecOperate1!=null) mRecOperate1.setVisibility(View.GONE);
                     invalidate();
                     handled = true;
                     break;

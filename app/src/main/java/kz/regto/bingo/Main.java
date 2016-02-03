@@ -28,7 +28,6 @@ import kz.regto.database.d_device;
 import kz.regto.database.d_entry_set;
 import kz.regto.database.d_game;
 import kz.regto.database.d_settings;
-import kz.regto.json.Balance;
 import kz.regto.json.Network;
 
 public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent, BoardGridEvents {
@@ -45,6 +44,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
 
     //Network Helper
     public Network ntw;
+    public boolean fNetworkError = false;
 
     // Database Helper
     public DatabaseHelper db;
@@ -189,13 +189,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         BalanceRelative = balanceElement;
     }
 
-    //0) Проверяем включена ли связь устройства, если активировано, то просто разблокируем, если нет
-    //1) Просим линк из объекта устройства
-    //2) Если линк есть, стучимся для проверки пин кода
-    //3) Линк не работает, просим ввести линк, не работает сеть, просим дать нам сеть
-    //4) Пин совпал, запросили баланс, если больше нуля, разблокировали и записали баланс в переменную устройства, запустили таймер.
-    //5) Пин не совпал - сообщили что не совпал
-    //6) Баланс равен 0 - сообщили
     public void screen_lock_starting_procedure () {
         //hide keyboard
         View view = this.getCurrentFocus();
@@ -226,9 +219,14 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         }
         final EditText ET = (EditText) frameLayout.findViewById(R.id.pin);
         if (ET.getText().toString().length()==0) {
-            Toast toast = Toast.makeText(this, R.string.PinIsEmpty, Toast.LENGTH_SHORT);
-            toast.show();
-            return;
+            if (db.getSettings("pin_code")!=null) {
+                ET.setText(db.getSettings("pin_code").getSettingsValue());
+            }
+            else {
+                Toast toast = Toast.makeText(this, R.string.PinIsEmpty, Toast.LENGTH_SHORT);
+                toast.show();
+                return;
+            }
         }
         int iPinCode = Integer.parseInt(ET.getText().toString());
         int pinCode = ntw.getServerValue("web_service.php?comm=pincode&par=0",4000).getIntvalue();
@@ -237,6 +235,13 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             toast.show();
             return;
         }
+        else {
+            d_settings settings = new d_settings();
+            settings.setSettingsName("pin_code");
+            settings.setSettingsValue(Integer.toString(pinCode));
+            db.createNewSettings(settings);
+        }
+
         BingoDevice = ntw.getDeviceFromServer(BingoDevice);
         db.updateDevice(BingoDevice);
 
@@ -342,12 +347,12 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
                     setButtonsUnclickable(false);
                     WBC.setAll_lock(false);
                     BalanceRelative.setWinZero();
-                    if (db.getDBState()==DatabaseHelper.STATE_OPENED) TimerStarted_sub();
+                    if (db.getDBState() == DatabaseHelper.STATE_OPENED) TimerStarted_sub();
                 }
-            }, 2500);
+            }, getResources().getInteger(R.integer.NewGameResultDelay)); //4500 задержка перед новой игрой.
         }
         else {
-            Toast toast = Toast.makeText(this, "Не удалось сохранить результаты игры.", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, R.string.NoSaveSuccess, Toast.LENGTH_SHORT);
             toast.show();
             screen_lock(true);
         }
@@ -375,7 +380,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             else nCode = l_gameCode.getGameCode();
             //Создаем новую игру
             nCode = timerRelative.GenerateNewGameCode(nCode, Integer.toString(BingoDevice.getServerDeviceId()));
-
             dGame = new d_game();
             dGame.setGameCode(nCode);
             if (timerRelative.getServerGameCode() == 0) dGame.setServer_game_id(ntw.getTimer(ntw.getNetworkPath().concat("/timer.php")).getGame_id());
@@ -415,7 +419,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             //Запустили таймер
             timerRelative.StartTimer();
             //Запустили баланс
-
+            fNetworkError =false;
     }
 
     @Override
@@ -515,11 +519,15 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
 
     public void stepBack(View view){
         mc.stepBack();
+        final WinBallContainer  WBC = (WinBallContainer)this.findViewById(R.id.win_ball_container);
+        WBC.setAll_lock(true);
+        //Возвращем выбранные(если есть) в положение не выбран
+        WBC.setAllSelected_false();
+        WBC.setAll_lock(false);
     }
 
     private void clearBoard(){
-        BalanceRelative.setEntry(0);
-        BalanceRelative.setBalancePlus(db.getGameCurrentSum(dGame.getId()));
+        BalanceRelative.setEntry((-1)*db.getGameCurrentSum(dGame.getId()));
         mc.ClearBoard(MainContainer.CLEAR_ALL);
         final WinBallContainer  WBC = (WinBallContainer)this.findViewById(R.id.win_ball_container);
         WBC.setAll_lock(true);
@@ -531,7 +539,16 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
     public void ball_clicked(View v){
         board.showGame(v);
     }
+    public void NetworkError(){
+        clearBoard();
+        timerRelative.StopTimer();
+        screen_lock(true);
+        screen_lock_starting_procedure();
+        fNetworkError =true;
+    }
+
     public void quit(View v){
+        BalanceRelative.setBalance(0);
         //Остановили таймер
         BingoDevice.setStatus(1);
         clearBoard();
@@ -548,7 +565,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         mc.ClearAllAlfa05();
         WBC.setAllSelected_false();
     }
-
     @Override
     protected void onDestroy(){
         setButtonsUnclickable(true);

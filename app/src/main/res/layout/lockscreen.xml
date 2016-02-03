@@ -35,4 +35,13 @@
         android:textSize="@dimen/s2nd_row"
         android:layout_gravity="right"
         android:imeOptions="actionDone"/>
+    <TextView
+        android:id="@+id/WinLabel"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/s2nd_row"
+        android:layout_gravity="bottom"
+        android:text="sdssddsdsdsdsdsds"
+        android:layout_margin = "17dp"
+        android:maxLength="150" />
 </FrameLayout>

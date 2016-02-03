@@ -16,6 +16,7 @@ import java.util.List;
 
 import kz.regto.database.d_balance;
 import kz.regto.database.d_settings;
+import kz.regto.json.Balance;
 import kz.regto.json.ServerResult;
 import kz.regto.json.SupportBalance;
 
@@ -99,7 +100,7 @@ public class BalanceEngine extends RelativeLayout {
             if (BalanceSet !=null) {BalanceSet.setSettingsValue("0");}
             else {
                 BalanceSet = new d_settings();
-                BalanceSet.setSettingsValue("device_balance");
+                BalanceSet.setSettingsName("device_balance");
                 BalanceSet.setSettingsValue("0");
             }
             prnt.db.DeleteServerBalance();
@@ -121,12 +122,16 @@ public class BalanceEngine extends RelativeLayout {
 
     public boolean RunBalanceSender(){
         //Инициируем отправку окончательного Баланса
-        ServerResult sr = prnt.ntw.setBalance();
+        Balance sr = prnt.ntw.setBalance();
         if (sr == null) return false;
-        int answer = sr.getAnswer();
+        int answer = sr.getId_balance();
         //здесь у нас должна быть более сложная логика, но пока оставляем
-        if ((answer)!=0) return false;
-        else return true;
+        if ((answer)==0) return false;
+        else {
+            //Сбрасываем локальный баланс и ждем загрузки от сервера
+            setBalance(0);
+            return true;
+        }
     }
 
     private Runnable updateGameBalanceIncome = new Runnable() {
@@ -135,24 +140,26 @@ public class BalanceEngine extends RelativeLayout {
 
             currId = sb.getCurrentID();
             currBalance = sb.getCurrentBalance();
-
-            if ((currBalance!=-1) && (currId >0)){
-                d_balance dBalance = new d_balance();
-                dBalance.setStatus(0);
-                dBalance.setOperation(currId);
-                dBalance.setSum(currBalance);
-                prnt.db.UpdateBalanceFROMServer(dBalance);
-//                field_balance = Integer.toString(dBalance.getSum());
-//                tfield_balance.setField(field_balance);
+            if (prnt.ntw.isNetworkAvailable(prnt)) {
+                if ((currBalance != -1) && (currId > 0)) {
+                    d_balance dBalance = new d_balance();
+                    dBalance.setStatus(0);
+                    dBalance.setOperation(currId);
+                    dBalance.setSum(currBalance);
+                    prnt.db.UpdateBalanceFROMServer(dBalance);
+                }
             }
-            balanceHandlerIncome.postDelayed(this,500);
-
+            else {
+                if (!prnt.fNetworkError) prnt.NetworkError();
+            }
+            balanceHandlerIncome.postDelayed(this, 250);
         }
     };
     private Runnable updateDeviceBalance = new Runnable() {
         @Override
         public void run() {
-            int cbal = prnt.db.getCurrentServerBalance();
+            int cbal =0;
+            cbal = prnt.db.getCurrentServerBalance();
             if (cbal > 0 ) {
                 BalanceSet = prnt.db.getSettings("device_balance");
                 int CurUpdate = Integer.parseInt(BalanceSet.getSettingsValue()) + cbal;

@@ -119,11 +119,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // ------------------------ "settings" table methods ----------------//
 
     public boolean createNewSettings(d_settings dSettings) {
+        int id_settings = 0;
         String insert_sql = "insert into settings ( settings_name, settings_value) " +
                 "VALUES ('"+dSettings.getSettingsName()+"','"+dSettings.getSettingsValue()+"')";
         try {
             //Еcли там уже есть настрока, то обновим
-            if (this.getSQLQueryCount("SELECT * FROM settings WHERE settings_name='"+dSettings.getSettingsName()+"'")==0) {
+            String Sql_Chk = "SELECT id FROM settings WHERE settings_name='"+dSettings.getSettingsName()+"'";
+            Cursor c_ck = this.runResultedSQL(Sql_Chk);
+            if (c_ck!=null && c_ck.moveToFirst()){
+                id_settings = c_ck.getInt(c_ck.getColumnIndex("id"));
+                dSettings.setId(id_settings);
+                c_ck.close();
+            }
+            if (id_settings==0) {
                 db.execSQL(insert_sql);
                 String sql = "SELECT last_insert_rowid() as lastid";
                 Cursor c = this.runResultedSQL(sql);
@@ -134,8 +142,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 return true;
             }
             else {
-                if (!this.updateSettings(dSettings)) return false;
-                else  return true;
+                return this.updateSettings(dSettings);
             }
 
         }

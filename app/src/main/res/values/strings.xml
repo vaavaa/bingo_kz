@@ -20,5 +20,6 @@
     <string name="win">Выйгрыш:</string>
     <string name="entry">Ставка:</string>
     <string name="x2Balance">"Баланс на устройстве не достатрочен для удвоения, пополните баланс."</string>
-
+    <string name="NoSaveSuccess">"Не удалось сохранить результаты игры."</string>
+    <string name="serial">тираж:</string>
 </resources>
