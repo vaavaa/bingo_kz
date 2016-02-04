@@ -88,7 +88,8 @@ public class WinBallContainer extends RelativeLayout {
         state = newState;
     }
 
-    public void UpdateNewOne(String winNumber,List<d_entry_set> dl, Main mn ){
+    //Нужно как то с логами прописать что бы найти ошибку с повторением шаров
+    public void UpdateNewOne(String winNumber, List<d_entry_set> dl, Main mn ){
         lastWinNumber = winNumber;
         pdl = dl;
         if  (iVisible<=10){
@@ -139,7 +140,7 @@ public class WinBallContainer extends RelativeLayout {
             }
             else {
                 rInt++;
-                h.postDelayed(showInfo,100);
+                h.postDelayed(showInfo,150);
             }
         }
     };

@@ -22,4 +22,5 @@
     <string name="x2Balance">"Баланс на устройстве не достатрочен для удвоения, пополните баланс."</string>
     <string name="NoSaveSuccess">"Не удалось сохранить результаты игры."</string>
     <string name="serial">тираж:</string>
+    <string name="GameStop">"Вы завершили игру. Результаты отправлены администратору."</string>
 </resources>

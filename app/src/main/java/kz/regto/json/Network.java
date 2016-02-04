@@ -198,4 +198,23 @@ public class Network {
         if (data!=null) rMsg = new Gson().fromJson(data, d_device.class);
         return rMsg;
     }
+    public d_device setDeviceOnServer(d_device dDevice){
+        String url = "device_service.php?comm=set_status&stat="+dDevice.getStatus()+"&par="+dDevice.getServerDeviceId();
+        url = networkPath+url;
+        String data=null;
+        d_device rMsg=null;
+        boolean exitflag = true;
+        long curtime = SystemClock.uptimeMillis();
+        long exittime =curtime+2000;
+        do {
+            data = getJSON(url,1000);
+            try {Thread.sleep(100);}
+            catch (InterruptedException Ex){}
+            curtime = SystemClock.uptimeMillis();
+            if (data!=null) exitflag = false;
+            if (curtime > exittime) exitflag = false;
+        }while (exitflag);
+        if (data!=null) rMsg = new Gson().fromJson(data, d_device.class);
+        return rMsg;
+    }
 }

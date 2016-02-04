@@ -202,9 +202,15 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             toast.show();
             return;
         }
-        //Забираем линк на сервер
+        //Забираем линк на сервер и добавляем слеш в конце если его нет
         EditText ET1 = (EditText) frameLayout.findViewById(R.id.n_path);
-        if (ET1.getText().toString().length() > 0) ntw.setNetworkPath(ET1.getText().toString());
+        if (ET1.getText().toString().length() > 0) {
+            String ntwPath = ET1.getText().toString();
+            String slash = ntwPath.substring(ntwPath.length()-1,ntwPath.length());
+            if (!slash.equals("/")) ntwPath = ntwPath.concat("/");
+            ET1.setText(ntwPath);
+            ntw.setNetworkPath(ntwPath);
+        }
         else {
             Toast toast = Toast.makeText(this,  R.string.ServerIsNotReachable, Toast.LENGTH_SHORT);
             toast.show();
@@ -420,6 +426,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             timerRelative.StartTimer();
             //Запустили баланс
             fNetworkError =false;
+            ShowWinText(false);
     }
 
     @Override
@@ -547,18 +554,42 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         fNetworkError =true;
     }
 
-    public void quit(View v){
+    public void quit(View v) {
+        ShowWinText(true);
         BalanceRelative.setBalance(0);
         //Остановили таймер
-        BingoDevice.setStatus(1);
+        BingoDevice.setStatus(2);
+        BingoDevice = ntw.setDeviceOnServer(BingoDevice);
+        db.updateDevice(BingoDevice);
         clearBoard();
         timerRelative.StopTimer();
         screen_lock(true);
-        Toast toast = Toast.makeText(this, "Игра остановлена", Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(this, R.string.GameStop, Toast.LENGTH_SHORT);
         toast.show();
         final EditText ET = (EditText) frameLayout.findViewById(R.id.pin);
         ET.setText("");
     }
+
+    public void ShowWinText(boolean HideShowAction){
+        TextView t1 = (TextView)findViewById(R.id.WinLabel);
+        TextView t2 = (TextView)findViewById(R.id.WinFigure);
+        if ((t1.getVisibility()== View.INVISIBLE) && !HideShowAction) return;
+        else {
+            //Если истина, показываем
+            if (HideShowAction) {
+                t1.setVisibility(View.VISIBLE);
+                t2.setVisibility(View.VISIBLE);
+                t2.setText("" + BalanceRelative.getBalance());
+            }
+            //Если нет то скрываем
+            else {
+                t1.setVisibility(View.INVISIBLE);
+                t2.setVisibility(View.INVISIBLE);
+                t2.setText("");
+            }
+        }
+    }
+
     public void ball_cancel_clicked(View v){
         v.setVisibility(View.INVISIBLE);
         WinBallContainer WBC = (WinBallContainer)findViewById(R.id.win_ball_container);

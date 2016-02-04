@@ -672,10 +672,13 @@ public class BoardGrid extends View {
     }
 
     public void showGame(View v) {
+        //Взяли из шара что в нем лежит
         List<d_entry_set> dList = (List<d_entry_set>)v.getTag();
-        Main main = (Main)this.getContext();
 
-        int currentLevel =  main.getIlevelset();
+        //Если масив пустой, то мы вышли, ни каких изменений не было
+        if (dList.size() == 0) return;
+        Main main = (Main)this.getContext();
+        if (mc==null) mc = (MainContainer)this.getParent();
 
         WinBallContainer WBC = (WinBallContainer)main.findViewById(R.id.win_ball_container);
         String name_cancel = getResources().getResourceEntryName(v.getId());
@@ -683,22 +686,29 @@ public class BoardGrid extends View {
         int viewid = getResourceByID("id",name_cancel);
         View iCancel = WBC.findViewById(viewid);
 
+        mc.ClearAllAlfa05();
         if (v.isSelected()) {
+            int gameSum = main.db.getGameCurrentSum(dList.get(dList.size()-1).getGame_id());
+            main.BalanceRelative.setEntry(gameSum);
             for (d_entry_set dEntry: dList) {
-                int xTouch_new=dEntry.getX()-33;
-                int yTouch_new=dEntry.getY()-33;
-                main.setIlevelset(main.getLevelfromEntry(dEntry.getEntry_value()));
-                EntryGetsPoint(xTouch_new, yTouch_new);
+                dEntry.setGame_id(main.dGame.getId());
+                int xTouch_new =dEntry.getX();
+                int yTouch_new =dEntry.getY();
+                EntryAnimated touchedView;
+                touchedView=new EntryAnimated(main);
+                touchedView.RectArea(xTouch_new - (int) (RADIUS_LIMIT / 2), yTouch_new - (int) (RADIUS_LIMIT / 2), xTouch_new + (int) (RADIUS_LIMIT / 2), yTouch_new + (int) (RADIUS_LIMIT / 2));
+                touchedView.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", EntryName(main.getLevelfromEntry(dEntry.getEntry_value())))));
+                touchedView.bringToFront();
+                touchedView.setAnimation(null);
+                mc.addCustomView(touchedView);
             }
+            saveEntrySet(dList);
             iCancel.setVisibility(View.INVISIBLE);
             WBC.setState(WinBallContainer.STATE_UNSELECTED);
             v.setSelected(false);
             v.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", "round_shape")));
-            main.setIlevelset(currentLevel);
         }
         else {
-            if (mc==null) mc = (MainContainer)this.getParent();
-            mc.ClearAllAlfa05();
             for (d_entry_set dEntry: dList) {
                 int xTouch_new =dEntry.getX();
                 int yTouch_new =dEntry.getY();

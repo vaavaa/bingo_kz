@@ -42,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_balance = "CREATE TABLE balance " +
             "(id_balance INTEGER NOT NULL DEFAULT '0'," +
             " sum INTEGER NOT NULL, " +
-            "dtime DATETIME NOT NULL DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME')), " +
+            " dtime DATETIME NOT NULL DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME')), " +
             " status INTEGER NOT NULL DEFAULT '0')";
     private static final String CREATE_TABLE_device = "CREATE TABLE device (device_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
             " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', server_device_id INTEGER NOT NULL DEFAULT '-1', " +
@@ -295,7 +295,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int getCurrentServerBalance() {
         String selectQuery = "SELECT TOTAL(balance.sum) as sum FROM balance " +
-                " WHERE status = 0 GROUP BY dtime";
+                " WHERE status = 0";
         int rValue=0;
         Cursor c = dbr.rawQuery(selectQuery, null);
         if( c != null && c.moveToFirst() ){
@@ -667,7 +667,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public int getLastSetPack() {
         String selectQuery = "SELECT entry_pack_id FROM entry_set ORDER BY entry_pack_id DESC LIMIT 1";
         Cursor c = dbr.rawQuery(selectQuery, null);
-        if (c != null && c.moveToFirst()) return c.getInt(c.getColumnIndex("entry_pack_id"));
+        if (c != null && c.moveToFirst()) {
+            c.close();
+            return c.getInt(c.getColumnIndex("entry_pack_id"));
+        }
         else return -1;
     }
 
@@ -759,7 +762,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * */
     public List<d_entry_set> getAllGameEntrySet(int GameId) {
         List<d_entry_set> d_entry_set = new ArrayList<>();
-        String selectQuery = "SELECT * FROM entry_set WHERE sys_id IN (SELECT MIN(sys_id) FROM entry_set WHERE game_id="+GameId + " group by log_id)";
+        String selectQuery = "SELECT * FROM entry_set WHERE game_id="+GameId;
         Cursor c = dbr.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
@@ -902,11 +905,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean deleteGameCache() {
         boolean bReturn;
         String delete_sql = "DELETE FROM game WHERE id NOT IN (SELECT id FROM game ORDER BY dtime DESC LIMIT 11)";
-        String delete_sql1 = "DELETE FROM balance WHERE game_id NOT IN (SELECT id FROM game)";
         String delete_sql2 = "DELETE FROM entry_set WHERE game_id NOT IN (SELECT id FROM game)";
         try {
             db.execSQL(delete_sql);
-            db.execSQL(delete_sql1);
             db.execSQL(delete_sql2);
             bReturn = true;
         }
