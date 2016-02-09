@@ -582,6 +582,8 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
     }
 
     public void quit(View v) {
+        //Возвращем все в баланс
+        clearBoard();
         //Изменили статус баланса на сервере
         if (ntw.setBalanceStatus(2)!=null) {
             ShowWinText(true);
@@ -591,9 +593,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             BingoDevice.setStatus(2);
             BingoDevice = ntw.setDeviceOnServer(BingoDevice);
             db.updateDevice(BingoDevice);
-
-
-            clearBoard();
             timerRelative.StopTimer(false);
             screen_lock(true);
             Toast toast = Toast.makeText(this, R.string.GameStop, Toast.LENGTH_SHORT);

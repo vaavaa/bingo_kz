@@ -131,11 +131,8 @@ public class Network {
                 "&balance="+main.db.getSettings("device_balance").getSettingsValue()+"&status="+status;
         Balance rMsg=null;
         String data = null;
-        do {
-            data = getJSON(url, 1000);
-            rMsg = new Gson().fromJson(data, Balance.class);
-        }while(rMsg==null);
-
+        data = getJSON(url, 1000);
+        rMsg = new Gson().fromJson(data, Balance.class);
         return rMsg;
     }
 

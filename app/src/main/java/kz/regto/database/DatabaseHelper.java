@@ -72,9 +72,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "                    game_id INTEGER NOT NULL, "+
             "                    entry_sum INTEGER NOT NULL, " +
             "                    entry_win INTEGER NOT NULL, " +
+            "                    lay INTEGER NOT NULL, " +
+            "                    lay_sum INTEGER NOT NULL, " +
+            "                    id_pack INTEGER NOT NULL, " +
+            "                    id_place INTEGER NOT NULL, " +
             "                    x INTEGER NOT NULL," +
             "                    y INTEGER NOT NULL)";
-    
+
+    private static final String _entry_line = "entry_line";
+    private static final String CREATE_TABLE_entry_line = "CREATE TABLE entry_line ( " +
+            "                    id_line INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+            "                    game_id INTEGER NOT NULL, "+
+            "                    entry_sum INTEGER NOT NULL, " +
+            "                    id_pack INTEGER NOT NULL, " +
+            "                    x INTEGER NOT NULL," +
+            "                    y INTEGER NOT NULL)";
+
     private static final String _entry_details = "entry_details";
     private static final String CREATE_TABLE_entry_details = "CREATE TABLE entry_details ( " +
             "                    id_details INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
@@ -94,7 +107,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         // creating required tables
         db.execSQL(CREATE_TABLE_Game);
         db.execSQL(CREATE_TABLE_balance);
@@ -103,6 +115,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_settings);
         db.execSQL(CREATE_TABLE_entry);
         db.execSQL(CREATE_TABLE_entry_details);
+        db.execSQL(CREATE_TABLE_entry_line);
     }
 
     @Override
@@ -115,8 +128,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + _settings);
         db.execSQL("DROP TABLE IF EXISTS " + _entry);
         db.execSQL("DROP TABLE IF EXISTS " + _entry_details);
-
-
+        db.execSQL("DROP TABLE IF EXISTS " + _entry_line);
         // create new tables
         onCreate(db);
     }
