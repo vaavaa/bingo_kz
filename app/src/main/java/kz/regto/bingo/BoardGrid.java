@@ -671,6 +671,29 @@ public class BoardGrid extends View {
           }
     }
 
+    public void X2_pack(List<d_entry_set> dList){
+        //Если масив пустой, то мы вышли, ни каких изменений не было
+        if (dList.size() == 0) return;
+        Main main = (Main)this.getContext();
+        if (mc==null) mc = (MainContainer)this.getParent();
+        int gameSum = main.db.getGameCurrentSum(main.dGame.getId());
+        main.BalanceRelative.setEntry(gameSum);
+        for (d_entry_set dEntry: dList) {
+            dEntry.setGame_id(main.dGame.getId());
+            int xTouch_new =dEntry.getX();
+            int yTouch_new =dEntry.getY();
+            EntryAnimated touchedView;
+            touchedView=new EntryAnimated(main);
+            touchedView.RectArea(xTouch_new - (int) (RADIUS_LIMIT / 2), yTouch_new - (int) (RADIUS_LIMIT / 2), xTouch_new + (int) (RADIUS_LIMIT / 2), yTouch_new + (int) (RADIUS_LIMIT / 2));
+            touchedView.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", EntryName(main.getLevelfromEntry(dEntry.getEntry_value())))));
+            touchedView.bringToFront();
+            touchedView.setAnimation(null);
+            mc.addCustomView(touchedView);
+        }
+        saveEntrySet(dList);
+    }
+
+
     public void showGame(View v) {
         //Взяли из шара что в нем лежит
         List<d_entry_set> dList = (List<d_entry_set>)v.getTag();

@@ -23,6 +23,7 @@
         android:maxLength="250"
         android:textSize="@dimen/s2nd_row"
         android:layout_gravity="left"
+        android:longClickable="true"
         android:imeOptions="actionDone" />
     <EditText
         android:id="@+id/pin"

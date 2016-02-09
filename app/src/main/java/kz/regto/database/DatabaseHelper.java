@@ -32,6 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private int state;
 
     // Table Create Statements
+    private static final String _Game = "Game";
     private static final String CREATE_TABLE_Game = "CREATE TABLE Game (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
             "win_ball INTEGER NOT NULL DEFAULT '-1' , " +
             "state INTEGER NOT NULL DEFAULT '0' , " +
@@ -39,15 +40,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "dtime DATETIME NOT NULL,"+
             "game_code VARCHAR(10),"+
             "server_game_id INTEGER NOT NULL)";
+
+    private static final String _balance = "balance";
     private static final String CREATE_TABLE_balance = "CREATE TABLE balance " +
             "(id_balance INTEGER NOT NULL DEFAULT '0'," +
             " sum INTEGER NOT NULL, " +
             " dtime DATETIME NOT NULL DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME')), " +
             " status INTEGER NOT NULL DEFAULT '0')";
+
+    private static final String _device = "device";
     private static final String CREATE_TABLE_device = "CREATE TABLE device (device_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
             " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', server_device_id INTEGER NOT NULL DEFAULT '-1', " +
             " type_id INTEGER NOT NULL DEFAULT '0', Comment VARCHAR(200) NOT NULL DEFAULT '', type_name VARCHAR(200) NOT NULL DEFAULT ''," +
             " game_limit INTEGER NOT NULL DEFAULT '0', game_mask VARCHAR(200) NOT NULL DEFAULT '')";
+
+    private static final String _entry_set = "entry_set";
     private static final String CREATE_TABLE_entry_set = "    CREATE TABLE entry_set (\n" +
             "                    sys_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
             "                    log_id INTEGER NOT NULL, "+
@@ -59,6 +66,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "                    sum INTEGER NOT NULL," +
             "                    entry_pack_id INTEGER NOT NULL)";
 
+    private static final String _entry = "entry";
+    private static final String CREATE_TABLE_entry = "CREATE TABLE entry ( " +
+            "                    id_sys INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+            "                    game_id INTEGER NOT NULL, "+
+            "                    entry_sum INTEGER NOT NULL, " +
+            "                    entry_win INTEGER NOT NULL, " +
+            "                    x INTEGER NOT NULL," +
+            "                    y INTEGER NOT NULL)";
+    
+    private static final String _entry_details = "entry_details";
+    private static final String CREATE_TABLE_entry_details = "CREATE TABLE entry_details ( " +
+            "                    id_details INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+            "                    id_sys INTEGER NOT NULL, "+
+            "                    divided_by INTEGER NOT NULL)";
+
+    private static final String _settings = "settings";
     private static final String CREATE_TABLE_settings = "CREATE TABLE settings " +
             "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, settings_name VARCHAR(255) NOT NULL," +
             " settings_value VARCHAR(255) NOT NULL)";
@@ -78,16 +101,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_device);
         db.execSQL(CREATE_TABLE_entry_set);
         db.execSQL(CREATE_TABLE_settings);
+        db.execSQL(CREATE_TABLE_entry);
+        db.execSQL(CREATE_TABLE_entry_details);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // on upgrade drop older tables
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_Game);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_balance);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_device);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_entry_set);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_settings);
+        db.execSQL("DROP TABLE IF EXISTS " + _Game);
+        db.execSQL("DROP TABLE IF EXISTS " + _balance);
+        db.execSQL("DROP TABLE IF EXISTS " + _device);
+        db.execSQL("DROP TABLE IF EXISTS " + _entry_set);
+        db.execSQL("DROP TABLE IF EXISTS " + _settings);
+        db.execSQL("DROP TABLE IF EXISTS " + _entry);
+        db.execSQL("DROP TABLE IF EXISTS " + _entry_details);
+
 
         // create new tables
         onCreate(db);
@@ -668,8 +696,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String selectQuery = "SELECT entry_pack_id FROM entry_set ORDER BY entry_pack_id DESC LIMIT 1";
         Cursor c = dbr.rawQuery(selectQuery, null);
         if (c != null && c.moveToFirst()) {
+            int dfff =  c.getInt(c.getColumnIndex("entry_pack_id"));
             c.close();
-            return c.getInt(c.getColumnIndex("entry_pack_id"));
+            return dfff;
         }
         else return -1;
     }

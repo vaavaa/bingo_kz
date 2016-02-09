@@ -125,6 +125,20 @@ public class Network {
 
         return rMsg;
     }
+
+    public Balance setBalanceStatus(int status){
+        String url = networkPath+"/balance_income.php?device_server_id="+main.BingoDevice.getServerDeviceId()+
+                "&balance="+main.db.getSettings("device_balance").getSettingsValue()+"&status="+status;
+        Balance rMsg=null;
+        String data = null;
+        do {
+            data = getJSON(url, 1000);
+            rMsg = new Gson().fromJson(data, Balance.class);
+        }while(rMsg==null);
+
+        return rMsg;
+    }
+
     public Balance getBalance(String url) {
         Balance rMsg=null;
         String data = null;

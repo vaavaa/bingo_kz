@@ -85,13 +85,17 @@ public class TimerRelative extends RelativeLayout {
         GameResultHandler.removeCallbacks(updateGameResult);
     }
 
-    public void StopTimer(){
+    public void StopTimer(boolean NeedResult){
         //Сменили видимость выйгравшего номера и таймера
         TimerVisibility(false);
         WinNumber.setText("...");
+
+
         //Запустили процесс опроса сервера
         //И опросника сервера
-        GameResultHandler.postDelayed(updateGameResult, 0);
+        if (NeedResult) GameResultHandler.postDelayed(updateGameResult, 0);
+        else GameResultHandler.removeCallbacks(updateGameResult);
+
         //Сказали всем что таймер кончился
         for (TimerEvent hl : listeners) hl.TimerOver();
         //Остановили опросник времени
@@ -191,7 +195,7 @@ public class TimerRelative extends RelativeLayout {
             int secs;
             int mins;
 
-            if ((updatedTime) >= secCounter) StopTimer();
+            if ((updatedTime) >= secCounter) StopTimer(true);
             else {
                 secs = (int) ((secCounter - updatedTime) / 1000);
                 mins = secs / 60;
