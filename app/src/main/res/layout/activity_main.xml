@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:id="@+id/balance_elements"
-            cl:layout_cellsHeight="33"
+            cl:layout_cellsHeight="27"
             cl:layout_cellsWidth="50"
             cl:layout_left="25"
             cl:layout_top="3"
@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             cl:layout_cellsHeight="15"
-            cl:layout_cellsWidth="100"
+            cl:layout_cellsWidth="101"
             cl:layout_left="10"
             cl:layout_top="30"/>
         <kz.regto.bingo.TimerRelative
@@ -125,7 +125,7 @@
             cl:layout_left="10"
             cl:layout_top="105"
             android:onClick="botsEntry"/>
-        <Button android:id="@+id/x2"
+        <!--Button android:id="@+id/x2"
             android:textSize="@dimen/x2_text_size"
             android:layout_height="@dimen/auto_ball_size"
             android:layout_width="@dimen/auto_ball_size"
@@ -135,7 +135,7 @@
             cl:layout_cellsWidth="15"
             cl:layout_left="25"
             cl:layout_top="105"
-            android:onClick="x2_button"/>
+            android:onClick="x2_button"/-->
 
         <Button android:id="@+id/entry100"
             android:text="100"

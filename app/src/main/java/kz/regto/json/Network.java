@@ -103,7 +103,19 @@ public class Network {
         return null;
     }
 
+    public int[] getGameLog() {
+        String url = networkPath+"/last10.php";
+        int[] rMsg=null;
+        String data = null;
+        do {
+            data = getJSON(url, 1000);
+        }while(data==null);
+        rMsg = new Gson().fromJson(data, int[].class);
+        return rMsg;
+    }
+
     public CurrentTime getTimer(String url) {
+
         CurrentTime rMsg=null;
         String data = null;
         do {

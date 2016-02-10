@@ -2,31 +2,22 @@ package kz.regto.bingo;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Handler;
-import android.os.SystemClock;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
 
 import kz.regto.database.d_entry_set;
 
-/**
- * Created by spt on 03.11.2015.
- */
 public class WinBallContainer extends RelativeLayout {
 
-    private int iVisible=1;
-    private Handler h;
     private TextView[] tViews = new TextView[11];
     private String lastWinNumber;
     private String lastNumber;
@@ -36,6 +27,8 @@ public class WinBallContainer extends RelativeLayout {
     private int state;
     public static final int STATE_SELECTED = 1;
     public static final int STATE_UNSELECTED = 0;
+    BlockingQueue queue = new ArrayBlockingQueue<>(10);
+
 
     public WinBallContainer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -58,90 +51,88 @@ public class WinBallContainer extends RelativeLayout {
         view.setVisibility(View.VISIBLE);
         //Выставили на показ
         addView(view);
-        h = new Handler();
         state = STATE_UNSELECTED;
     }
-    public void setAllSelected_false(){
-        for (int i=1; i<=10;i++){
-            TextView view = (TextView)this.findViewById(
-                        getResourceByID("id", "f".concat(Integer.toString(i))));
+
+    public void setAllSelected_false() {
+        for (int i = 1; i <= 10; i++) {
+            TextView view = (TextView) this.findViewById(
+                    getResourceByID("id", "f".concat(Integer.toString(i))));
             View v = this.findViewById(
                     getResourceByID("id", "f".concat(Integer.toString(i)).concat("c")));
             v.setVisibility(INVISIBLE);
             view.setSelected(false);
-            view.setBackground(ContextCompat.getDrawable(getContext(), getResourceByID("drawable", "round_shape")));
+            //view.setBackgroundResource(R.drawable.round_shape_filled);;
             state = STATE_UNSELECTED;
         }
     }
-    public void setAll_lock(boolean iLock){
-        for (int i=1; i<=10;i++){
-            TextView view = (TextView)this.findViewById(
+
+    public void setAll_lock(boolean iLock) {
+        for (int i = 1; i <= 10; i++) {
+            TextView view = (TextView) this.findViewById(
                     getResourceByID("id", "f".concat(Integer.toString(i))));
             view.setEnabled(!iLock);
         }
     }
-    public int getState(){
-     return state;
+
+    public void setAll_Visible(int[] iV) {
+        if (queue.remainingCapacity() > 0) {
+            for (int i = 1; i <= 10; i++) {
+                TextView view = (TextView) this.findViewById(
+                        getResourceByID("id", "f".concat(Integer.toString(i))));
+
+                LineBalls lb = new LineBalls();
+                lb.setBackground(R.drawable.round_shape);
+                lb.setNumber("" + iV[i - 1]);
+                lb.setTextColor(view.getCurrentTextColor());
+                view.setBackgroundResource(R.drawable.round_shape);
+                view.setVisibility(VISIBLE);
+                view.setText("" + iV[i - 1]);
+                queue.offer(lb);
+            }
+        }
     }
 
-    public void setState(int newState){
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int newState) {
         state = newState;
     }
 
     //Нужно как то с логами прописать что бы найти ошибку с повторением шаров
-    public void UpdateNewOne(String winNumber, List<d_entry_set> dl, Main mn ){
-        lastWinNumber = winNumber;
-        pdl = dl;
-        if  (iVisible<=10){
-            List<d_entry_set> newdl =  new ArrayList<>();;
-            TextView view = (TextView)this.findViewById(
-                    getResourceByID("id", "f".concat(Integer.toString(11-iVisible))));
-            view.setTag(newdl);
-            tViews[iVisible] = view;
-            h.post(showInfo);
-            iVisible++;
+    public void UpdateNewOne(String winNumber, List<d_entry_set> dl, Main mn) {
+        try {
+            queue.take();
+
+            LineBalls lb = new LineBalls();
+            lb.setBackground(R.drawable.round_shape_filled);
+            lb.setNumber(winNumber);
+            lb.setTextColor(Color.BLACK);
+
+            queue.offer(lb);
+
+            Iterator iterator = queue.iterator();
+            for (int i = 1; i <= 10; i++) {
+                TextView view = (TextView) this.findViewById(
+                        getResourceByID("id", "f".concat(Integer.toString(i))));
+                LineBalls lb_i = (LineBalls)iterator.next();
+                view.setText(lb_i.getNumber());
+                view.setBackgroundResource(lb_i.getBackground());
+                view.setTextColor(lb_i.getTextColor());
+            }
+            this.invalidate();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        else{
-            mn.ClearGameCach();
-            h.post(showInfo);
-        }
-        this.invalidate();
     }
 
-    private int getResourceByID(String ResType,String ResName) {
+    private int getResourceByID(String ResType, String ResName) {
         Resources resources = getContext().getResources();
         return resources.getIdentifier(ResName, ResType,
                 getContext().getPackageName());
     }
 
-    // Изображение перетекает
-    Runnable showInfo = new Runnable() {
-        public void run() {
-            if (rInt==1){
-                lastNumber = (String)tViews[rInt].getText();
-                last_pdl = (List<d_entry_set>)tViews[rInt].getTag();
-
-                tViews[rInt].setText(lastWinNumber);
-                tViews[rInt].setTag(pdl);
-            }
-            else {
-                List <d_entry_set> t_pdl=(List <d_entry_set>)tViews[rInt].getTag();
-                String lastNumber1 = (String)tViews[rInt].getText();
-                tViews[rInt].setText(lastNumber);
-                tViews[rInt].setTag(last_pdl);
-                lastNumber = lastNumber1;
-                last_pdl = t_pdl;
-            }
-
-            if (rInt ==(iVisible-1)){
-                rInt=1;
-                h.removeCallbacks(showInfo);
-                tViews[iVisible-1].setVisibility(View.VISIBLE);
-            }
-            else {
-                rInt++;
-                h.postDelayed(showInfo,150);
-            }
-        }
-    };
 }

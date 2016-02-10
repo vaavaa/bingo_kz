@@ -6,14 +6,14 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
         android:layout_height="@dimen/ball_size"
-        android:background="@drawable/round_shape"
+        android:background="@drawable/round_shape_filled"
         android:gravity="center"
         android:text="@string/init_figure"
         android:textSize="@dimen/ball_text_size"
         android:textColor="@color/ball_numeric_color"
         android:visibility="invisible"
         android:clickable="true"
-        android:onClick="ball_clicked"/>
+        />
     <ImageButton
         android:id="@+id/f1c"
         android:layout_width="@dimen/ball_size_cancel"
@@ -26,7 +26,7 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
         android:layout_height="@dimen/ball_size"
-        android:background="@drawable/round_shape"
+        android:background="@drawable/round_shape_filled"
         android:gravity="center"
         android:text="@string/init_figure"
         android:textSize="@dimen/ball_text_size"
@@ -34,7 +34,7 @@
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f1"
         android:clickable="true"
-        android:onClick="ball_clicked"/>
+        />
     <ImageButton
         android:id="@+id/f2c"
         android:layout_width="@dimen/ball_size_cancel"
@@ -47,7 +47,7 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
         android:layout_height="@dimen/ball_size"
-        android:background="@drawable/round_shape"
+        android:background="@drawable/round_shape_filled"
         android:gravity="center"
         android:text="@string/init_figure"
         android:textSize="@dimen/ball_text_size"
@@ -55,7 +55,7 @@
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f2"
         android:clickable="true"
-        android:onClick="ball_clicked"/>
+        />
     <ImageButton
         android:id="@+id/f3c"
         android:layout_width="@dimen/ball_size_cancel"
@@ -68,7 +68,7 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
         android:layout_height="@dimen/ball_size"
-        android:background="@drawable/round_shape"
+        android:background="@drawable/round_shape_filled"
         android:gravity="center"
         android:text="@string/init_figure"
         android:textSize="@dimen/ball_text_size"
@@ -76,7 +76,7 @@
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f3"
         android:clickable="true"
-        android:onClick="ball_clicked"/>
+        />
     <ImageButton
         android:id="@+id/f4c"
         android:layout_width="@dimen/ball_size_cancel"
@@ -89,7 +89,7 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
         android:layout_height="@dimen/ball_size"
-        android:background="@drawable/round_shape"
+        android:background="@drawable/round_shape_filled"
         android:gravity="center"
         android:text="@string/init_figure"
         android:textSize="@dimen/ball_text_size"
@@ -97,7 +97,7 @@
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f4"
         android:clickable="true"
-        android:onClick="ball_clicked"/>
+        />
     <ImageButton
         android:id="@+id/f5c"
         android:layout_width="@dimen/ball_size_cancel"
@@ -110,7 +110,7 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
         android:layout_height="@dimen/ball_size"
-        android:background="@drawable/round_shape"
+        android:background="@drawable/round_shape_filled"
         android:gravity="center"
         android:text="@string/init_figure"
         android:textSize="@dimen/ball_text_size"
@@ -118,7 +118,7 @@
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f5"
         android:clickable="true"
-        android:onClick="ball_clicked"/>
+        />
     <ImageButton
         android:id="@+id/f6c"
         android:layout_width="@dimen/ball_size_cancel"
@@ -131,7 +131,7 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
         android:layout_height="@dimen/ball_size"
-        android:background="@drawable/round_shape"
+        android:background="@drawable/round_shape_filled"
         android:gravity="center"
         android:text="@string/init_figure"
         android:textSize="@dimen/ball_text_size"
@@ -139,7 +139,7 @@
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f6"
         android:clickable="true"
-        android:onClick="ball_clicked"/>
+        />
     <ImageButton
         android:id="@+id/f7c"
         android:layout_width="@dimen/ball_size_cancel"
@@ -152,7 +152,7 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
         android:layout_height="@dimen/ball_size"
-        android:background="@drawable/round_shape"
+        android:background="@drawable/round_shape_filled"
         android:gravity="center"
         android:text="@string/init_figure"
         android:textSize="@dimen/ball_text_size"
@@ -160,7 +160,7 @@
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f7"
         android:clickable="true"
-        android:onClick="ball_clicked"/>
+        />
     <ImageButton
         android:id="@+id/f8c"
         android:layout_width="@dimen/ball_size_cancel"
@@ -170,9 +170,10 @@
         android:layout_alignStart="@+id/f8"
         android:onClick="ball_cancel_clicked"/>
     <TextView android:id="@+id/f9"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
         android:layout_height="@dimen/ball_size"
-        android:background="@drawable/round_shape"
+        android:background="@drawable/round_shape_filled"
         android:gravity="center"
         android:text="@string/init_figure"
         android:textSize="@dimen/ball_text_size"
@@ -180,7 +181,7 @@
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f8"
         android:clickable="true"
-        android:onClick="ball_clicked"/>
+        />
     <ImageButton
         android:id="@+id/f9c"
         android:layout_width="@dimen/ball_size_cancel"
@@ -190,9 +191,10 @@
         android:layout_alignStart="@+id/f9"
         android:onClick="ball_cancel_clicked"/>
     <TextView android:id="@+id/f10"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_width="@dimen/ball_size"
         android:layout_height="@dimen/ball_size"
-        android:background="@drawable/round_shape"
+        android:background="@drawable/round_shape_filled"
         android:gravity="center"
         android:text="@string/init_figure"
         android:textSize="@dimen/ball_text_size"
@@ -200,7 +202,7 @@
         android:visibility="invisible"
         android:layout_toEndOf="@+id/f9"
         android:clickable="true"
-        android:onClick="ball_clicked"/>
+        />
     <ImageButton
         android:id="@+id/f10c"
         android:layout_width="@dimen/ball_size_cancel"

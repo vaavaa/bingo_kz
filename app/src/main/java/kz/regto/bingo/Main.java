@@ -137,7 +137,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         findViewById(R.id.entry500).setEnabled(!bEnable);
         findViewById(R.id.entry200).setEnabled(!bEnable);
         findViewById(R.id.entry100).setEnabled(!bEnable);
-        findViewById(R.id.x2).setEnabled(!bEnable);
+        //findViewById(R.id.x2).setEnabled(!bEnable);
         findViewById(R.id.auto).setEnabled(!bEnable);
         findViewById(R.id.quit).setEnabled(!bEnable);
         if (bEnable) {
@@ -147,7 +147,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             findViewById(R.id.entry500).setAlpha(.7f);
             findViewById(R.id.entry200).setAlpha(.7f);
             findViewById(R.id.entry100).setAlpha(.7f);
-            findViewById(R.id.x2).setAlpha(.7f);
+            //findViewById(R.id.x2).setAlpha(.7f);
             findViewById(R.id.auto).setAlpha(.7f);
             findViewById(R.id.quit).setAlpha(.7f);
             board.setBoard_blocked(true);
@@ -158,7 +158,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             findViewById(R.id.entry500).setAlpha(1f);
             findViewById(R.id.entry200).setAlpha(1f);
             findViewById(R.id.entry100).setAlpha(1f);
-            findViewById(R.id.x2).setAlpha(1f);
+            //findViewById(R.id.x2).setAlpha(1f);
             findViewById(R.id.auto).setAlpha(1f);
             findViewById(R.id.quit).setAlpha(1f);
             board.setBoard_blocked(false);
@@ -174,7 +174,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             findViewById(R.id.entry500).setVisibility(View.VISIBLE);
             findViewById(R.id.entry200).setVisibility(View.VISIBLE);
             findViewById(R.id.entry100).setVisibility(View.VISIBLE);
-            findViewById(R.id.x2).setVisibility(View.VISIBLE);
+            //findViewById(R.id.x2).setVisibility(View.VISIBLE);
             findViewById(R.id.auto).setVisibility(View.VISIBLE);
             findViewById(R.id.quit).setVisibility(View.VISIBLE);
 
@@ -185,7 +185,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             findViewById(R.id.entry500).setVisibility(View.INVISIBLE);
             findViewById(R.id.entry200).setVisibility(View.INVISIBLE);
             findViewById(R.id.entry100).setVisibility(View.INVISIBLE);
-            findViewById(R.id.x2).setVisibility(View.INVISIBLE);
+            //findViewById(R.id.x2).setVisibility(View.INVISIBLE);
             findViewById(R.id.auto).setVisibility(View.INVISIBLE);
             findViewById(R.id.quit).setVisibility(View.INVISIBLE);
         }
@@ -273,6 +273,11 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
 
         screen_lock(false);
         TimerStarted_sub();
+
+        WinBallContainer WBC = (WinBallContainer) this.findViewById(R.id.win_ball_container);
+        //get games log from server
+        int[] games_log =  ntw.getGameLog();
+        WBC.setAll_Visible(games_log);
     }
 
     public void screen_lock(boolean bSkrn) {
