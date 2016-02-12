@@ -268,6 +268,16 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             return;
         }
 
+        if (dGame!=null){
+            //Считаем выйгрыш, если ничего нет, будет 0
+            int iWin = db.getGameSum(dGame.getId(), dGame.getWin_ball());
+            if (iWin > BingoDevice.getGame_limit()) {
+                Toast toast = Toast.makeText(this, R.string.OutOfLimit, Toast.LENGTH_SHORT);
+                toast.show();
+                return;
+            }
+        }
+
         BalanceRelative.RunBalanсeListening(ntw.getNetworkPath().concat("/balance_outcome.php?device_server_id=" + BingoDevice.getServerDeviceId()));
         timerRelative.HTTPRunTimer(ntw.getNetworkPath().concat("/timer.php"));
 
@@ -355,24 +365,33 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
 
         //Обновляем баланс устройства и ни какой ставки в начеле новой игры нет
         db.updateDevice(BingoDevice);
-
         //Обнулили ставки робота
         botEntrySet = null;
 
-        if (BalanceRelative.RunBalanceSender()) {
-            //Запускаем новую игру c задержкой в 2 секунды
-            Handler temp_handler = new Handler();
-            temp_handler.postDelayed(new Runnable() {
-                public void run() {
-                    mc.ClearBoard(MainContainer.CLEAR_BOARD_ONLY);
-                    setButtonsUnclickable(false);
-                    WBC.setAll_lock(false);
-                    BalanceRelative.setWinZero();
-                    if (db.getDBState() == DatabaseHelper.STATE_OPENED) TimerStarted_sub();
-                }
-            }, getResources().getInteger(R.integer.NewGameResultDelay)); //4500 задержка перед новой игрой.
-        } else {
-            Toast toast = Toast.makeText(this, R.string.NoSaveSuccess, Toast.LENGTH_SHORT);
+        //Проверяем, не вышел ли выйгрыш за лимит.
+        // Такого не должно происходить, но тем ни менее
+
+        if (BingoDevice.getGame_limit()>= iWin) {
+            if (BalanceRelative.RunBalanceSender()) {
+                //Запускаем новую игру c задержкой в 2 секунды
+                Handler temp_handler = new Handler();
+                temp_handler.postDelayed(new Runnable() {
+                    public void run() {
+                        mc.ClearBoard(MainContainer.CLEAR_BOARD_ONLY);
+                        setButtonsUnclickable(false);
+                        WBC.setAll_lock(false);
+                        BalanceRelative.setWinZero();
+                        if (db.getDBState() == DatabaseHelper.STATE_OPENED) TimerStarted_sub();
+                    }
+                }, getResources().getInteger(R.integer.NewGameResultDelay)); //4500 задержка перед новой игрой.
+            } else {
+                Toast toast = Toast.makeText(this, R.string.NoSaveSuccess, Toast.LENGTH_SHORT);
+                toast.show();
+                screen_lock(true);
+            }
+        }
+        else {
+            Toast toast = Toast.makeText(this, R.string.OutOfLimit, Toast.LENGTH_SHORT);
             toast.show();
             screen_lock(true);
         }
@@ -452,6 +471,8 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
 
         GameCode.setAnimation(rotate_animation);
         GameCode.animate();
+
+        setButtonsUnclickable(false);
         //Запустили таймер
         timerRelative.StartTimer();
         //Запустили баланс

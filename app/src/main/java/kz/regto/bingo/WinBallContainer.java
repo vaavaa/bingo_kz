@@ -18,15 +18,10 @@ import kz.regto.database.d_entry_set;
 
 public class WinBallContainer extends RelativeLayout {
 
-    private TextView[] tViews = new TextView[11];
-    private String lastWinNumber;
-    private String lastNumber;
-    private int rInt = 1;
-    private List<d_entry_set> pdl;
-    private List<d_entry_set> last_pdl;
     private int state;
     public static final int STATE_SELECTED = 1;
     public static final int STATE_UNSELECTED = 0;
+    //Вот это делает все перемещения сама, - вещь!
     BlockingQueue queue = new ArrayBlockingQueue<>(10);
 
 

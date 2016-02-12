@@ -14,6 +14,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import kz.regto.database.DatabaseHelper;
 import kz.regto.database.d_balance;
 import kz.regto.database.d_settings;
 import kz.regto.json.Balance;
@@ -177,8 +178,11 @@ public class BalanceEngine extends RelativeLayout {
         if (prnt.db.updateSettings(BalanceSet)) tfield_balance.setField(""+ newSum);
     }
     public int getBalance(){
-        BalanceSet = prnt.db.getSettings("device_balance");
-        return Integer.parseInt(BalanceSet.getSettingsValue());
+        if (prnt.db.getDBState() == DatabaseHelper.STATE_OPENED) {
+            BalanceSet = prnt.db.getSettings("device_balance");
+            return Integer.parseInt(BalanceSet.getSettingsValue());
+        }
+        else return -1;
     }
     public void setBalancePlus(int balanceUpdate){
         BalanceSet = prnt.db.getSettings("device_balance");
