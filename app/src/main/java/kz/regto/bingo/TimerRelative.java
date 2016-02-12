@@ -210,12 +210,15 @@ public class TimerRelative extends RelativeLayout {
     private Runnable updateGameResult = new Runnable() {
         @Override
         public void run() {
+            CurrentTime cTime;
+            cTime = prnt.ntw.getTimer(prnt.ntw.getNetworkPath().concat("/timer1.php?game_id=").concat(""+prnt.dGame.getServer_game_id()));
 
-                if (sp.GetWinBall() !=-1) {
-                    wn_number =sp.GetWinBall();
-                    GameOver();
-                }
-                else {GameResultHandler.postDelayed(this,0);}
+
+            if (cTime.getWinnumber() >= 0) {
+                wn_number =cTime.getWinnumber();
+                GameOver();
+            }
+            else {GameResultHandler.postDelayed(this,0);}
 
         }
     };

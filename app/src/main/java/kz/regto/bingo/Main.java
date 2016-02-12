@@ -279,7 +279,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         }
 
         BalanceRelative.RunBalanсeListening(ntw.getNetworkPath().concat("/balance_outcome.php?device_server_id=" + BingoDevice.getServerDeviceId()));
-        timerRelative.HTTPRunTimer(ntw.getNetworkPath().concat("/timer.php"));
+        timerRelative.HTTPRunTimer(ntw.getNetworkPath().concat("/timer0.php"));
 
         screen_lock(false);
         TimerStarted_sub();
@@ -431,7 +431,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         dGame = new d_game();
         dGame.setGameCode(nCode);
         if (timerRelative.getServerGameCode() == 0)
-            dGame.setServer_game_id(ntw.getTimer(ntw.getNetworkPath().concat("/timer.php")).getGame_id());
+            dGame.setServer_game_id(ntw.getTimer(ntw.getNetworkPath().concat("/timer0.php")).getGame_id());
         else dGame.setServer_game_id(timerRelative.getServerGameCode());
         if (dGame.getServer_game_id() == 0) {
             //Если ошибка создания, то бдлокируем экран
