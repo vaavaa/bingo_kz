@@ -211,7 +211,7 @@ public class TimerRelative extends RelativeLayout {
         @Override
         public void run() {
             CurrentTime cTime;
-            cTime = prnt.ntw.getTimer(prnt.ntw.getNetworkPath().concat("/timer1.php?game_id=").concat(""+prnt.dGame.getServer_game_id()));
+            cTime = prnt.ntw.getTimer(prnt.ntw.getNetworkPath().concat("/timer.php?game_id=").concat(""+prnt.dGame.getServer_game_id()));
 
 
             if (cTime.getWinnumber() >= 0) {

@@ -27,20 +27,16 @@ public class BalanceEngine extends RelativeLayout {
     private SupportBalance sb =new SupportBalance();
     private Handler balanceHandlerIncome = new Handler();
     private Handler balanceHandlerDevice = new Handler();
-    private List<BalanceEvent> listeners = new ArrayList<>();
+    private Handler balanceHBack = new Handler();
     private String field_balance="";
     private String field_currentEntry="";
     private String field_win="";
 
     public d_settings BalanceSet = new d_settings();
 
-    private int currBalance;
-    private int currId;
-
     private TwoTextViews tfield_balance;
     private TwoTextViews tfield_currentEntry;
     private TwoTextViews tfield_win;
-
 
     public BalanceEngine(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -77,7 +73,6 @@ public class BalanceEngine extends RelativeLayout {
         if (field_balance.length()>0) tfield_balance.setField(field_balance);
         if (field_currentEntry.length()>0) tfield_currentEntry.setField(field_currentEntry);
         if (field_win.length()>0) tfield_win.setField(field_win);
-        this.addListener((Main) context);
         prnt = (Main)context;
         prnt.setBalanceElement(this);
         addView(view);
@@ -87,6 +82,7 @@ public class BalanceEngine extends RelativeLayout {
         sb.cancel(true);
         balanceHandlerIncome.removeCallbacks(updateGameBalanceIncome);
         balanceHandlerDevice.removeCallbacks(updateDeviceBalance);
+        balanceHBack.removeCallbacks(backBalance);
     }
 
     public void RunBalanсeListening(String URL_Balance){
@@ -110,9 +106,10 @@ public class BalanceEngine extends RelativeLayout {
 
         //Устанавливаем баланс устройства - единая строка, которая и ведется
         prnt.db.createNewSettings(BalanceSet);
-
+        //Запускаем все слушалки балансов
         balanceHandlerIncome.postDelayed(updateGameBalanceIncome, 0);
         balanceHandlerDevice.postDelayed(updateDeviceBalance, 500);
+        balanceHBack.postDelayed(backBalance,800);
 
 
     }
@@ -135,12 +132,21 @@ public class BalanceEngine extends RelativeLayout {
         }
     }
 
+    private Runnable backBalance = new Runnable() {
+        @Override
+        public void run() {
+
+            balanceHBack.postDelayed(this, 800);
+        }
+    };
+
+
     private Runnable updateGameBalanceIncome = new Runnable() {
         @Override
         public void run() {
 
-            currId = sb.getCurrentID();
-            currBalance = sb.getCurrentBalance();
+            int currId = sb.getCurrentID();
+            int currBalance = sb.getCurrentBalance();
             if (prnt.ntw.isNetworkAvailable(prnt)) {
                 if ((currBalance != -1) && (currId > 0)) {
                     d_balance dBalance = new d_balance();
@@ -191,12 +197,17 @@ public class BalanceEngine extends RelativeLayout {
     }
     public void setEntry(int newEntry){
         int fEntr =  Integer.parseInt(tfield_currentEntry.getField()) + newEntry;
-        tfield_currentEntry.setField(""+fEntr);
+        tfield_currentEntry.setField("" + fEntr);
 
         BalanceSet = prnt.db.getSettings("device_balance");
         int newSum = Integer.parseInt(BalanceSet.getSettingsValue()) - newEntry;
         setBalance(newSum);
     }
+    public  int getEntry(){
+        int curentr = Integer.parseInt(tfield_currentEntry.getField());
+        return curentr;
+    }
+
 
     public void setWinSum(int newSum){
         setBalancePlus(newSum);
@@ -206,8 +217,4 @@ public class BalanceEngine extends RelativeLayout {
     public void setWinZero(){
         tfield_win.setField("0");
     }
-
-
-    //Принимаем подписчиков на события баланса
-    public void addListener(BalanceEvent toAdd) { listeners.add(toAdd);}
 }

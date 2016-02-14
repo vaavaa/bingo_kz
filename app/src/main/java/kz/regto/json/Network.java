@@ -240,4 +240,15 @@ public class Network {
         if (data!=null) rMsg = new Gson().fromJson(data, d_device.class);
         return rMsg;
     }
+
+    public Integer getMissedGame(String url) {
+        Integer rMsg=null;
+        String data = null;
+        do{
+            data = getJSON(url, 1000);
+        }while(data!=null);
+        rMsg = new Gson().fromJson(data, Integer.class);
+        return rMsg;
+    }
+
 }

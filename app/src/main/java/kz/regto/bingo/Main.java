@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -24,14 +23,13 @@ import java.util.List;
 
 import kz.regto.database.DatabaseHelper;
 import kz.regto.database.Utils;
-import kz.regto.database.d_balance;
 import kz.regto.database.d_device;
 import kz.regto.database.d_entry_set;
 import kz.regto.database.d_game;
 import kz.regto.database.d_settings;
 import kz.regto.json.Network;
 
-public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent, BoardGridEvents {
+public class Main extends AppCompatActivity implements TimerEvent, BoardGridEvents {
 
     View mRootView;
     MainContainer mc;
@@ -278,8 +276,12 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
             }
         }
 
+        //Записали что за устройстово
+        VerticalTextView vtv  = (VerticalTextView)findViewById(R.id.devCode);
+        vtv.setText(BingoDevice.getComment());
+
         BalanceRelative.RunBalanсeListening(ntw.getNetworkPath().concat("/balance_outcome.php?device_server_id=" + BingoDevice.getServerDeviceId()));
-        timerRelative.HTTPRunTimer(ntw.getNetworkPath().concat("/timer0.php"));
+        timerRelative.HTTPRunTimer(ntw.getNetworkPath().concat("/timer.php"));
 
         screen_lock(false);
         TimerStarted_sub();
@@ -431,7 +433,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         dGame = new d_game();
         dGame.setGameCode(nCode);
         if (timerRelative.getServerGameCode() == 0)
-            dGame.setServer_game_id(ntw.getTimer(ntw.getNetworkPath().concat("/timer0.php")).getGame_id());
+            dGame.setServer_game_id(ntw.getTimer(ntw.getNetworkPath().concat("/timer.php")).getGame_id());
         else dGame.setServer_game_id(timerRelative.getServerGameCode());
         if (dGame.getServer_game_id() == 0) {
             //Если ошибка создания, то бдлокируем экран
@@ -478,18 +480,6 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
         //Запустили баланс
         fNetworkError = false;
         ShowWinText(false);
-    }
-
-    @Override
-    public void BalanceUpdated() {
-    }
-
-    @Override
-    public void BonusUpdated() {
-    }
-
-    @Override
-    public void EntryUpdated() {
     }
 
     @Override
@@ -586,7 +576,7 @@ public class Main extends AppCompatActivity implements BalanceEvent, TimerEvent,
     }
 
     private void clearBoard() {
-        BalanceRelative.setEntry((-1) * db.getGameCurrentSum(dGame.getId()));
+        BalanceRelative.setEntry((-1) * BalanceRelative.getEntry());
         mc.ClearBoard(MainContainer.CLEAR_ALL);
         final WinBallContainer WBC = (WinBallContainer) this.findViewById(R.id.win_ball_container);
         WBC.setAll_lock(true);

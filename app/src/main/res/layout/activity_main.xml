@@ -16,7 +16,16 @@
         cl:columns="200"
         cl:spacing="1dp"
         tools:context=".MainActivity" >
-
+        <kz.regto.bingo.VerticalTextView
+            android:id="@+id/devCode"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/ball_size_cancel"
+            android:alpha="0.8"
+            cl:layout_cellsHeight="26"
+            cl:layout_cellsWidth="6"
+            cl:layout_left="-1"
+            cl:layout_top="90"/>
         <Button android:id="@+id/quit"
             android:text=""
             android:layout_width="@dimen/pause_ball_size"

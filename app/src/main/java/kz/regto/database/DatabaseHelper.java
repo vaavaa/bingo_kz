@@ -48,6 +48,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             " dtime DATETIME NOT NULL DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME')), " +
             " status INTEGER NOT NULL DEFAULT '0')";
 
+    private static final String _returnGame = "returnGame";
+    private static final String CREATE_TABLE_returnGame = "CREATE TABLE returnGame " +
+            "(id_game INTEGER NOT NULL," +
+            " dtime DATETIME NOT NULL DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME')), " +
+            " status INTEGER NOT NULL DEFAULT '0')";
+
     private static final String _device = "device";
     private static final String CREATE_TABLE_device = "CREATE TABLE device (device_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
             " device_code VARCHAR(200) NOT NULL, status INTEGER NOT NULL DEFAULT '0', server_device_id INTEGER NOT NULL DEFAULT '-1', " +
@@ -116,6 +122,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_entry);
         db.execSQL(CREATE_TABLE_entry_details);
         db.execSQL(CREATE_TABLE_entry_line);
+        db.execSQL(CREATE_TABLE_returnGame);
     }
 
     @Override
@@ -129,6 +136,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + _entry);
         db.execSQL("DROP TABLE IF EXISTS " + _entry_details);
         db.execSQL("DROP TABLE IF EXISTS " + _entry_line);
+        db.execSQL("DROP TABLE IF EXISTS " + _returnGame);
         // create new tables
         onCreate(db);
     }
@@ -875,7 +883,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int getGameCurrentSum(int game_id) {
         int iReturn=-1;
-        String group_sum_sql = "SELECT TOTAL(cur_sum) as cur_sum1 FROM (SELECT MIN(entry_value) as cur_sum, MIN(entry_id) as EI  FROM entry_set WHERE game_id=" + game_id+ " GROUP BY log_id)";
+        String group_sum_sql = "SELECT SUM(cur_sum) as cur_sum1 FROM (SELECT MIN(entry_value) as cur_sum, MIN(entry_id) as EI  FROM entry_set WHERE game_id=" + game_id+ " GROUP BY log_id)";
         try{
             Cursor c = dbr.rawQuery(group_sum_sql, null);
             if (c!=null && c.moveToFirst()){
