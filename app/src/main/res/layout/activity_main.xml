@@ -104,10 +104,10 @@
             android:layout_width="match_parent"
             android:textSize="@dimen/ball_text_size"
             android:alpha="0.1"
-            cl:layout_cellsHeight="26"
+            cl:layout_cellsHeight="30"
             cl:layout_cellsWidth="6"
             cl:layout_left="12"
-            cl:layout_top="49"/>
+            cl:layout_top="48"/>
         <kz.regto.bingo.VerticalTextView
             android:id="@+id/serial"
             android:layout_height="match_parent"
@@ -118,7 +118,7 @@
             cl:layout_cellsHeight="15"
             cl:layout_cellsWidth="6"
             cl:layout_left="11"
-            cl:layout_top="73"/>
+            cl:layout_top="76"/>
 
         <!-- Конец поля -->
         <!-- Нижние кнопки -->

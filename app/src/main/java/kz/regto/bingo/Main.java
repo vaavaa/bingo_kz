@@ -77,6 +77,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             BingoDevice.setDeviceCode(new Utils().getUniquePsuedoID());
             db.createNewDevice(BingoDevice);
         }
+        final EditText ET1 = (EditText) frameLayout.findViewById(R.id.n_path);
         //Network initialisation
         ntw = new Network(this);
         String NetworkPath = "";
@@ -84,8 +85,10 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             NetworkPath = db.getSettings("network_path").getSettingsValue();
         if (NetworkPath.length() > 0) {
             ntw.setNetworkPath(NetworkPath);
-            EditText ET1 = (EditText) frameLayout.findViewById(R.id.n_path);
             ET1.setText(NetworkPath);
+        }
+        else {
+            if (ET1.getText().toString().length()==0) ET1.setText("http://");
         }
         if (ntw.isNetworkAvailable(this))
             if (ntw.ConnectionExist()) {
@@ -105,7 +108,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         lck = (Lock) findViewById(R.id.r_lock);
         lck.bringToFront();
         setButtonsVisible(false);
-        final EditText ET1 = (EditText) frameLayout.findViewById(R.id.n_path);
+
 
         ET1.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -422,16 +425,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         EditText ET = (EditText) frameLayout.findViewById(R.id.pin);
         ET.setText("");
 
-
-        //Получаем код игры на устройсте.
-        String nCode = "";
-        d_game l_gameCode = db.getLastGame();
-        if (l_gameCode == null) nCode = "AA-0000";
-        else nCode = l_gameCode.getGameCode();
-        //Создаем новую игру
-        nCode = timerRelative.GenerateNewGameCode(nCode, Integer.toString(BingoDevice.getServerDeviceId()));
         dGame = new d_game();
-        dGame.setGameCode(nCode);
         if (timerRelative.getServerGameCode() == 0)
             dGame.setServer_game_id(ntw.getTimer(ntw.getNetworkPath().concat("/timer.php")).getGame_id());
         else dGame.setServer_game_id(timerRelative.getServerGameCode());
@@ -445,6 +439,16 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         dGame.setWin_ball(-1);
         dGame.setDevice_id(db.getDevice().getDevice_id());
         dGame.setState(0);
+
+        //Получаем код игры на устройсте.
+        String nCode = "";
+//        d_game l_gameCode = db.getLastGame();
+//        if (l_gameCode == null) nCode = "AA-0000";
+//        else nCode = l_gameCode.getGameCode();
+        //Создаем новую игру
+        nCode = timerRelative.getServerGameSerial().concat("-"+BingoDevice.getServerDeviceId());   //timerRelative.GenerateNewGameCode(nCode, Integer.toString(BingoDevice.getServerDeviceId()));
+        dGame.setGameCode(nCode);
+
 
         if (!db.createNewGame(dGame)) {
             //Если ошибка создания, то бдлокируем экран

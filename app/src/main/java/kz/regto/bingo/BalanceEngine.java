@@ -16,15 +16,18 @@ import java.util.List;
 
 import kz.regto.database.DatabaseHelper;
 import kz.regto.database.d_balance;
+import kz.regto.database.d_game;
 import kz.regto.database.d_settings;
 import kz.regto.json.Balance;
 import kz.regto.json.ServerResult;
 import kz.regto.json.SupportBalance;
+import kz.regto.json.SupportBalanceReturn;
 
 public class BalanceEngine extends RelativeLayout {
 
     private Main prnt;
     private SupportBalance sb =new SupportBalance();
+    private SupportBalanceReturn sr =new SupportBalanceReturn();
     private Handler balanceHandlerIncome = new Handler();
     private Handler balanceHandlerDevice = new Handler();
     private Handler balanceHBack = new Handler();
@@ -80,6 +83,7 @@ public class BalanceEngine extends RelativeLayout {
 
     public void CloseAll() {
         sb.cancel(true);
+        sr.cancel(true);
         balanceHandlerIncome.removeCallbacks(updateGameBalanceIncome);
         balanceHandlerDevice.removeCallbacks(updateDeviceBalance);
         balanceHBack.removeCallbacks(backBalance);
@@ -101,6 +105,12 @@ public class BalanceEngine extends RelativeLayout {
                 BalanceSet.setSettingsValue("0");
             }
             prnt.db.DeleteServerBalance();
+        }
+        if (sr.getStatus()!=AsyncTask.Status.RUNNING) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                sr.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, prnt.ntw.getNetworkPath().concat("err_number.php"));
+            else
+                sr.execute(prnt.ntw.getNetworkPath().concat("err_number.php"));
         }
 
 
@@ -132,11 +142,34 @@ public class BalanceEngine extends RelativeLayout {
         }
     }
 
+
     private Runnable backBalance = new Runnable() {
         @Override
         public void run() {
-
-            balanceHBack.postDelayed(this, 800);
+            //Если больше 0 ид игры
+            if (sr.getGameId()>0){
+                //проверяем, есть ли у нас этот ид в игре, если нет, то добавляем
+                if (!prnt.db.setReturnGame(sr.getGameId())) {
+                    //Получаем, ид игры
+                    d_game gme = prnt.db.getGame(sr.getGameId());
+                    if (gme != null) {
+                        //То что он ставил
+                        int balance_sum_plus = prnt.db.getGameIdSum(gme.getId());
+                        //То что он выйграл на неврном определении
+                        int balance_sum_minus = prnt.db.getGameSum(gme.getId(),gme.getWin_ball());
+                        //Инициируем новый выйгрыш.
+                        int iWin = 0;
+                        if (sr.getUpdatedWinNumberId()>-1) {
+                            iWin = prnt.db.getGameSum(gme.getId(),sr.getUpdatedWinNumberId());
+                            //Обнуляем его ставки на ту игру если пришел новый выйгрышный номер
+                            balance_sum_plus=0;
+                        }
+                        //Возвращаем сумму в балланс
+                        setBalance(getBalance() + balance_sum_plus-balance_sum_minus+iWin);
+                    }
+                }
+            }
+            balanceHBack.postDelayed(this, 1000);
         }
     };
 

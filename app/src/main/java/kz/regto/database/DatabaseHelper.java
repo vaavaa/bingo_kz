@@ -603,6 +603,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return dGames;
     }
 
+    /**
+     * getting active game
+     * */
+    public d_game getGame(int serverId) {
+        d_game dGames = null;
+        if (serverId>0) {
+            String selectQuery = "SELECT * FROM game WHERE server_game_id = " + serverId;
+            Cursor c = dbr.rawQuery(selectQuery, null);
+            // looping through all rows and adding to list
+            if (c != null && c.moveToFirst()) {
+                dGames = new d_game();
+                dGames.setId(c.getInt(c.getColumnIndex("id")));
+                dGames.setWin_ball((c.getInt(c.getColumnIndex("win_ball"))));
+                dGames.setState(c.getInt(c.getColumnIndex("state")));
+                dGames.setDevice_id(c.getInt(c.getColumnIndex("device_id")));
+                dGames.setServer_game_id(c.getInt(c.getColumnIndex("server_game_id")));
+                dGames.setGameCode(c.getString(c.getColumnIndex("game_code")));
+                dGames.setDtime(c.getString(c.getColumnIndex("dtime")));
+                c.close();
+            }
+        }
+        return dGames;
+    }
+
 
 
     /**
@@ -900,11 +924,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int getGameIdSum(int game_id, int idV) {
         int iReturn=0;
-        String group_sum_sql = "SELECT TOTAL(F1.cur_sum) as cur_sum1 FROM (SELECT MIN(entry_value) as cur_sum, MIN(entry_id) as EI  FROM entry_set WHERE game_id=" + game_id+" AND entry_id="+idV+" GROUP BY log_id) as F1 GROUP BY EI";
+        String group_sum_sql = "SELECT TOTAL(F1.cur_sum) as cur_sum1 FROM (SELECT MIN(entry_value) as cur_sum, MIN(entry_id) as EI FROM entry_set WHERE game_id=" + game_id+" AND entry_id="+idV+" GROUP BY log_id) as F1 GROUP BY EI";
         try{
             Cursor c = dbr.rawQuery(group_sum_sql, null);
             if (c!=null && c.moveToFirst()){
                 iReturn = c.getInt(c.getColumnIndex("cur_sum1"));
+                c.close();
+            }
+
+        }
+        catch (Exception ex){
+            iReturn = -1;
+        }
+        return iReturn;
+    }
+
+    public int getGameIdSum(int game_id) {
+        int iReturn=0;
+        String group_sum_sql = "select sum (vle) as cur_sum from " +
+                "(SELECT min(entry_value) as vle FROM entry_set WHERE game_id = "+game_id+" group by log_id) as slct";
+        try{
+            Cursor c = dbr.rawQuery(group_sum_sql, null);
+            if (c!=null && c.moveToFirst()){
+                iReturn = c.getInt(c.getColumnIndex("cur_sum"));
                 c.close();
             }
 
@@ -948,6 +990,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return bReturn;
     }
+
+    public boolean setReturnGame(int id){
+        int idgame = 0;
+        boolean breturn = true;
+        String check_sql = "SELECT id_game FROM returnGame WHERE id_game ="+id;
+        try{
+            Cursor c = dbr.rawQuery(check_sql, null);
+            if (c!=null && c.moveToFirst()){
+                idgame = c.getInt(c.getColumnIndex("id_game"));
+                breturn = true;
+                c.close();
+            }
+            if (idgame==0) {
+                String SQLstring = "INSERT INTO returnGame(id_game) VALUES(" + id + ")";
+                db.execSQL(SQLstring);
+                breturn=false;
+            }
+            return breturn;
+        }
+        catch (Exception ex){
+            return breturn;
+        }
+    }
+
+
     /**
      * Deleting a EntrySet by game_id
      */
