@@ -86,16 +86,15 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         if (NetworkPath.length() > 0) {
             ntw.setNetworkPath(NetworkPath);
             ET1.setText(NetworkPath);
+            if (ntw.isNetworkAvailable(this))
+                if (ntw.ConnectionExist()) {
+                    BingoDevice = ntw.getDeviceFromServer(BingoDevice);
+                    db.updateDevice(BingoDevice);
+                }
         }
         else {
-            if (ET1.getText().toString().length()==0) ET1.setText("http://");
+            if (ET1.getText().toString().length()==0) ET1.setText(R.string.http);
         }
-        if (ntw.isNetworkAvailable(this))
-            if (ntw.ConnectionExist()) {
-                BingoDevice = ntw.getDeviceFromServer(BingoDevice);
-                db.updateDevice(BingoDevice);
-            }
-
         mc = (MainContainer) findViewById(R.id.main_board);
 
         board = (BoardGrid) findViewById(R.id.board_grid);
@@ -284,7 +283,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         vtv.setText(BingoDevice.getComment());
 
         BalanceRelative.RunBalanсeListening(ntw.getNetworkPath().concat("/balance_outcome.php?device_server_id=" + BingoDevice.getServerDeviceId()));
-        timerRelative.HTTPRunTimer(ntw.getNetworkPath().concat("/timer.php"));
+        timerRelative.HTTPRunTimer(ntw.getNetworkPath().concat("/timer0.php"));
 
         screen_lock(false);
         TimerStarted_sub();
@@ -427,7 +426,7 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
 
         dGame = new d_game();
         if (timerRelative.getServerGameCode() == 0)
-            dGame.setServer_game_id(ntw.getTimer(ntw.getNetworkPath().concat("/timer.php")).getGame_id());
+            dGame.setServer_game_id(ntw.getTimer(ntw.getNetworkPath().concat("/timer0.php")).getGame_id());
         else dGame.setServer_game_id(timerRelative.getServerGameCode());
         if (dGame.getServer_game_id() == 0) {
             //Если ошибка создания, то бдлокируем экран

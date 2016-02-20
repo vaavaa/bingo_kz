@@ -25,4 +25,5 @@
     <string name="GameStop">"Вы завершили игру. Результаты отправлены администратору."</string>
     <string name="BalanceStatusError">"Не удалось сохранить баланс на сервере. Обратитесь к администратру!"</string>
     <string name="OutOfLimit">"Вы вышли за ограничение выйгрыша. Обратитесь к администратору."</string>
+    <string name="http">"http://"</string>
 </resources>
