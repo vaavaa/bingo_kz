@@ -120,8 +120,11 @@ public class Network {
         String data = null;
         do {
             data = getJSON(url, 1000);
+            if (data!=null) if (!data.contains("{")){data=null;}
         }while(data==null);
         rMsg = new Gson().fromJson(data, CurrentTime.class);
+
+
         return rMsg;
     }
 
@@ -132,8 +135,9 @@ public class Network {
         String data = null;
         do {
             data = getJSON(url, 1000);
-            rMsg = new Gson().fromJson(data, Balance.class);
-        }while(rMsg==null);
+            if (data!=null)  if (!data.contains("{")){data=null;}
+        }while(data==null);
+        rMsg = new Gson().fromJson(data, Balance.class);
 
         return rMsg;
     }
@@ -153,6 +157,7 @@ public class Network {
         String data = null;
         do {
             data = getJSON(url, 1000);
+            if (data!=null) if (!data.contains("{")){data=null;}
         }while(data==null);
         rMsg = new Gson().fromJson(data, Balance.class);
         return rMsg;
@@ -163,19 +168,10 @@ public class Network {
         String data = null;
         do {
             data = getJSON(url, 1000);
+            if (data!=null)  if (!data.contains("{")){data=null;}
         }while(data==null);
 
         rMsg = new Gson().fromJson(data, Balance.class);
-        return rMsg;
-    }
-
-    public CurrentTime getGameResult(String url) {
-        CurrentTime rMsg=null;
-        String data = null;
-        do{
-            data = getJSON(url, 1000);
-        }while(data!=null);
-            rMsg = new Gson().fromJson(data, CurrentTime.class);
         return rMsg;
     }
 
@@ -246,6 +242,7 @@ public class Network {
         String data = null;
         do{
             data = getJSON(url, 1000);
+            if (data!=null) if (!data.contains("[")){data=null;}
         }while(data==null);
         rMsg = new Gson().fromJson(data, Integer[].class);
         return rMsg;

@@ -3,5 +3,5 @@
     <integer name="second_row_height">30</integer>
     <integer name="third_row_height">10</integer>
     <item name="img_transparent" format="float" type="integer">0.15</item>
-    <integer name="NewGameResultDelay">8000</integer>
+    <integer name="NewGameResultDelay">10000</integer>
 </resources>
