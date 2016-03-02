@@ -282,8 +282,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         VerticalTextView vtv  = (VerticalTextView)findViewById(R.id.devCode);
         vtv.setText(BingoDevice.getComment());
 
+        String game_id_code_path = getResources().getString(R.string.ntw_pth_server_gameid);
         BalanceRelative.RunBalanсeListening(ntw.getNetworkPath().concat("/balance_outcome.php?device_server_id=" + BingoDevice.getServerDeviceId()));
-        timerRelative.HTTPRunTimer(ntw.getNetworkPath().concat("/timer0.php"));
+        timerRelative.HTTPRunTimer(ntw.getNetworkPath().concat(game_id_code_path));
 
         screen_lock(false);
         TimerStarted_sub();
@@ -341,6 +342,8 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     public void onResume() {
         super.onResume();
         showSystemUi();
+        //устанавливаем баланс полсе возвращения в приложение
+        BalanceRelative.setBalance(BalanceRelative.getBalance());
     }
 
     @Override
@@ -425,8 +428,9 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         ET.setText("");
 
         dGame = new d_game();
+        String game_id_code_path = getResources().getString(R.string.ntw_pth_server_gameid);
         if (timerRelative.getServerGameCode() == 0)
-            dGame.setServer_game_id(ntw.getTimer(ntw.getNetworkPath().concat("/timer0.php")).getGame_id());
+            dGame.setServer_game_id(ntw.getTimer(ntw.getNetworkPath().concat(game_id_code_path)).getGame_id());
         else dGame.setServer_game_id(timerRelative.getServerGameCode());
         if (dGame.getServer_game_id() == 0) {
             //Если ошибка создания, то бдлокируем экран
