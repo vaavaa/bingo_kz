@@ -26,6 +26,7 @@
     <string name="BalanceStatusError">"Не удалось сохранить баланс на сервере. Обратитесь к администратру!"</string>
     <string name="OutOfLimit">"Вы вышли за ограничение выйгрыша. Обратитесь к администратору."</string>
     <string name="http">"http://"</string>
+    <string name="err_set_status">"Ошибка проверки статуса устройства."</string>
     <string name="ntw_pth_gameid_result">"/timer.php?game_id="</string>
     <string name="ntw_pth_server_gameid">"/timer.php"</string>
 </resources>

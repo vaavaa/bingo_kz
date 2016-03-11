@@ -142,7 +142,6 @@ public class BalanceEngine extends RelativeLayout {
         }
     }
 
-
     private Runnable backBalance = new Runnable() {
         @Override
         public void run() {
@@ -213,13 +212,16 @@ public class BalanceEngine extends RelativeLayout {
     public void setBalance(int balanceUpdate ){
         BalanceSet = prnt.db.getSettings("device_balance");
         int newSum = balanceUpdate;
-        BalanceSet.setSettingsValue("" + newSum);
-        if (prnt.db.updateSettings(BalanceSet)) tfield_balance.setField(""+ newSum);
+        if (BalanceSet !=null) {
+            BalanceSet.setSettingsValue("" + newSum);
+            if (prnt.db.updateSettings(BalanceSet)) tfield_balance.setField("" + newSum);
+        }
     }
     public int getBalance(){
         if (prnt.db.getDBState() == DatabaseHelper.STATE_OPENED) {
             BalanceSet = prnt.db.getSettings("device_balance");
-            return Integer.parseInt(BalanceSet.getSettingsValue());
+            if (BalanceSet!=null) return Integer.parseInt(BalanceSet.getSettingsValue());
+            else return 0;
         }
         else return -1;
     }

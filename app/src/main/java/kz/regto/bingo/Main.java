@@ -49,7 +49,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
     public DatabaseHelper db;
     public d_device BingoDevice;
     public d_game dGame;
-    public d_entry_set dEntrySet;
     public List<d_entry_set> botEntrySet = null;
 
 
@@ -63,7 +62,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         mRootView = getWindow().getDecorView();
         //setOnSystemUiVisibilityChangeListener();
         showSystemUi();
-
         //database initialisation
         //Создали подключение
         db = new DatabaseHelper(this);
@@ -107,7 +105,6 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
         lck = (Lock) findViewById(R.id.r_lock);
         lck.bringToFront();
         setButtonsVisible(false);
-
 
         ET1.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -257,6 +254,22 @@ public class Main extends AppCompatActivity implements TimerEvent, BoardGridEven
             settings.setSettingsName("pin_code");
             settings.setSettingsValue(Integer.toString(pinCode));
             db.createNewSettings(settings);
+        }
+
+        if (db.getSettings("exit_code") == null) {
+            d_settings settings = new d_settings();
+            settings.setSettingsName("exit_code");
+            settings.setSettingsValue("-1");
+            db.createNewSettings(settings);
+        }else{
+            if (db.getSettings("exit_code").getSettingsValue().equals("-1")){
+                //Изменили статус баланса на сервере
+                if (ntw.setBalanceStatus(2)==null) {
+                    Toast toast = Toast.makeText(this, R.string.err_set_status, Toast.LENGTH_SHORT);
+                    toast.show();
+                    return;
+                }
+            }
         }
 
         BingoDevice = ntw.getDeviceFromServer(BingoDevice);
